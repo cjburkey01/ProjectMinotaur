@@ -47,7 +47,7 @@ public class GraphicsOptionsHandler : MonoBehaviour {
 			ppp.vignette.enabled = vignette;
 			ppp.dithering.enabled = dithering;
 			attachedCamera.fieldOfView = fieldOfView;
-			Debug.Log("Graphics settings reloaded.");
+			print("Graphics settings reloaded.");
 		} else {
 			Debug.LogWarning("Graphics settings couldn't be reloaded.");
 		}

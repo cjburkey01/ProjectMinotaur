@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class MazeGenerate : MonoBehaviour {
 
 	public int width = 10;
 	public int height = 10;
+	public bool IsBuilt { private set; get; }
 
 	private MazeCell dummyCell;
 	private MazeCell[] cells;
@@ -16,20 +18,16 @@ public class MazeGenerate : MonoBehaviour {
 	}
 
 	public void Generate() {
-		InitVariables();
+		print("Generating maze...");
+		long startTimeMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
+		InitVariables();
 		Stack<CellPosition> stack = new Stack<CellPosition>();
 		int[] keys = new int[] { 0, 1, 2, 3 }; // Up, down, left, right
+		IsBuilt = CarveTo(0, 0, stack, keys);
 
-		bool worked = CarveTo(0, 0, stack, keys);
-		print("Created maze: " + worked);
-		DrawMaze();
-	}
-
-	public void Update() {
-		if (Input.GetButtonDown("Jump")) {
-			Generate();
-		}
+		long endTimeMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+		print("Generated maze in " + (endTimeMs - startTimeMs) + "ms.");
 	}
 
 	private bool CarveTo(int x, int y, Stack<CellPosition> stack, int[] keys) {
@@ -95,36 +93,6 @@ public class MazeGenerate : MonoBehaviour {
 		return CarveTo(x, y, stack, keys);
 	}
 
-	public void DrawMaze() {
-		for (int x = 0; x < width; x ++) {
-			for (int y = 0; y < height; y ++) {
-				MazeCell cell = GetCell(x, y);
-				if (cell != null) {
-					if (cell.HasWall(0)) {
-						Vector3 start = new Vector3(x, 0, -y);
-						Vector3 end = new Vector3(x + 1.0f, 0, -y);
-						Debug.DrawLine(start, end, Color.red, 35.0f, false);
-					}
-					if (cell.HasWall(1)) {
-						Vector3 start = new Vector3(x, 0, -y - 1.0f);
-						Vector3 end = new Vector3(x + 1.0f, 0, -y - 1.0f);
-						Debug.DrawLine(start, end, Color.red, 35.0f, false);
-					}
-					if (cell.HasWall(2)) {
-						Vector3 start = new Vector3(x, 0, -y);
-						Vector3 end = new Vector3(x, 0, -y - 1.0f);
-						Debug.DrawLine(start, end, Color.red, 35.0f, false);
-					}
-					if (cell.HasWall(3)) {
-						Vector3 start = new Vector3(x + 1.0f, 0, -y);
-						Vector3 end = new Vector3(x + 1.0f, 0, -y - 1.0f);
-						Debug.DrawLine(start, end, Color.red, 35.0f, false);
-					}
-				}
-			}
-		}
-	}
-
 	private void Shuffle(ref int[] array) {
 		BetterRandom r = new BetterRandom();
 		for (int i = array.Length; i > 0; i --) {
@@ -156,7 +124,7 @@ public class MazeGenerate : MonoBehaviour {
 
 	public MazeCell GetCell(int x, int y) {
 		int i = y * width + x;
-		if (i < 0 || i >= cells.Length) {
+		if (x < 0 || x > width - 1 || y < 0 || y > height - 1 || i < 0 || i >= cells.Length) {
 			return null;
 		}
 		return cells[i];
@@ -175,5 +143,35 @@ public class MazeGenerate : MonoBehaviour {
 			cell.walls ^= walls;
 		}
 	}
+
+	/*public void DrawMaze() {
+		for (int x = 0; x < width; x ++) {
+			for (int y = 0; y < height; y ++) {
+				MazeCell cell = GetCell(x, y);
+				if (cell != null) {
+					if (cell.HasWall(0)) {
+						Vector3 start = new Vector3(x, 0, -y);
+						Vector3 end = new Vector3(x + 1.0f, 0, -y);
+						Debug.DrawLine(start, end, Color.red, 35.0f, false);
+					}
+					if (cell.HasWall(1)) {
+						Vector3 start = new Vector3(x, 0, -y - 1.0f);
+						Vector3 end = new Vector3(x + 1.0f, 0, -y - 1.0f);
+						Debug.DrawLine(start, end, Color.red, 35.0f, false);
+					}
+					if (cell.HasWall(2)) {
+						Vector3 start = new Vector3(x, 0, -y);
+						Vector3 end = new Vector3(x, 0, -y - 1.0f);
+						Debug.DrawLine(start, end, Color.red, 35.0f, false);
+					}
+					if (cell.HasWall(3)) {
+						Vector3 start = new Vector3(x + 1.0f, 0, -y);
+						Vector3 end = new Vector3(x + 1.0f, 0, -y - 1.0f);
+						Debug.DrawLine(start, end, Color.red, 35.0f, false);
+					}
+				}
+			}
+		}
+	}*/
 
 }
