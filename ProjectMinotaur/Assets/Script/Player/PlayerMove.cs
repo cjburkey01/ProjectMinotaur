@@ -12,7 +12,7 @@ public class PlayerMove : MonoBehaviour {
 	public float playerGravity = 9.0f;
 	public bool running { private set; get; }
 	public bool moving { private set; get; }
-
+	
 	private CharacterController controller;
 	private GameObject playerCamera;
 	private float currentSpeed;
@@ -21,6 +21,7 @@ public class PlayerMove : MonoBehaviour {
 	private Vector2 walkMove;
 	private Vector2 rotation;
 	private Vector2 moveVel;
+	private Vector3 previousPosition;
 	private float pedalSpeed;
 
 	// Initialize variables
@@ -68,6 +69,8 @@ public class PlayerMove : MonoBehaviour {
 		HandleJumping();
 		HandleGravity();
 		controller.Move(moveDirection * Time.deltaTime);
+		moving = previousPosition != transform.position;
+		previousPosition = transform.position;
 	}
 
 	// Handle walking, specifically
@@ -75,7 +78,6 @@ public class PlayerMove : MonoBehaviour {
 		running = Input.GetKey(KeyCode.LeftShift);
 		currentSpeed = ((running) ? (playerRunSpeed) : (playerWalkSpeed));
 		walkInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-		moving = walkInput != Vector2.zero;
 		walkMove = Vector2.SmoothDamp(walkMove, walkInput.normalized, ref moveVel, playerMoveDamp, 100.0f, Time.deltaTime);
 		pedalSpeed = ((controller.isGrounded) ? (currentSpeed) : (currentSpeed * playerInAirRatio));
 		moveDirection.x = walkMove.x * pedalSpeed;
@@ -101,6 +103,10 @@ public class PlayerMove : MonoBehaviour {
 		if (hit.moveDirection.y > 0.0f) {
 			moveDirection.y = -playerGravity * Time.deltaTime;
 		}
+	}
+
+	public bool Grounded() {
+		return controller.isGrounded;
 	}
 
 }

@@ -5,9 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerMove))]
 public class PlayerCameraBob : MonoBehaviour {
 
-	public float walkingBob = 360.0f;
-	public float runningBob = 480.0f;
-	public float bobAmount = 0.17f;
+	public float walkingBob = 480.0f;
+	public float runningBob = 640.0f;
+	public float bobAmount = 0.14f;
 
 	private Transform cameraTransform;
 	private PlayerMove playerMove;
@@ -39,18 +39,24 @@ public class PlayerCameraBob : MonoBehaviour {
 
 	// Do camera bobbing
 	void Update() {
-		if (playerMove.moving) {
-			bobbing = ((playerMove.running) ? (runningBob) : (walkingBob));
-			timer += Time.deltaTime;
-		} else {
-			timer = Mathf.SmoothDamp(timer, 0.0f, ref smoothVel, 0.25f);
+		if (!GameHandler.paused) {
+			if (!playerMove.Grounded()) {
+				timer = Mathf.SmoothDamp(timer, 270.0f / bobbing, ref smoothVel, 0.75f);
+			} else {
+				if (playerMove.moving) {
+					bobbing = ((playerMove.running) ? (runningBob) : (walkingBob));
+					timer += Time.deltaTime;
+				} else {
+					timer = Mathf.SmoothDamp(timer, 0.0f, ref smoothVel, 0.25f);
+				}
+			}
+			coef = timer * bobbing;
+			if (coef >= 360.0f) {
+				timer %= 360.0f / bobbing;
+			}
+			currentPosition.y = originalCameraPosition.y + ((Mathf.Sin(Mathf.Deg2Rad * coef) / 2) * bobAmount);
+			cameraTransform.localPosition = currentPosition;
 		}
-		coef = timer * bobbing;
-		if (coef >= 360.0f) {
-			timer %= 360.0f / bobbing;
-		}
-		currentPosition.y = originalCameraPosition.y + ((Mathf.Sin(Mathf.Deg2Rad * coef) / 2) * bobAmount);
-		cameraTransform.localPosition = currentPosition;
 	}
 
 }

@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 143412855905335226}
   - component: {fileID: 114751520642733098}
   - component: {fileID: 114040088378843096}
+  - component: {fileID: 114805776067938024}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -92,7 +93,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1115867106847606}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalPosition: {x: 4.5, y: 1.5, z: 4.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4298611581002352}
@@ -279,9 +280,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f12edfcf25a724e7ca3566bbcad399ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkingBob: 360
-  runningBob: 480
-  bobAmount: 0.17
+  walkingBob: 480
+  runningBob: 640
+  bobAmount: 0.14
 --- !u!114 &114107230788651888
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -329,8 +330,19 @@ MonoBehaviour:
   playerWalkSpeed: 6
   playerRunSpeed: 8
   playerInAirRatio: 0.8
-  playerJumpHeight: 6
-  playerGravity: 9
+  playerJumpHeight: 9
+  playerGravity: 20
+--- !u!114 &114805776067938024
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1115867106847606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 139f477bd7023422cb9b208f8edbfc01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!124 &124704325598956778
 Behaviour:
   m_ObjectHideFlags: 1

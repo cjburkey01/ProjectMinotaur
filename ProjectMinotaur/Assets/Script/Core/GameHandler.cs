@@ -6,14 +6,14 @@ public class GameHandler {
 
 	// Pause the game, free the cursor
 	public static void Pause() {
-		Cursor.lockState = CursorLockMode.None;
 		paused = true;
+		Cursor.lockState = CursorLockMode.None;
 	}
 
 	// Play the game, lock the cursor
 	public static void Unpause() {
-		paused = false;
 		Cursor.lockState = CursorLockMode.Locked;
+		paused = false;
 	}
 
 }
