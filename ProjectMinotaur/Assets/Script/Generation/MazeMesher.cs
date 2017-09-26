@@ -81,7 +81,7 @@ public class MazeMesher : MonoBehaviour {
 	private void RenderMesh(List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
 		float bw = (blockWidth + wallWidth);
 		float ww = wallWidth;
-		bool[] draws = new bool[] { false, false, true, true, true, true };
+		bool[] draws = new bool[] { true, false, true, true, true, true };
 
 		for (int x = 0; x < generator.width; x ++) {
 			for (int y = 0; y < generator.height; y ++) {
