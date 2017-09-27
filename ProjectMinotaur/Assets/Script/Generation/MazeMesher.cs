@@ -79,82 +79,48 @@ public class MazeMesher : MonoBehaviour {
 	}
 
 	private void RenderMesh(List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		float bw = (blockWidth + wallWidth);
 		float ww = wallWidth;
+		float bw = (blockWidth + ww);
 		bool[] draws = new bool[] { true, false, true, true, true, true };
 
 		for (int x = 0; x < generator.width; x ++) {
 			for (int y = 0; y < generator.height; y ++) {
+				bool bottom = y == 0;
+				bool right = x == generator.width - 1;
+
 				MazeCell cell = generator.GetCell(x, y);
 
 				int uy = generator.height - 1 - y;	// Invert Y, maze is generated with +y=Down, world is +y=Up
 
-				// Top Wall
+				// Horizontal Wall(s)
 				if (cell.HasWall(0)) {
-					float offset = 0.0f;
-					float width = 0.0f;
-					if (y > 0) {
-						MazeCell above = generator.GetCell(x, y - 1);
-						if (cell.HasWall(2) || (above != null && above.HasWall(2))) {
-							offset -= ww;
-							width += ww;
-						} else if (!cell.HasWall(2) && (above != null && above.HasWall(2))) {
-							offset -= ww;
-							width += ww;
-						}
-						if (generator.GetCell(x - 1, y) == null) {
-							offset += ww;
-							width -= ww;
-						}
-						if (generator.GetCell(x + 1, y) == null) {
-							width -= ww;
-						}
-					} else {
-						offset -= ww;
-						width += ww;
+					AddHorizontal(draws, x, bw, ww, uy, verts, tris, uvs);
+					if (bottom) {
+						AddHorizontal(draws, x, bw, ww, uy - 1, verts, tris, uvs);
 					}
-					Vector2 wallPos = new Vector2(x * bw + offset + ww, (uy + 1) * bw - ww);
-					Vector2 size = new Vector2(blockWidth + width + ww, ww);
-					DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
 				}
 				
-				// Left Wall
+				// Vertical Wall(s)
 				if (cell.HasWall(2)) {
-					float offset = 0.0f;
-					float height = 0.0f;
-					if (x > 0 ) {
-						MazeCell left = generator.GetCell(x - 1, y);
-						if (!cell.HasWall(0) && (left == null || !left.HasWall(0))) {
-							height += ww;
-						}
-					} else {
-						if (generator.GetCell(x, y - 1) != null) {
-							height += ww;
-						}
+					AddVertical(draws, x, bw, ww, uy, verts, tris, uvs);
+					if (right) {
+						AddVertical(draws, x + 1, bw, ww, uy, verts, tris, uvs);
 					}
-					Vector2 wallPos = new Vector2(x * bw, uy * bw + offset);
-					Vector2 size = new Vector2(ww, blockWidth + height);
-					DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
-				}
-
-				if (cell.HasWall(1) && y == generator.height - 1) {
-					Vector2 wallPos = new Vector2(x * bw, uy * bw - ww);
-					Vector2 size = new Vector2(blockWidth + 2 * ww, ww);
-					DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
-				}
-
-				if (cell.HasWall(3) && x == generator.width - 1) {
-					float offset = 0.0f;
-					float height = 0.0f;
-					if (generator.GetCell(x, y - 1) != null) {
-						height += ww;
-					}
-					Vector2 wallPos = new Vector2((x + 1) * bw, uy * bw + offset);
-					Vector2 size = new Vector2(ww, blockWidth + height);
-					DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
 				}
 			}
 		}
+	}
+
+	private void AddHorizontal(bool[] draws, int x, float bw, float ww, int uy, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
+		Vector2 wallPos = new Vector2(x * bw + ww, uy * bw);
+		Vector2 size = new Vector2(blockWidth + ww, ww);
+		DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
+	}
+
+	private void AddVertical(bool[] draws, int x, float bw, float ww, int uy, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
+		Vector2 wallPos = new Vector2(x * bw, uy * bw);
+		Vector2 size = new Vector2(ww, blockWidth);
+		DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
 	}
 
 	private void DrawWallSegment(bool[] sidesToDraw, Vector2 pos, Vector2 size, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
@@ -172,7 +138,7 @@ public class MazeMesher : MonoBehaviour {
 
 		// Top
 		if (sidesToDraw[0]) {
-			AddTrisAndUVs(verts.Count, tris, uvs, textureScale, size.x, size.x);
+			AddTrisAndUVs(verts.Count, tris, uvs, size.x, size.x);
 			verts.Add(new Vector3(oneX, oneY, zeroZ));
 			verts.Add(new Vector3(oneX, oneY, oneZ));
 			verts.Add(new Vector3(zeroX, oneY, oneZ));
@@ -181,7 +147,7 @@ public class MazeMesher : MonoBehaviour {
 
 		// Bottom
 		if (sidesToDraw[1]) {
-			AddTrisAndUVs(verts.Count, tris, uvs, textureScale, size.x, size.x);
+			AddTrisAndUVs(verts.Count, tris, uvs, size.x, size.x);
 			verts.Add(new Vector3(oneX, zeroY, zeroZ));
 			verts.Add(new Vector3(zeroX, zeroY, zeroZ));
 			verts.Add(new Vector3(zeroX, zeroY, oneZ));
@@ -190,7 +156,7 @@ public class MazeMesher : MonoBehaviour {
 
 		// Right
 		if (sidesToDraw[2]) {
-			AddTrisAndUVs(verts.Count, tris, uvs, textureScale, size.y, size.x);
+			AddTrisAndUVs(verts.Count, tris, uvs, size.y, size.x);
 			verts.Add(new Vector3(oneX, zeroY, zeroZ));
 			verts.Add(new Vector3(oneX, zeroY, oneZ));
 			verts.Add(new Vector3(oneX, oneY, oneZ));
@@ -199,7 +165,7 @@ public class MazeMesher : MonoBehaviour {
 
 		// Left
 		if (sidesToDraw[3]) {
-			AddTrisAndUVs(verts.Count, tris, uvs, textureScale, size.y, size.x);
+			AddTrisAndUVs(verts.Count, tris, uvs, size.y, size.x);
 			verts.Add(new Vector3(zeroX, oneY, zeroZ));
 			verts.Add(new Vector3(zeroX, oneY, oneZ));
 			verts.Add(new Vector3(zeroX, zeroY, oneZ));
@@ -208,7 +174,7 @@ public class MazeMesher : MonoBehaviour {
 
 		// Front
 		if (sidesToDraw[4]) {
-			AddTrisAndUVs(verts.Count, tris, uvs, textureScale, size.x, size.y);
+			AddTrisAndUVs(verts.Count, tris, uvs, size.x, size.y);
 			verts.Add(new Vector3(oneX, zeroY, zeroZ));
 			verts.Add(new Vector3(oneX, oneY, zeroZ));
 			verts.Add(new Vector3(zeroX, oneY, zeroZ));
@@ -217,7 +183,7 @@ public class MazeMesher : MonoBehaviour {
 
 		// Back
 		if (sidesToDraw[5]) {
-			AddTrisAndUVs(verts.Count, tris, uvs, textureScale, size.x, size.y);
+			AddTrisAndUVs(verts.Count, tris, uvs, size.x, size.y);
 			verts.Add(new Vector3(zeroX, zeroY, oneZ));
 			verts.Add(new Vector3(zeroX, oneY, oneZ));
 			verts.Add(new Vector3(oneX, oneY, oneZ));
@@ -225,17 +191,17 @@ public class MazeMesher : MonoBehaviour {
 		}
 	}
 
-	private void AddTrisAndUVs(int vertCountBefore, List<int> tris, List<Vector2> uvs, float scale, float sizeX, float sizeY) {
+	private void AddTrisAndUVs(int vertCountBefore, List<int> tris, List<Vector2> uvs, float sizeX, float sizeY) {
 		tris.Add(vertCountBefore + 3);
 		tris.Add(vertCountBefore + 1);
 		tris.Add(vertCountBefore + 0);
 		tris.Add(vertCountBefore + 1);
 		tris.Add(vertCountBefore + 3);
 		tris.Add(vertCountBefore + 2);
-		uvs.Add(new Vector2(sizeX * scale, sizeY * scale));
-		uvs.Add(new Vector2(sizeX * scale, 0.0f));
+		uvs.Add(new Vector2(1.0f, 1.0f));
+		uvs.Add(new Vector2(1.0f, 0.0f));
 		uvs.Add(new Vector2(0.0f, 0.0f));
-		uvs.Add(new Vector2(0.0f, sizeY * scale));
+		uvs.Add(new Vector2(0.0f, 1.0f));
 	}
 
 }

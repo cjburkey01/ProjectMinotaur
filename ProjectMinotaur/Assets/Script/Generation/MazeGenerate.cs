@@ -10,7 +10,7 @@ public class MazeGenerate : MonoBehaviour {
 	public int height = 10;
 	public bool IsBuilt { private set; get; }
 
-	private MazeCell dummyCell;
+	private MazeCell sideWall;
 	private MazeCell[] cells;
 
 	void Start() {
@@ -25,6 +25,8 @@ public class MazeGenerate : MonoBehaviour {
 		Stack<CellPosition> stack = new Stack<CellPosition>();
 		int[] keys = new int[] { 0, 1, 2, 3 }; // Up, down, left, right
 		IsBuilt = CarveTo(0, 0, stack, keys);
+
+		// Generate rooms and such.
 
 		long endTimeMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 		print("Generated maze in " + (endTimeMs - startTimeMs) + "ms.");
@@ -104,9 +106,9 @@ public class MazeGenerate : MonoBehaviour {
 	}
 
 	private void InitVariables() {
-		dummyCell = new MazeCell();
-		dummyCell.init = true;
-		dummyCell.walls = 0x1111;
+		sideWall = new MazeCell();
+		sideWall.init = true;
+		sideWall.walls = 0x1111;
 		cells = new MazeCell[width * height];
 		for (int i = 0; i < cells.Length; i ++) {
 			cells[i] = new MazeCell();
@@ -115,10 +117,10 @@ public class MazeGenerate : MonoBehaviour {
 
 	public MazeCell[] GetNeighbors(int x, int y) {
 		MazeCell[] neighbors = new MazeCell[4];
-		neighbors[0] = ((y > 0) ? (GetCell(x, y - 1)) : (dummyCell));
-		neighbors[1] = ((y < height - 1) ? (GetCell(x, y + 1)) : (dummyCell));
-		neighbors[2] = ((x > 0) ? (GetCell(x - 1, y)) : (dummyCell));
-		neighbors[3] = ((x < width - 1) ? (GetCell(x + 1, y)) : (dummyCell));
+		neighbors[0] = ((y > 0) ? (GetCell(x, y - 1)) : (sideWall));
+		neighbors[1] = ((y < height - 1) ? (GetCell(x, y + 1)) : (sideWall));
+		neighbors[2] = ((x > 0) ? (GetCell(x - 1, y)) : (sideWall));
+		neighbors[3] = ((x < width - 1) ? (GetCell(x + 1, y)) : (sideWall));
 		return neighbors;
 	}
 
@@ -143,35 +145,5 @@ public class MazeGenerate : MonoBehaviour {
 			cell.walls ^= walls;
 		}
 	}
-
-	/*public void DrawMaze() {
-		for (int x = 0; x < width; x ++) {
-			for (int y = 0; y < height; y ++) {
-				MazeCell cell = GetCell(x, y);
-				if (cell != null) {
-					if (cell.HasWall(0)) {
-						Vector3 start = new Vector3(x, 0, -y);
-						Vector3 end = new Vector3(x + 1.0f, 0, -y);
-						Debug.DrawLine(start, end, Color.red, 35.0f, false);
-					}
-					if (cell.HasWall(1)) {
-						Vector3 start = new Vector3(x, 0, -y - 1.0f);
-						Vector3 end = new Vector3(x + 1.0f, 0, -y - 1.0f);
-						Debug.DrawLine(start, end, Color.red, 35.0f, false);
-					}
-					if (cell.HasWall(2)) {
-						Vector3 start = new Vector3(x, 0, -y);
-						Vector3 end = new Vector3(x, 0, -y - 1.0f);
-						Debug.DrawLine(start, end, Color.red, 35.0f, false);
-					}
-					if (cell.HasWall(3)) {
-						Vector3 start = new Vector3(x + 1.0f, 0, -y);
-						Vector3 end = new Vector3(x + 1.0f, 0, -y - 1.0f);
-						Debug.DrawLine(start, end, Color.red, 35.0f, false);
-					}
-				}
-			}
-		}
-	}*/
 
 }
