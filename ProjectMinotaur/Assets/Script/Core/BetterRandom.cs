@@ -1,9 +1,10 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿//using System;
+//using System.Security.Cryptography;
+using UnityEngine;
 
-public class BetterRandom : RandomNumberGenerator {
+public class BetterRandom /*: RandomNumberGenerator*/ {
 
-	private static RandomNumberGenerator r;
+	/*private static RandomNumberGenerator r;
 
 	public BetterRandom() {
 		r = RandomNumberGenerator.Create();
@@ -33,6 +34,11 @@ public class BetterRandom : RandomNumberGenerator {
 
 	public int Next(int max) {
 		return Next(0, max);
+	}*/
+
+	public static int Between(int min, int max, int seed) {
+		Random.InitState(seed);
+		return Random.Range(min, max);
 	}
 
 }

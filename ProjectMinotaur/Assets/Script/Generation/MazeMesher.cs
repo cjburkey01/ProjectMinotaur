@@ -10,7 +10,6 @@ public class MazeMesher : MonoBehaviour {
 	public float wallHeight = 10.0f;
 	public float wallWidth = 2.0f;
 	public float blockWidth = 10.0f;
-	public float textureScale = 0.5f;
 
 	private MazeGenerate generator;
 	private bool hasGenerated = false;
@@ -58,7 +57,9 @@ public class MazeMesher : MonoBehaviour {
 		List<int> tris = new List<int>();
 		List<Vector2> uvs = new List<Vector2>();
 
-		RenderMesh(verts, tris, uvs);
+		RenderMesh(false, verts, tris, uvs);
+
+		print("Mesh built. V: " + verts.Count + ", T: " + tris.Count + ", UV: " + uvs.Count);
 
 		mesh.name = "MeshMaze";
 		mesh.vertices = verts.ToArray();
@@ -78,8 +79,9 @@ public class MazeMesher : MonoBehaviour {
 		print("Built maze mesh in " + (endTimeMs - startTimeMs) + "ms.");
 	}
 
-	private void RenderMesh(List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		bool[] draws = new bool[] { true, false, true, true, true, true };
+	private void RenderMesh(bool drawTop, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
+		bool[] horizontal = new bool[] { drawTop, false, false, false, true, true };
+		bool[] vertical = new bool[] { drawTop, false, true, true, false, false };
 
 		for (int x = 0; x < generator.width; x ++) {
 			for (int y = 0; y < generator.height; y ++) {
@@ -94,27 +96,30 @@ public class MazeMesher : MonoBehaviour {
 
 				// Horizontal Wall(s)
 				if (hasTopWall) {
-					AddHorizontal(draws, x, blockWidth, wallWidth, uy, verts, tris, uvs);
+					AddHorizontal(horizontal, x, blockWidth, wallWidth, uy, verts, tris, uvs);
 				}
 				if (onBottom) {
-					AddHorizontal(draws, x, blockWidth, wallWidth, uy - 1, verts, tris, uvs);
+					AddHorizontal(horizontal, x, blockWidth, wallWidth, uy - 1, verts, tris, uvs);
 				}
 				
 				// Vertical Wall(s)
 				if (hasLeftWall) {
-					AddVertical(draws, x, blockWidth, wallWidth, uy, verts, tris, uvs);
+					AddVertical(vertical, x, blockWidth, wallWidth, uy, verts, tris, uvs);
 				}
 				if (onRight) {
-					AddVertical(draws, x + 1, blockWidth, wallWidth, uy, verts, tris, uvs);
+					AddVertical(vertical, x + 1, blockWidth, wallWidth, uy, verts, tris, uvs);
 				}
 
 				// Corners
-				AddCorner(draws, x, blockWidth, wallWidth, uy, verts, tris, uvs);
+				MazeCell leftCell = generator.GetCell(x - 1, y);
+				MazeCell aboveCell = generator.GetCell(x, y - 1);
+				bool[] corner = new bool[] { drawTop, false, !hasTopWall, (leftCell == null || !leftCell.HasWall(0)), !hasLeftWall, (aboveCell == null || !aboveCell.HasWall(2)) };
+				AddCorner(corner, x, blockWidth, wallWidth, uy, verts, tris, uvs);
 				if (onRight) {
-					AddCorner(draws, x + 1, blockWidth, wallWidth, uy, verts, tris, uvs);
+					AddCorner(new bool[] { drawTop, false, false, true, false, false }, x + 1, blockWidth, wallWidth, uy, verts, tris, uvs);
 				}
 				if (onBottom) {
-					AddCorner(draws, x, blockWidth, wallWidth, uy - 1, verts, tris, uvs);
+					AddCorner(new bool[] { drawTop, false, false, false, false, true }, x, blockWidth, wallWidth, uy - 1, verts, tris, uvs);
 				}
 			}
 		}

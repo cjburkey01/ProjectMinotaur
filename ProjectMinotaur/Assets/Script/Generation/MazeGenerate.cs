@@ -24,7 +24,8 @@ public class MazeGenerate : MonoBehaviour {
 		InitVariables();
 		Stack<CellPosition> stack = new Stack<CellPosition>();
 		int[] keys = new int[] { 0, 1, 2, 3 }; // Up, down, left, right
-		IsBuilt = CarveTo(0, 0, stack, keys);
+		int seed = 103737;
+		IsBuilt = CarveTo(0, 0, stack, keys, ref seed);
 
 		// Generate rooms and such.
 
@@ -32,7 +33,7 @@ public class MazeGenerate : MonoBehaviour {
 		print("Generated maze in " + (endTimeMs - startTimeMs) + "ms.");
 	}
 
-	private bool CarveTo(int x, int y, Stack<CellPosition> stack, int[] keys) {
+	private bool CarveTo(int x, int y, Stack<CellPosition> stack, int[] keys, ref int seed) {
 		MazeCell cell = GetCell(x, y);
 
 		if (cell.init) {
@@ -40,7 +41,7 @@ public class MazeGenerate : MonoBehaviour {
 			CellPosition next = stack.Pop();
 			GetCell(next.x, next.y).init = false;
 			if (stack.Count > 0) {
-				return CarveTo(next.x, next.y, stack, keys);
+				return CarveTo(next.x, next.y, stack, keys, ref seed);
 			}
 			return true;
 		}
@@ -49,7 +50,7 @@ public class MazeGenerate : MonoBehaviour {
 		stack.Push(new CellPosition(x, y));
 
 		MazeCell[] neighbors = GetNeighbors(x, y);
-		Shuffle(ref keys);
+		Shuffle(ref keys, ref seed);
 		int check = 0;
 		int rand = 0;
 
@@ -92,13 +93,15 @@ public class MazeGenerate : MonoBehaviour {
 			}
 		}
 
-		return CarveTo(x, y, stack, keys);
+		return CarveTo(x, y, stack, keys, ref seed);
 	}
 
-	private void Shuffle(ref int[] array) {
-		BetterRandom r = new BetterRandom();
+	private void Shuffle(ref int[] array, ref int seed) {
+		//BetterRandom r = new BetterRandom();
 		for (int i = array.Length; i > 0; i --) {
-			int j = r.Next(i - 1);
+			int j = BetterRandom.Between(0, i - 1, seed);
+			seed ++;
+			//int j = r.Next(i - 1);
 			int k = array[j];
 			array[j] = array[i - 1];
 			array[i - 1] = k;

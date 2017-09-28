@@ -111,7 +111,6 @@ MonoBehaviour:
   wallHeight: 10
   wallWidth: 2
   blockWidth: 10
-  textureScale: 0.5
 --- !u!114 &114314212288315552
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -123,5 +122,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dcf23766d08f482f94cd9f30635865c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 39
-  height: 39
+  width: 60
+  height: 60

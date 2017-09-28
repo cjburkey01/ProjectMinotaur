@@ -3,6 +3,8 @@
 	string GetName();
 	string GetDescription();
 
+	void OnUpdate(PlayerCombatHandler combatHandler);
+
 	// Left click
 	void OnPrimary(PlayerCombatHandler combatHandler);
 
