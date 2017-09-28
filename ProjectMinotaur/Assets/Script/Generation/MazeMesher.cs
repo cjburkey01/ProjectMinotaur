@@ -79,47 +79,62 @@ public class MazeMesher : MonoBehaviour {
 	}
 
 	private void RenderMesh(List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		float ww = wallWidth;
-		float bw = (blockWidth + ww);
 		bool[] draws = new bool[] { true, false, true, true, true, true };
 
 		for (int x = 0; x < generator.width; x ++) {
 			for (int y = 0; y < generator.height; y ++) {
-				bool bottom = y == 0;
-				bool right = x == generator.width - 1;
-
 				MazeCell cell = generator.GetCell(x, y);
 
-				int uy = generator.height - 1 - y;	// Invert Y, maze is generated with +y=Down, world is +y=Up
+				bool onBottom = y == generator.height - 1;
+				bool onRight = x == generator.width - 1;
+				bool hasTopWall = cell.HasWall(0);
+				bool hasLeftWall = cell.HasWall(2);
+
+				int uy = generator.height - 1 - y;	// Invert Y, maze is generated with +y=Down, world is +y=Up(+z=forward)
 
 				// Horizontal Wall(s)
-				if (cell.HasWall(0)) {
-					AddHorizontal(draws, x, bw, ww, uy, verts, tris, uvs);
-					if (bottom) {
-						AddHorizontal(draws, x, bw, ww, uy - 1, verts, tris, uvs);
-					}
+				if (hasTopWall) {
+					AddHorizontal(draws, x, blockWidth, wallWidth, uy, verts, tris, uvs);
+				}
+				if (onBottom) {
+					AddHorizontal(draws, x, blockWidth, wallWidth, uy - 1, verts, tris, uvs);
 				}
 				
 				// Vertical Wall(s)
-				if (cell.HasWall(2)) {
-					AddVertical(draws, x, bw, ww, uy, verts, tris, uvs);
-					if (right) {
-						AddVertical(draws, x + 1, bw, ww, uy, verts, tris, uvs);
-					}
+				if (hasLeftWall) {
+					AddVertical(draws, x, blockWidth, wallWidth, uy, verts, tris, uvs);
+				}
+				if (onRight) {
+					AddVertical(draws, x + 1, blockWidth, wallWidth, uy, verts, tris, uvs);
+				}
+
+				// Corners
+				AddCorner(draws, x, blockWidth, wallWidth, uy, verts, tris, uvs);
+				if (onRight) {
+					AddCorner(draws, x + 1, blockWidth, wallWidth, uy, verts, tris, uvs);
+				}
+				if (onBottom) {
+					AddCorner(draws, x, blockWidth, wallWidth, uy - 1, verts, tris, uvs);
 				}
 			}
 		}
 	}
 
 	private void AddHorizontal(bool[] draws, int x, float bw, float ww, int uy, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		Vector2 wallPos = new Vector2(x * bw + ww, uy * bw);
-		Vector2 size = new Vector2(blockWidth + ww, ww);
+		Vector2 wallPos = new Vector2(x * (bw + ww) + ww, (uy + 1) * (bw + ww) - ww);
+		Vector2 size = new Vector2(bw, ww);
 		DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
 	}
 
 	private void AddVertical(bool[] draws, int x, float bw, float ww, int uy, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		Vector2 wallPos = new Vector2(x * bw, uy * bw);
-		Vector2 size = new Vector2(ww, blockWidth);
+		Vector2 wallPos = new Vector2(x * (bw + ww), uy * (bw + ww));
+		Vector2 size = new Vector2(ww, bw);
+		DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
+	}
+
+	private void AddCorner(bool[] draws, int x, float bw, float ww, int uy, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
+		Vector2 wallPos = new Vector2(x * (bw + ww), (uy + 1) * (bw + ww) - ww);
+		Vector2 size = new Vector2(ww, ww);
 		DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
 	}
 

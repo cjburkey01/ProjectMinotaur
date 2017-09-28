@@ -93,7 +93,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1115867106847606}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalPosition: {x: 4.5, y: 1.5, z: 4.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4298611581002352}
@@ -158,7 +158,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 1000
+  far clip plane: 200
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -306,13 +306,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 771006780ef664b62894545be3d08441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  antialiasing: 1
-  ambientOcclusion: 1
-  motionBlur: 1
-  bloom: 1
-  colorGrading: 1
-  vignette: 1
-  dithering: 1
+  antialiasing: 0
+  ambientOcclusion: 0
+  motionBlur: 0
+  bloom: 0
+  colorGrading: 0
+  vignette: 0
+  dithering: 0
   fieldOfView: 90
 --- !u!114 &114751520642733098
 MonoBehaviour:
@@ -325,7 +325,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb69589f259e7444a8600027251551a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: 6
+  mouseSensitivity: 3
   playerMoveDamp: 0.1
   playerWalkSpeed: 6
   playerRunSpeed: 8

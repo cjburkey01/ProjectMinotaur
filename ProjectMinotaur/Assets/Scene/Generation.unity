@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.013724543, g: 0.010593183, b: 0.018608462, a: 1}
+  m_IndirectSpecularColor: {r: 0.013724489, g: 0.010593166, b: 0.01860843, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -3330,55 +3330,6 @@ Prefab:
     - target: {fileID: 4171276025111444, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699, type: 2}
       propertyPath: m_RootOrder
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114421551556288658, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699,
-        type: 2}
-      propertyPath: antialiasing
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114421551556288658, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699,
-        type: 2}
-      propertyPath: ambientOcclusion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114421551556288658, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699,
-        type: 2}
-      propertyPath: motionBlur
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114421551556288658, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699,
-        type: 2}
-      propertyPath: bloom
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114421551556288658, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699,
-        type: 2}
-      propertyPath: colorGrading
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114421551556288658, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699,
-        type: 2}
-      propertyPath: vignette
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114421551556288658, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699,
-        type: 2}
-      propertyPath: dithering
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 20519635513049324, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699,
-        type: 2}
-      propertyPath: far clip plane
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 114751520642733098, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699,
-        type: 2}
-      propertyPath: mouseSensitivity
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1115867106847606, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699, type: 2}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699, type: 2}
