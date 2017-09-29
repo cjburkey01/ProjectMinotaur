@@ -26,14 +26,16 @@ public class PlayerCombatHandler : IHealthHaver {
 	}
 
 	void Update() {
-		if (Input.GetMouseButtonDown(0)) {
-			weapon.OnPrimary(this);
-		} else if(Input.GetMouseButtonDown(1)) {
-			weapon.OnSecondary(this);
-		} else if(Input.GetMouseButtonDown(2)) {
-			weapon.OnTertiary(this);
+		if (weapon != null) {
+			if (Input.GetMouseButtonDown(0)) {
+				weapon.OnPrimary(this);
+			} else if(Input.GetMouseButtonDown(1)) {
+				weapon.OnSecondary(this);
+			} else if(Input.GetMouseButtonDown(2)) {
+				weapon.OnTertiary(this);
+			}
+			weapon.OnUpdate(this);
 		}
-		weapon.OnUpdate(this);
 	}
 
 	public PlayerMove GetPlayer() {

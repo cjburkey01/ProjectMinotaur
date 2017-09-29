@@ -12,33 +12,43 @@ public class MazeGenerate : MonoBehaviour {
 
 	private MazeCell sideWall;
 	private MazeCell[] cells;
+	private int seed;
+	private LoadingHandler loadingHandler;
 
 	void Start() {
+		loadingHandler = GetComponent<LoadingHandler>();
+
 		Generate();
 	}
 
 	public void Generate() {
-		int seed = UnityEngine.Random.Range(0, 999999999);
+		i = 0;
+		if (loadingHandler != null) {
+			loadingHandler.Set(true);
+		}
+		seed = UnityEngine.Random.Range(0, 999999999);
 		Generate(seed);
 	}
 
 	private void Generate(int seed) {
 		IsBuilt = false;
 		print("Generating maze...; seed is " + seed);
-		long startTimeMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
 		InitVariables();
 		Stack<CellPosition> stack = new Stack<CellPosition>();
 		int[] keys = new int[] { 0, 1, 2, 3 }; // Up, down, left, right
-		CarveTo(0, 0, stack, keys, ref seed);
-
-		// Generate rooms and such.
-
-		long endTimeMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-		print("Generated maze in " + (endTimeMs - startTimeMs) + "ms.");
+		//CarveTo(0, 0, stack, keys);
+		StartCoroutine(CarveTo(0, 0, stack, keys));
 	}
 
-	public void CarveTo(int x, int y, Stack<CellPosition> stack, int[] keys, ref int seed) {
+	private void FinishedBuilding() {
+		// Generate rooms and such.
+
+		print("Generated maze.");
+	}
+
+	int i = 0;
+	IEnumerator CarveTo(int x, int y, Stack<CellPosition> stack, int[] keys) {
 		MazeCell cell = GetCell(x, y);
 
 		if (cell.init) {
@@ -46,19 +56,19 @@ public class MazeGenerate : MonoBehaviour {
 			CellPosition next = stack.Pop();
 			GetCell(next.x, next.y).init = false;
 			if (stack.Count > 0) {
-				CarveTo(next.x, next.y, stack, keys, ref seed);
-				return;
+				yield return CarveTo(next.x, next.y, stack, keys);
+				yield break;
 			}
 			IsBuilt = true;
 			FinishedBuilding();
-			return;
+			yield break;
 		}
 
 		cell.init = true;
 		stack.Push(new CellPosition(x, y));
 
 		MazeCell[] neighbors = GetNeighbors(x, y);
-		Shuffle(ref keys, ref seed);
+		Shuffle(ref keys);
 		int check = 0;
 		int rand = 0;
 
@@ -100,18 +110,20 @@ public class MazeGenerate : MonoBehaviour {
 					break;
 			}
 
-			//yield return null;
+			i ++;
+			if (i % 500 == 0) {
+				if (loadingHandler != null) {
+					loadingHandler.displayText.text = "Generating: " + i;
+				}
+				yield return null;
+			}
 		}
 
-		CarveTo(x, y, stack, keys, ref seed);
-		return;
+		yield return CarveTo(x, y, stack, keys);
+		yield break;
 	}
 
-	private void FinishedBuilding() {
-
-	}
-
-	private void Shuffle(ref int[] array, ref int seed) {
+	private void Shuffle(ref int[] array) {
 		//BetterRandom r = new BetterRandom();
 		for (int i = array.Length; i > 0; i --) {
 			int j = BetterRandom.Between(0, i - 1, seed);
@@ -163,5 +175,76 @@ public class MazeGenerate : MonoBehaviour {
 			cell.walls ^= walls;
 		}
 	}
+
+	/*
+	public void CarveTo(int x, int y, Stack<CellPosition> stack, int[] keys) {
+		MazeCell cell = GetCell(x, y);
+
+		if (cell.init) {
+			stack.Pop();
+			CellPosition next = stack.Pop();
+			GetCell(next.x, next.y).init = false;
+			if (stack.Count > 0) {
+				CarveTo(next.x, next.y, stack, keys);
+				return;
+			}
+			IsBuilt = true;
+			FinishedBuilding();
+			return;
+		}
+
+		cell.init = true;
+		stack.Push(new CellPosition(x, y));
+
+		MazeCell[] neighbors = GetNeighbors(x, y);
+		Shuffle(ref keys);
+		int check = 0;
+		int rand = 0;
+
+		while (check ++ < keys.Length) {
+			i ++;
+			rand = keys[check - 1];
+
+			switch (rand) {
+				case 0:
+					if (!neighbors[0].init) {
+						ClearWalls(x, y, MazeCell.UP);
+						ClearWalls(x, y - 1, MazeCell.DOWN);
+						y --;
+						check = keys.Length;
+					}
+					break;
+				case 1:
+					if (!neighbors[1].init) {
+						ClearWalls(x, y, MazeCell.DOWN);
+						ClearWalls(x, y + 1, MazeCell.UP);
+						y ++;
+						check = keys.Length;
+					}
+					break;
+				case 2:
+					if (!neighbors[2].init) {
+						ClearWalls(x, y, MazeCell.LEFT);
+						ClearWalls(x - 1, y, MazeCell.RIGHT);
+						x --;
+						check = keys.Length;
+					}
+					break;
+				case 3:
+					if (!neighbors[3].init) {
+						ClearWalls(x, y, MazeCell.RIGHT);
+						ClearWalls(x + 1, y, MazeCell.LEFT);
+						x ++;
+						check = keys.Length;
+					}
+					break;
+			}
+
+			//yield return null;
+		}
+
+		CarveTo(x, y, stack, keys);
+	}
+	*/
 
 }

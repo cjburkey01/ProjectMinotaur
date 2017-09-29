@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4359222830183962}
   - component: {fileID: 114314212288315552}
   - component: {fileID: 114095790097115398}
+  - component: {fileID: 114156489159266358}
   - component: {fileID: 33459241956062000}
   - component: {fileID: 23109307556302034}
   - component: {fileID: 64319489348930988}
@@ -111,6 +112,21 @@ MonoBehaviour:
   wallHeight: 10
   wallWidth: 2
   blockWidth: 10
+--- !u!114 &114156489159266358
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1871423469109360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1064e4f4e4ef40eaa544f1a43225fa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loadingCamera: {fileID: 0}
+  player: {fileID: 0}
+  loadingScreen: {fileID: 0}
+  displayText: {fileID: 0}
 --- !u!114 &114314212288315552
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -122,5 +138,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dcf23766d08f482f94cd9f30635865c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 32
-  height: 32
+  width: 61
+  height: 61

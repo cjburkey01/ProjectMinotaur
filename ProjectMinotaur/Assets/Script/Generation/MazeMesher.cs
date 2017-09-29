@@ -10,14 +10,19 @@ public class MazeMesher : MonoBehaviour {
 	public float wallHeight = 10.0f;
 	public float wallWidth = 2.0f;
 	public float blockWidth = 10.0f;
+	public bool hasGenerated { private set; get; }
+	public bool isBuilding { private set; get; }
 
 	private MazeGenerate generator;
-	private bool hasGenerated = false;
 	private MeshRenderer meshRenderer;
 	private MeshFilter meshFilter;
 	private MeshCollider meshCollider;
+	private LoadingHandler loadingHandler;
 
 	void Start() {
+		hasGenerated = false;
+		isBuilding = false;
+
 		generator = GetComponent<MazeGenerate>();
 		if (generator == null) {
 			Debug.LogError("Maze generator not found on maze generator object. Can't create mesh.");
@@ -36,36 +41,40 @@ public class MazeMesher : MonoBehaviour {
 		}
 
 		meshCollider = GetComponent<MeshCollider>();
+		loadingHandler = GetComponent<LoadingHandler>();
 	}
 
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.R)) {
 			hasGenerated = false;
+			isBuilding = false;
 			generator.Generate();
 		}
 
-		if (!hasGenerated && generator.IsBuilt) {
-			hasGenerated = true;
+		if (!hasGenerated && !isBuilding && generator.IsBuilt) {
+			isBuilding = true;
 			CreateMesh();
 		}
 	}
 
 	private void CreateMesh() {
 		print("Building maze mesh...");
-		long startTimeMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+		i = 0;
 
 		meshFilter.mesh = null;
 		meshFilter.sharedMesh = null;
 
-		Mesh mesh = new Mesh();
 		List<Vector3> verts = new List<Vector3>();
 		List<int> tris = new List<int>();
 		List<Vector2> uvs = new List<Vector2>();
 
-		RenderMesh(true, verts, tris, uvs);
+		StartCoroutine(RenderMesh(false, verts, tris, uvs));
+	}
 
-		print("Mesh built. V: " + verts.Count + ", T: " + tris.Count + ", UV: " + uvs.Count);
+	private void BuildMeshFromData(List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
+		print("Verts/Tris/UVs built. Verts: " + verts.Count + ", Tris: " + tris.Count + ", UVs: " + uvs.Count);
 
+		Mesh mesh = new Mesh();
 		mesh.name = "MeshMaze";
 		mesh.vertices = verts.ToArray();
 		mesh.triangles = tris.ToArray();
@@ -80,11 +89,13 @@ public class MazeMesher : MonoBehaviour {
 			meshCollider.sharedMesh = mesh;
 		}
 
-		long endTimeMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-		print("Built maze mesh in " + (endTimeMs - startTimeMs) + "ms.");
+		isBuilding = false;
+		hasGenerated = true;
+		print("Built maze mesh.");
 	}
 
-	private void RenderMesh(bool drawTop, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
+	private int i = 0;
+	IEnumerator RenderMesh(bool drawTop, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
 		bool[] horizontal = new bool[] { drawTop, false, false, false, true, true };
 		bool[] vertical = new bool[] { drawTop, false, true, true, false, false };
 
@@ -126,8 +137,19 @@ public class MazeMesher : MonoBehaviour {
 				if (onBottom) {
 					AddCorner(new bool[] { drawTop, false, false, false, false, true }, x, blockWidth, wallWidth, uy - 1, verts, tris, uvs);
 				}
+
+				i ++;
+				if (i % 100 == 0) {
+					if (loadingHandler != null) {
+						loadingHandler.displayText.text = "Building: " + i + " / " + (generator.width * generator.height);
+					}
+					yield return null;
+				}
 			}
 		}
+
+		BuildMeshFromData(verts, tris, uvs);
+		yield break;
 	}
 
 	private void AddHorizontal(bool[] draws, int x, float bw, float ww, int uy, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
