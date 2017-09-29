@@ -39,6 +39,11 @@ public class MazeMesher : MonoBehaviour {
 	}
 
 	void Update() {
+		if (Input.GetKeyDown(KeyCode.R)) {
+			hasGenerated = false;
+			generator.Generate();
+		}
+
 		if (!hasGenerated && generator.IsBuilt) {
 			hasGenerated = true;
 			CreateMesh();
@@ -57,7 +62,7 @@ public class MazeMesher : MonoBehaviour {
 		List<int> tris = new List<int>();
 		List<Vector2> uvs = new List<Vector2>();
 
-		RenderMesh(false, verts, tris, uvs);
+		RenderMesh(true, verts, tris, uvs);
 
 		print("Mesh built. V: " + verts.Count + ", T: " + tris.Count + ", UV: " + uvs.Count);
 

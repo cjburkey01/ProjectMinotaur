@@ -18,14 +18,19 @@ public class MazeGenerate : MonoBehaviour {
 	}
 
 	public void Generate() {
-		print("Generating maze...");
+		int seed = UnityEngine.Random.Range(0, 999999999);
+		Generate(seed);
+	}
+
+	private void Generate(int seed) {
+		IsBuilt = false;
+		print("Generating maze...; seed is " + seed);
 		long startTimeMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
 		InitVariables();
 		Stack<CellPosition> stack = new Stack<CellPosition>();
 		int[] keys = new int[] { 0, 1, 2, 3 }; // Up, down, left, right
-		int seed = 103737;
-		IsBuilt = CarveTo(0, 0, stack, keys, ref seed);
+		CarveTo(0, 0, stack, keys, ref seed);
 
 		// Generate rooms and such.
 
@@ -33,7 +38,7 @@ public class MazeGenerate : MonoBehaviour {
 		print("Generated maze in " + (endTimeMs - startTimeMs) + "ms.");
 	}
 
-	private bool CarveTo(int x, int y, Stack<CellPosition> stack, int[] keys, ref int seed) {
+	public void CarveTo(int x, int y, Stack<CellPosition> stack, int[] keys, ref int seed) {
 		MazeCell cell = GetCell(x, y);
 
 		if (cell.init) {
@@ -41,9 +46,12 @@ public class MazeGenerate : MonoBehaviour {
 			CellPosition next = stack.Pop();
 			GetCell(next.x, next.y).init = false;
 			if (stack.Count > 0) {
-				return CarveTo(next.x, next.y, stack, keys, ref seed);
+				CarveTo(next.x, next.y, stack, keys, ref seed);
+				return;
 			}
-			return true;
+			IsBuilt = true;
+			FinishedBuilding();
+			return;
 		}
 
 		cell.init = true;
@@ -91,9 +99,16 @@ public class MazeGenerate : MonoBehaviour {
 					}
 					break;
 			}
+
+			//yield return null;
 		}
 
-		return CarveTo(x, y, stack, keys, ref seed);
+		CarveTo(x, y, stack, keys, ref seed);
+		return;
+	}
+
+	private void FinishedBuilding() {
+
 	}
 
 	private void Shuffle(ref int[] array, ref int seed) {
