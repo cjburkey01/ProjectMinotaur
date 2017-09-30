@@ -4,168 +4,221 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MazeGenerate))]
-[RequireComponent(typeof(MeshRenderer))]
 public class MazeMesher : MonoBehaviour {
 
+	public Material wallMaterial;
 	public float wallHeight = 10.0f;
 	public float wallWidth = 2.0f;
 	public float blockWidth = 10.0f;
-	public bool hasGenerated { private set; get; }
-	public bool isBuilding { private set; get; }
-
-	private MazeGenerate generator;
-	private MeshRenderer meshRenderer;
-	private MeshFilter meshFilter;
-	private MeshCollider meshCollider;
+	public GameObject floorPrefab;
+	public MazeGenerate generator { private set; get; }
+	
+	private bool builtChunks = false;
+	private bool buildingChunks = false;
 	private LoadingHandler loadingHandler;
+	private List<GameObject> children = new List<GameObject>();
+
+	private int progress = 0;
+	private int finished = 0;
+
+	private int totalVert = 0;
+	private int totalTri = 0;
+	private int totalUv = 0;
 
 	void Start() {
-		hasGenerated = false;
-		isBuilding = false;
-
+		loadingHandler = GetComponent<LoadingHandler>();
 		generator = GetComponent<MazeGenerate>();
 		if (generator == null) {
-			Debug.LogError("Maze generator not found on maze generator object. Can't create mesh.");
+			Debug.LogError("Maze generator not found on maze generator object. Couldn't create maze chunk meshes.");
 			Destroy(gameObject);
 		}
-
-		meshRenderer = GetComponent<MeshRenderer>();
-		if (meshRenderer == null) {
-			Debug.LogError("Mesh renderer not found on maze generator object. Can't create mesh.");
-			Destroy(gameObject);
-		}
-
-		meshFilter = GetComponent<MeshFilter>();
-		if (meshFilter == null) {
-			meshFilter = gameObject.AddComponent<MeshFilter>();
-		}
-
-		meshCollider = GetComponent<MeshCollider>();
-		loadingHandler = GetComponent<LoadingHandler>();
 	}
 
 	void Update() {
-		if (Input.GetKeyDown(KeyCode.R)) {
-			hasGenerated = false;
-			isBuilding = false;
-			generator.Generate();
+		if (!builtChunks && generator.generated) {
+			StartCoroutine(CreateMeshes());
 		}
 
-		if (!hasGenerated && !isBuilding && generator.IsBuilt) {
-			isBuilding = true;
-			CreateMesh();
+		if (generator.generated && builtChunks && !buildingChunks && loadingHandler != null && loadingHandler.loading) {
+			print("Verts: " + totalVert + ", Tris: " + totalTri + ", UVs: " + totalUv);
+			loadingHandler.Set(false);
+		}
+
+		if (builtChunks && generator.generated && Input.GetKeyDown(KeyCode.R)) {
+			CleanUp();
+			generator.GenerateMaze();
 		}
 	}
 
-	private void CreateMesh() {
-		print("Building maze mesh...");
-		i = 0;
-
-		meshFilter.mesh = null;
-		meshFilter.sharedMesh = null;
-
-		List<Vector3> verts = new List<Vector3>();
-		List<int> tris = new List<int>();
-		List<Vector2> uvs = new List<Vector2>();
-
-		StartCoroutine(RenderMesh(false, verts, tris, uvs));
+	public void CleanUp() {
+		builtChunks = false;
+		foreach (GameObject obj in children) {
+			Destroy(obj);
+		}
+		children.Clear();
 	}
 
-	private void BuildMeshFromData(List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		print("Verts/Tris/UVs built. Verts: " + verts.Count + ", Tris: " + tris.Count + ", UVs: " + uvs.Count);
+	IEnumerator CreateMeshes() {
+		print("Building maze meshes...");
+
+		progress = 0;
+		finished = 0;
+
+		totalVert = 0;
+		totalTri = 0;
+		totalUv = 0;
+
+		builtChunks = true;
+		
+		for (int x = generator.widthChunks - 1; x >= 0; x --) {
+			for (int y = generator.heightChunks - 1; y >= 0; y --) {
+				List<Vector3> verts = new List<Vector3>();
+				List<int> tris = new List<int>();
+				List<Vector2> uvs = new List<Vector2>();
+
+				GameObject chunk = new GameObject("MazeChunk (" + x + ", " + y + ")");
+				chunk.transform.parent = transform;
+				chunk.transform.position = GetChunkPos(x, y);
+				GameObject obj = (GameObject) Instantiate(floorPrefab);
+				obj.transform.position = GetChunkPos(x, y);
+				obj.transform.parent = chunk.transform;
+				children.Add(chunk);
+				StartCoroutine(RenderMesh(chunk, CreateChunk(x, y), x, y, verts, tris, uvs));
+
+				yield return null;
+			}
+		}
+		yield break;
+	}
+
+	private MazeCell[,] CreateChunk(int chunkX, int chunkY) {
+		int chunkSize = generator.chunkSize;
+		int startX = chunkX * chunkSize;
+		int startY = chunkY * chunkSize;
+		MazeCell[,] data = new MazeCell[chunkSize, chunkSize];
+		for (int x = 0; x < chunkSize; x ++) {
+			for (int y = 0; y < chunkSize; y ++) {
+				MazeCell cell = generator.GetCell(startX + x, startY + y);
+				data[x, y] = new MazeCell(cell);
+			}
+		}
+		return data;
+	}
+
+	private void BuildMeshFromData(GameObject obj, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
+		totalVert += verts.Count;
+		totalTri += tris.Count;
+		totalUv += uvs.Count;
 
 		Mesh mesh = new Mesh();
-		mesh.name = "MeshMaze";
+		mesh.name = "Mesh" + obj.transform.name;
 		mesh.vertices = verts.ToArray();
 		mesh.triangles = tris.ToArray();
 		mesh.uv = uvs.ToArray();
 		mesh.RecalculateBounds();
 		mesh.RecalculateNormals();
 		mesh.RecalculateTangents();
-		meshFilter.mesh = mesh;
 
-		if (meshCollider != null) {
-			meshCollider.convex = false;
-			meshCollider.sharedMesh = mesh;
-		}
+		verts.Clear();
+		tris.Clear();
+		uvs.Clear();
 
-		isBuilding = false;
-		hasGenerated = true;
-		print("Built maze mesh.");
+		MeshFilter filter = obj.AddComponent<MeshFilter>();
+		MeshRenderer renderer = obj.AddComponent<MeshRenderer>();
+		MeshCollider collider = obj.AddComponent<MeshCollider>();
+
+		filter.mesh = null;
+		filter.mesh = mesh;
+		renderer.material = wallMaterial;
+		collider.convex = false;
+		collider.sharedMesh = null;
+		collider.sharedMesh = mesh;
+
+		buildingChunks = false;
 	}
 
-	private int i = 0;
-	IEnumerator RenderMesh(bool drawTop, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		bool[] horizontal = new bool[] { drawTop, false, false, false, true, true };
-		bool[] vertical = new bool[] { drawTop, false, true, true, false, false };
+	IEnumerator RenderMesh(GameObject obj, MazeCell[,] data, int chunkX, int chunkY, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
+		bool[] horizontal = new bool[] { false, false, false, false, true, true };
+		bool[] vertical = new bool[] { false, false, true, true, false, false };
 
-		for (int x = 0; x < generator.width; x ++) {
-			for (int y = 0; y < generator.height; y ++) {
-				MazeCell cell = generator.GetCell(x, y);
+		for (int x = 0; x < generator.chunkSize; x ++) {
+			for (int y = 0; y < generator.chunkSize; y ++) {
+				MazeCell cell = data[x, y];
 
-				bool onBottom = y == generator.height - 1;
-				bool onRight = x == generator.width - 1;
+				int truX = x + chunkX * generator.chunkSize;
+				int truY = y + chunkY * generator.chunkSize;
+
+				bool onTop = y + chunkY * generator.chunkSize == generator.height - 1;
+				bool onRight = x + chunkX * generator.chunkSize == generator.width - 1;
 				bool hasTopWall = cell.HasWall(0);
 				bool hasLeftWall = cell.HasWall(2);
 
-				int uy = generator.height - 1 - y;	// Invert Y, maze is generated with +y=Down, world is +y=Up(+z=forward)
-
 				// Horizontal Wall(s)
 				if (hasTopWall) {
-					AddHorizontal(horizontal, x, blockWidth, wallWidth, uy, verts, tris, uvs);
+					AddHorizontal(horizontal, x, blockWidth, wallWidth, y, verts, tris, uvs);
 				}
-				if (onBottom) {
-					AddHorizontal(horizontal, x, blockWidth, wallWidth, uy - 1, verts, tris, uvs);
+				if (onTop) {
+					AddHorizontal(horizontal, x, blockWidth, wallWidth, y + 1, verts, tris, uvs);
 				}
 				
 				// Vertical Wall(s)
 				if (hasLeftWall) {
-					AddVertical(vertical, x, blockWidth, wallWidth, uy, verts, tris, uvs);
+					AddVertical(vertical, x, blockWidth, wallWidth, y, verts, tris, uvs);
 				}
 				if (onRight) {
-					AddVertical(vertical, x + 1, blockWidth, wallWidth, uy, verts, tris, uvs);
+					AddVertical(vertical, x + 1, blockWidth, wallWidth, y, verts, tris, uvs);
 				}
 
 				// Corners
-				MazeCell leftCell = generator.GetCell(x - 1, y);
-				MazeCell aboveCell = generator.GetCell(x, y - 1);
-				bool[] corner = new bool[] { drawTop, false, !hasTopWall, (leftCell == null || !leftCell.HasWall(0)), !hasLeftWall, (aboveCell == null || !aboveCell.HasWall(2)) };
-				AddCorner(corner, x, blockWidth, wallWidth, uy, verts, tris, uvs);
-				if (onRight) {
-					AddCorner(new bool[] { drawTop, false, false, true, false, false }, x + 1, blockWidth, wallWidth, uy, verts, tris, uvs);
+				MazeCell leftCell = generator.GetCell(truX - 1, truY);
+				MazeCell aboveCell = generator.GetCell(truX, truY - 1);
+				bool[] corner = new bool[] { false, false, !hasTopWall, (leftCell == null || !leftCell.HasWall(0)), (aboveCell == null || !aboveCell.HasWall(2)), !hasLeftWall };
+				AddCorner(corner, x, blockWidth, wallWidth, y - 1, verts, tris, uvs);
+				if (onRight && truY != 0) {
+					AddCorner(new bool[] { false, false, false, true, false, false }, x + 1, blockWidth, wallWidth, y - 1, verts, tris, uvs);
 				}
-				if (onBottom) {
-					AddCorner(new bool[] { drawTop, false, false, false, false, true }, x, blockWidth, wallWidth, uy - 1, verts, tris, uvs);
+				if (onTop && truX != 0) {
+					AddCorner(new bool[] { false, false, false, false, true, false }, x, blockWidth, wallWidth, y, verts, tris, uvs);
 				}
 
-				i ++;
-				if (i % 100 == 0) {
-					if (loadingHandler != null) {
-						loadingHandler.displayText.text = "Building: " + i + " / " + (generator.width * generator.height);
-					}
+				if (loadingHandler != null) {
+					float prog = ((float) progress) / ((float) (generator.width * generator.height));
+					float done = ((float) finished) / ((float) (generator.widthChunks * generator.heightChunks));
+					prog *= 100.0f;
+					done *= 100.0f;
+					string progString = prog.ToString("00.00");
+					string doneString = done.ToString("00.00");
+					loadingHandler.displayText.text = "Materializing Chunks: " + progString + "%. Finished Chunks: " + doneString + "%.";
+				}
+
+				progress ++;
+				if (progress % 10 == 0) {
 					yield return null;
 				}
+				buildingChunks = true;
 			}
 		}
 
-		BuildMeshFromData(verts, tris, uvs);
+		finished ++;
+
+		BuildMeshFromData(obj, verts, tris, uvs);
 		yield break;
 	}
 
 	private void AddHorizontal(bool[] draws, int x, float bw, float ww, int uy, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		Vector2 wallPos = new Vector2(x * (bw + ww) + ww, (uy + 1) * (bw + ww) - ww);
+		Vector2 wallPos = new Vector2(x * (bw + ww) + ww, (uy) * (bw + ww));
 		Vector2 size = new Vector2(bw, ww);
 		DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
 	}
 
 	private void AddVertical(bool[] draws, int x, float bw, float ww, int uy, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		Vector2 wallPos = new Vector2(x * (bw + ww), uy * (bw + ww));
+		Vector2 wallPos = new Vector2(x * (bw + ww), uy * (bw + ww) + ww);
 		Vector2 size = new Vector2(ww, bw);
 		DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
 	}
 
 	private void AddCorner(bool[] draws, int x, float bw, float ww, int uy, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		Vector2 wallPos = new Vector2(x * (bw + ww), (uy + 1) * (bw + ww) - ww);
+		Vector2 wallPos = new Vector2(x * (bw + ww), (uy + 1) * (bw + ww));
 		Vector2 size = new Vector2(ww, ww);
 		DrawWallSegment(draws, wallPos, size, verts, tris, uvs);
 	}
@@ -249,6 +302,22 @@ public class MazeMesher : MonoBehaviour {
 		uvs.Add(new Vector2(1.0f, 0.0f));
 		uvs.Add(new Vector2(0.0f, 0.0f));
 		uvs.Add(new Vector2(0.0f, 1.0f));
+	}
+
+	public float GetInWorldChunkSize() {
+		return (generator.chunkSize * blockWidth) + (generator.chunkSize * wallWidth);
+	}
+
+	public Vector3 GetChunkPos(int x, int y) {
+		return new Vector3(x * GetInWorldChunkSize(), 0.0f, y * GetInWorldChunkSize());
+	}
+
+	public Vector2 WorldPosOfCell(int x, int y) {
+		return new Vector2(TransformToWorld(x), TransformToWorld(y));
+	}
+
+	private float TransformToWorld(int val) {
+		return ((blockWidth + wallWidth) * val) + ((blockWidth / 2) + wallWidth);
 	}
 
 }

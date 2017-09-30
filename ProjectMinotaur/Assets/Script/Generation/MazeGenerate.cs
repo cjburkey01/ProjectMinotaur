@@ -6,44 +6,55 @@ using UnityEngine;
 
 public class MazeGenerate : MonoBehaviour {
 
-	public int width = 10;
-	public int height = 10;
-	public bool IsBuilt { private set; get; }
+	public int chunkSize = 16;
+	public int widthChunks = 2;
+	public int heightChunks = 1;
+	public bool generated { private set; get; }
+	public int width { private set; get; }
+	public int height { private set; get; }
 
 	private MazeCell sideWall;
 	private MazeCell[] cells;
-	private int seed;
 	private LoadingHandler loadingHandler;
+	private int seed;
 
 	void Start() {
 		loadingHandler = GetComponent<LoadingHandler>();
 
-		Generate();
+		width = chunkSize * widthChunks;
+		height = chunkSize * heightChunks;
+
+		GenerateMaze();
 	}
 
-	public void Generate() {
+	public void GenerateMaze() {
 		i = 0;
-		if (loadingHandler != null) {
-			loadingHandler.Set(true);
-		}
 		seed = UnityEngine.Random.Range(0, 999999999);
+		GenerateMaze(seed);
+	}
+
+	public void GenerateMaze(int seed) {
 		Generate(seed);
 	}
 
 	private void Generate(int seed) {
-		IsBuilt = false;
+		generated = false;
 		print("Generating maze...; seed is " + seed);
+
+		if (loadingHandler != null) {
+			loadingHandler.Set(true);
+		}
 
 		InitVariables();
 		Stack<CellPosition> stack = new Stack<CellPosition>();
 		int[] keys = new int[] { 0, 1, 2, 3 }; // Up, down, left, right
-		//CarveTo(0, 0, stack, keys);
 		StartCoroutine(CarveTo(0, 0, stack, keys));
 	}
 
 	private void FinishedBuilding() {
 		// Generate rooms and such.
 
+		generated = true;
 		print("Generated maze.");
 	}
 
@@ -59,7 +70,6 @@ public class MazeGenerate : MonoBehaviour {
 				yield return CarveTo(next.x, next.y, stack, keys);
 				yield break;
 			}
-			IsBuilt = true;
 			FinishedBuilding();
 			yield break;
 		}
@@ -110,11 +120,12 @@ public class MazeGenerate : MonoBehaviour {
 					break;
 			}
 
+			if (loadingHandler != null) {
+				loadingHandler.displayText.text = "Carved Pathways: " + i;
+			}
+
 			i ++;
-			if (i % 500 == 0) {
-				if (loadingHandler != null) {
-					loadingHandler.displayText.text = "Generating: " + i;
-				}
+			if (i % 750 == 0) {
 				yield return null;
 			}
 		}

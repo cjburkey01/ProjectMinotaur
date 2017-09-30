@@ -3,6 +3,14 @@
 	public bool init = false;
 	public int walls = 0x1111;
 
+	public MazeCell() {
+	}
+
+	public MazeCell(MazeCell copy) {
+		this.init = copy.init;
+		this.walls = copy.walls;
+	}
+
 	/*	Up		0
 		Down	1
 		Left	2

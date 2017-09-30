@@ -99,12 +99,6 @@ public class PlayerMove : MonoBehaviour {
 		}
 	}
 
-	void OnControllerColliderHit(ControllerColliderHit hit) {
-		if (hit.moveDirection.y > 0.0f) {
-			moveDirection.y = -playerGravity * Time.deltaTime;
-		}
-	}
-
 	public bool Grounded() {
 		return controller.isGrounded;
 	}
