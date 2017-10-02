@@ -6,6 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(MazeGenerate))]
 public class MazeMesher : MonoBehaviour {
 
+	public bool drawTop = true;
 	public Material wallMaterial;
 	public float wallHeight = 10.0f;
 	public float wallWidth = 2.0f;
@@ -45,7 +46,7 @@ public class MazeMesher : MonoBehaviour {
 		}
 
 		if (builtChunks && generator.generated && Input.GetKeyDown(KeyCode.R)) {
-			CleanUp();
+			builtChunks = false;
 			generator.GenerateMaze();
 		}
 	}
@@ -60,6 +61,7 @@ public class MazeMesher : MonoBehaviour {
 
 	IEnumerator CreateMeshes() {
 		print("Building maze meshes...");
+		CleanUp();
 
 		progress = 0;
 		finished = 0;
@@ -138,8 +140,8 @@ public class MazeMesher : MonoBehaviour {
 	}
 
 	IEnumerator RenderMesh(GameObject obj, MazeCell[,] data, int chunkX, int chunkY, List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
-		bool[] horizontal = new bool[] { false, false, false, false, true, true };
-		bool[] vertical = new bool[] { false, false, true, true, false, false };
+		bool[] horizontal = new bool[] { drawTop, false, false, false, true, true };
+		bool[] vertical = new bool[] { drawTop, false, true, true, false, false };
 
 		for (int x = 0; x < generator.chunkSize; x ++) {
 			for (int y = 0; y < generator.chunkSize; y ++) {
@@ -172,13 +174,15 @@ public class MazeMesher : MonoBehaviour {
 				// Corners
 				MazeCell leftCell = generator.GetCell(truX - 1, truY);
 				MazeCell aboveCell = generator.GetCell(truX, truY - 1);
-				bool[] corner = new bool[] { false, false, !hasTopWall, (leftCell == null || !leftCell.HasWall(0)), (aboveCell == null || !aboveCell.HasWall(2)), !hasLeftWall };
-				AddCorner(corner, x, blockWidth, wallWidth, y - 1, verts, tris, uvs);
+				bool[] corner = new bool[] { drawTop, false, !hasTopWall, (leftCell == null || !leftCell.HasWall(0)), (aboveCell == null || !aboveCell.HasWall(2)), !hasLeftWall };
+				if (hasLeftWall || hasTopWall || (leftCell == null || leftCell.HasWall(0)) || (aboveCell == null || aboveCell.HasWall(2))) {
+					AddCorner(corner, x, blockWidth, wallWidth, y - 1, verts, tris, uvs);
+				}
 				if (onRight && truY != 0) {
-					AddCorner(new bool[] { false, false, false, true, false, false }, x + 1, blockWidth, wallWidth, y - 1, verts, tris, uvs);
+					AddCorner(new bool[] { drawTop, false, false, true, false, false }, x + 1, blockWidth, wallWidth, y - 1, verts, tris, uvs);
 				}
 				if (onTop && truX != 0) {
-					AddCorner(new bool[] { false, false, false, false, true, false }, x, blockWidth, wallWidth, y, verts, tris, uvs);
+					AddCorner(new bool[] { drawTop, false, false, false, true, false }, x, blockWidth, wallWidth, y, verts, tris, uvs);
 				}
 
 				if (loadingHandler != null) {
@@ -192,7 +196,7 @@ public class MazeMesher : MonoBehaviour {
 				}
 
 				progress ++;
-				if (progress % 10 == 0) {
+				if (progress % 57 == 0) {
 					yield return null;
 				}
 				buildingChunks = true;

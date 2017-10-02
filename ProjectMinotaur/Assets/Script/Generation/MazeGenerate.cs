@@ -59,21 +59,37 @@ public class MazeGenerate : MonoBehaviour {
 	}
 
 	private void FinishedBuilding() {
-		GenerateStructures();
+		StartCoroutine(GenerateStructures());
+	}
+
+	private void DoneGenerating() {
 		generated = true;
 		print("Generated maze.");
 	}
 
-	private void GenerateStructures() {
+	IEnumerator GenerateStructures() {
+		int max = 999999999;
 		for (int x = 0; x < width; x ++) {
 			for (int y = 0; y < height; y ++) {
 				foreach (IBuilding structure in structures) {
-					if (structure.ForCell(this, x, y, seed)) {
-						structure.OnGenerate(mesher.WorldPosOfCell(x, y), this, x, y, seed);
+					if (loadingHandler != null) {
+						float perc = (((float) x * width + (float) y) / (width * height)) * 100.0f;
+						loadingHandler.displayText.text = "Generating Structures: " + perc.ToString("00.00") + "%";
+					}
+					if (structure.ForCell(this, x, y)) {
+						seed ++;
+						if (((float) BetterRandom.Between(0, max, seed) / (float) max) <= structure.generateChance) {
+							structure.OnGenerate(mesher.WorldPosOfCell(x, y), this, x, y, seed);
+						}
+					}
+					if ((y * width + x) % 663 == 0) {
+						yield return null;
 					}
 				}
 			}
 		}
+		DoneGenerating();
+		yield break;
 	}
 
 	int i = 0;
@@ -139,11 +155,11 @@ public class MazeGenerate : MonoBehaviour {
 			}
 
 			if (loadingHandler != null) {
-				loadingHandler.displayText.text = "Carved Pathways: " + i;
+				loadingHandler.displayText.text = "Carving Maze: " + i;
 			}
 
 			i ++;
-			if (i % 750 == 0) {
+			if (i % 2438 == 0) {
 				yield return null;
 			}
 		}

@@ -53,6 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8366e9fa24fbc4d2ca96bb666c40dad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drawTop: 1
   wallMaterial: {fileID: 2100000, guid: 34cd77d56e5194090b299299fdab8989, type: 2}
   wallHeight: 10
   wallWidth: 2
@@ -71,8 +72,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkSize: 16
-  widthChunks: 9
-  heightChunks: 9
+  widthChunks: 8
+  heightChunks: 8
+  structures:
+  - {fileID: 114271722970761678, guid: 2b1e6429c90c1403f8d1cac1f92432c0, type: 2}
 --- !u!114 &114572410840745312
 MonoBehaviour:
   m_ObjectHideFlags: 1
