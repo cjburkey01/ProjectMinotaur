@@ -12,14 +12,21 @@ public class MazeGenerate : MonoBehaviour {
 	public bool generated { private set; get; }
 	public int width { private set; get; }
 	public int height { private set; get; }
+	public IBuilding[] structures;
 
 	private MazeCell sideWall;
 	private MazeCell[] cells;
+	private MazeMesher mesher;
 	private LoadingHandler loadingHandler;
 	private int seed;
 
 	void Start() {
 		loadingHandler = GetComponent<LoadingHandler>();
+		mesher = GetComponent<MazeMesher>();
+		if (mesher == null) {
+			Debug.LogError("Mesher not found.");
+			gameObject.SetActive(false);
+		}
 
 		width = chunkSize * widthChunks;
 		height = chunkSize * heightChunks;
@@ -52,10 +59,21 @@ public class MazeGenerate : MonoBehaviour {
 	}
 
 	private void FinishedBuilding() {
-		// Generate rooms and such.
-
+		GenerateStructures();
 		generated = true;
 		print("Generated maze.");
+	}
+
+	private void GenerateStructures() {
+		for (int x = 0; x < width; x ++) {
+			for (int y = 0; y < height; y ++) {
+				foreach (IBuilding structure in structures) {
+					if (structure.ForCell(this, x, y, seed)) {
+						structure.OnGenerate(mesher.WorldPosOfCell(x, y), this, x, y, seed);
+					}
+				}
+			}
+		}
 	}
 
 	int i = 0;
