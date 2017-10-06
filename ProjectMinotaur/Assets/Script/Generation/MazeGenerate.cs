@@ -13,6 +13,7 @@ public class MazeGenerate : MonoBehaviour {
 	public int width { private set; get; }
 	public int height { private set; get; }
 	public IBuilding[] structures;
+	public float chanceRemoveWall = 0.05f;
 
 	private MazeCell sideWall;
 	private MazeCell[] cells;
@@ -59,7 +60,7 @@ public class MazeGenerate : MonoBehaviour {
 	}
 
 	private void FinishedBuilding() {
-		StartCoroutine(GenerateStructures());
+		DoneGenerating();
 	}
 
 	private void DoneGenerating() {
