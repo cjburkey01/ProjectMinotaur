@@ -38,11 +38,11 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 1782111979}
-  m_IndirectSpecularColor: {r: 0.013240499, g: 0.010388431, b: 0.017301373, a: 1}
+  m_IndirectSpecularColor: {r: 0.013240498, g: 0.010388414, b: 0.017301345, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 9
   m_GIWorkflowMode: 0
   m_GISettings:
     serializedVersion: 2
@@ -54,7 +54,7 @@ LightmapSettings:
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
-    serializedVersion: 9
+    serializedVersion: 8
     m_Resolution: 2
     m_BakeResolution: 40
     m_TextureWidth: 1024
@@ -87,7 +87,7 @@ LightmapSettings:
     m_PVRFilteringAtrousNormalSigma: 1
     m_PVRFilteringAtrousPositionSigma: 1
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_ShadowMaskMode: 2
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1438,7 +1438,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 692760218}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5, y: -5, z: -5}
+  m_LocalPosition: {x: 0.27, y: 0.07, z: 0.46}
   m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 1435714415}
@@ -2545,6 +2545,16 @@ Prefab:
       propertyPath: displayText
       value: 
       objectReference: {fileID: 866851454}
+    - target: {fileID: 114314212288315552, guid: 73278d61f31a54547af36ae7947b594c,
+        type: 2}
+      propertyPath: chunkSize
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 114095790097115398, guid: 73278d61f31a54547af36ae7947b594c,
+        type: 2}
+      propertyPath: drawTop
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 73278d61f31a54547af36ae7947b594c, type: 2}
   m_IsPrefabParent: 0
@@ -3508,15 +3518,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4656300731321608, guid: 744fb5cb58453417da7f6f12c58fc2cc, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 5.068
       objectReference: {fileID: 0}
     - target: {fileID: 4656300731321608, guid: 744fb5cb58453417da7f6f12c58fc2cc, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 8.249
       objectReference: {fileID: 0}
     - target: {fileID: 4656300731321608, guid: 744fb5cb58453417da7f6f12c58fc2cc, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 3.742
       objectReference: {fileID: 0}
     - target: {fileID: 4656300731321608, guid: 744fb5cb58453417da7f6f12c58fc2cc, type: 2}
       propertyPath: m_LocalRotation.x
