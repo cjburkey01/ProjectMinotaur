@@ -9,9 +9,13 @@ public class MazeGenerate : MonoBehaviour {
 	public int chunkSize = 16;
 	public int widthChunks = 2;
 	public int heightChunks = 1;
+
 	public bool generated { private set; get; }
+
 	public int width { private set; get; }
+
 	public int height { private set; get; }
+
 	public IBuilding[] structures;
 	public float chanceRemoveWall = 0.05f;
 
@@ -70,16 +74,16 @@ public class MazeGenerate : MonoBehaviour {
 
 	IEnumerator GenerateStructures() {
 		int max = 999999999;
-		for (int x = 0; x < width; x ++) {
-			for (int y = 0; y < height; y ++) {
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
 				foreach (IBuilding structure in structures) {
 					if (loadingHandler != null) {
-						float perc = (((float) x * width + (float) y) / (width * height)) * 100.0f;
+						float perc = (((float)x * width + (float)y) / (width * height)) * 100.0f;
 						loadingHandler.displayText.text = "Generating Structures: " + perc.ToString("00.00") + "%";
 					}
 					if (structure.ForCell(this, x, y)) {
-						seed ++;
-						if (((float) BetterRandom.Between(0, max, seed) / (float) max) <= structure.generateChance) {
+						seed++;
+						if (((float)BetterRandom.Between(0, max, seed) / (float)max) <= structure.generateChance) {
 							structure.OnGenerate(mesher.WorldPosOfCell(x, y), this, x, y, seed);
 						}
 					}
@@ -94,6 +98,7 @@ public class MazeGenerate : MonoBehaviour {
 	}
 
 	int i = 0;
+
 	IEnumerator CarveTo(int x, int y, Stack<CellPosition> stack, int[] keys) {
 		MazeCell cell = GetCell(x, y);
 
@@ -117,7 +122,7 @@ public class MazeGenerate : MonoBehaviour {
 		int check = 0;
 		int rand = 0;
 
-		while (check ++ < keys.Length) {
+		while (check++ < keys.Length) {
 			rand = keys[check - 1];
 
 			switch (rand) {
@@ -125,7 +130,7 @@ public class MazeGenerate : MonoBehaviour {
 					if (!neighbors[0].init) {
 						ClearWalls(x, y, MazeCell.UP);
 						ClearWalls(x, y - 1, MazeCell.DOWN);
-						y --;
+						y--;
 						check = keys.Length;
 					}
 					break;
@@ -133,7 +138,7 @@ public class MazeGenerate : MonoBehaviour {
 					if (!neighbors[1].init) {
 						ClearWalls(x, y, MazeCell.DOWN);
 						ClearWalls(x, y + 1, MazeCell.UP);
-						y ++;
+						y++;
 						check = keys.Length;
 					}
 					break;
@@ -141,7 +146,7 @@ public class MazeGenerate : MonoBehaviour {
 					if (!neighbors[2].init) {
 						ClearWalls(x, y, MazeCell.LEFT);
 						ClearWalls(x - 1, y, MazeCell.RIGHT);
-						x --;
+						x--;
 						check = keys.Length;
 					}
 					break;
@@ -149,7 +154,7 @@ public class MazeGenerate : MonoBehaviour {
 					if (!neighbors[3].init) {
 						ClearWalls(x, y, MazeCell.RIGHT);
 						ClearWalls(x + 1, y, MazeCell.LEFT);
-						x ++;
+						x++;
 						check = keys.Length;
 					}
 					break;
@@ -159,7 +164,7 @@ public class MazeGenerate : MonoBehaviour {
 				loadingHandler.displayText.text = "Carving Maze: " + i;
 			}
 
-			i ++;
+			i++;
 			if (i % 2438 == 0) {
 				yield return null;
 			}
@@ -171,9 +176,9 @@ public class MazeGenerate : MonoBehaviour {
 
 	private void Shuffle(ref int[] array) {
 		//BetterRandom r = new BetterRandom();
-		for (int i = array.Length; i > 0; i --) {
+		for (int i = array.Length; i > 0; i--) {
 			int j = BetterRandom.Between(0, i - 1, seed);
-			seed ++;
+			seed++;
 			//int j = r.Next(i - 1);
 			int k = array[j];
 			array[j] = array[i - 1];
@@ -186,7 +191,7 @@ public class MazeGenerate : MonoBehaviour {
 		sideWall.init = true;
 		sideWall.walls = 0x1111;
 		cells = new MazeCell[width * height];
-		for (int i = 0; i < cells.Length; i ++) {
+		for (int i = 0; i < cells.Length; i++) {
 			cells[i] = new MazeCell();
 		}
 	}

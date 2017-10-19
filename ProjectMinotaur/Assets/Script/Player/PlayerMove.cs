@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof (CharacterController))]
 public class PlayerMove : MonoBehaviour {
 
 	public float mouseSensitivity = 1.5f;
@@ -10,9 +10,11 @@ public class PlayerMove : MonoBehaviour {
 	public float playerInAirRatio = 0.8f;
 	public float playerJumpHeight = 6.0f;
 	public float playerGravity = 9.0f;
+
 	public bool running { private set; get; }
+
 	public bool moving { private set; get; }
-	
+
 	private CharacterController controller;
 	private GameObject playerCamera;
 	private float currentSpeed;

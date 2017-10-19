@@ -1,6 +1,7 @@
 ﻿public interface IWeapon {
 
 	string GetName();
+
 	string GetDescription();
 
 	void OnUpdate(PlayerCombatHandler combatHandler);

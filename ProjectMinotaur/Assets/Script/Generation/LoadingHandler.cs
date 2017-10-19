@@ -6,6 +6,7 @@ public class LoadingHandler : MonoBehaviour {
 	public GameObject loadingCamera;
 	public GameObject player;
 	public GameObject loadingScreen;
+
 	public bool loading { private set; get; }
 
 	public Text displayText;

@@ -2,7 +2,7 @@
 //using System.Security.Cryptography;
 using UnityEngine;
 
-public class BetterRandom /*: RandomNumberGenerator*/ {
+public class BetterRandom { /*: RandomNumberGenerator*/
 
 	/*private static RandomNumberGenerator r;
 

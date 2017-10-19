@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MazeGenerate))]
+[RequireComponent(typeof (MazeGenerate))]
 public class MazeMesher : MonoBehaviour {
 
 	public bool drawTop = true;
@@ -12,8 +12,9 @@ public class MazeMesher : MonoBehaviour {
 	public float wallWidth = 2.0f;
 	public float blockWidth = 10.0f;
 	public GameObject floorPrefab;
+
 	public MazeGenerate generator { private set; get; }
-	
+
 	private bool builtChunks = false;
 	private bool buildingChunks = false;
 	private LoadingHandler loadingHandler;
@@ -72,8 +73,8 @@ public class MazeMesher : MonoBehaviour {
 
 		builtChunks = true;
 		
-		for (int x = generator.widthChunks - 1; x >= 0; x --) {
-			for (int y = generator.heightChunks - 1; y >= 0; y --) {
+		for (int x = generator.widthChunks - 1; x >= 0; x--) {
+			for (int y = generator.heightChunks - 1; y >= 0; y--) {
 				List<Vector3> verts = new List<Vector3>();
 				List<int> tris = new List<int>();
 				List<Vector2> uvs = new List<Vector2>();
@@ -81,7 +82,7 @@ public class MazeMesher : MonoBehaviour {
 				GameObject chunk = new GameObject("MazeChunk (" + x + ", " + y + ")");
 				chunk.transform.parent = transform;
 				chunk.transform.position = GetChunkPos(x, y);
-				GameObject obj = (GameObject) Instantiate(floorPrefab);
+				GameObject obj = (GameObject)Instantiate(floorPrefab);
 				obj.transform.position = GetChunkPos(x, y);
 				obj.transform.parent = chunk.transform;
 				children.Add(chunk);
@@ -98,8 +99,8 @@ public class MazeMesher : MonoBehaviour {
 		int startX = chunkX * chunkSize;
 		int startY = chunkY * chunkSize;
 		MazeCell[,] data = new MazeCell[chunkSize, chunkSize];
-		for (int x = 0; x < chunkSize; x ++) {
-			for (int y = 0; y < chunkSize; y ++) {
+		for (int x = 0; x < chunkSize; x++) {
+			for (int y = 0; y < chunkSize; y++) {
 				MazeCell cell = generator.GetCell(startX + x, startY + y);
 				data[x, y] = new MazeCell(cell);
 			}
@@ -143,8 +144,8 @@ public class MazeMesher : MonoBehaviour {
 		bool[] horizontal = new bool[] { drawTop, false, false, false, true, true };
 		bool[] vertical = new bool[] { drawTop, false, true, true, false, false };
 
-		for (int x = 0; x < generator.chunkSize; x ++) {
-			for (int y = 0; y < generator.chunkSize; y ++) {
+		for (int x = 0; x < generator.chunkSize; x++) {
+			for (int y = 0; y < generator.chunkSize; y++) {
 				MazeCell cell = data[x, y];
 
 				int truX = x + chunkX * generator.chunkSize;
@@ -186,8 +187,8 @@ public class MazeMesher : MonoBehaviour {
 				}
 
 				if (loadingHandler != null) {
-					float prog = ((float) progress) / ((float) (generator.width * generator.height));
-					float done = ((float) finished) / ((float) (generator.widthChunks * generator.heightChunks));
+					float prog = ((float)progress) / ((float)(generator.width * generator.height));
+					float done = ((float)finished) / ((float)(generator.widthChunks * generator.heightChunks));
 					prog *= 100.0f;
 					done *= 100.0f;
 					string progString = prog.ToString("00.00");
@@ -195,7 +196,7 @@ public class MazeMesher : MonoBehaviour {
 					loadingHandler.displayText.text = "Materializing Chunks: " + progString + "%. Finished Chunks: " + doneString + "%.";
 				}
 
-				progress ++;
+				progress++;
 				if (progress % 57 == 0) {
 					yield return null;
 				}
@@ -203,7 +204,7 @@ public class MazeMesher : MonoBehaviour {
 			}
 		}
 
-		finished ++;
+		finished++;
 
 		BuildMeshFromData(obj, verts, tris, uvs);
 		yield break;

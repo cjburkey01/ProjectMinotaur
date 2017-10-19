@@ -29,9 +29,9 @@ public class PlayerCombatHandler : IHealthHaver {
 		if (weapon != null) {
 			if (Input.GetMouseButtonDown(0)) {
 				weapon.OnPrimary(this);
-			} else if(Input.GetMouseButtonDown(1)) {
+			} else if (Input.GetMouseButtonDown(1)) {
 				weapon.OnSecondary(this);
-			} else if(Input.GetMouseButtonDown(2)) {
+			} else if (Input.GetMouseButtonDown(2)) {
 				weapon.OnTertiary(this);
 			}
 			weapon.OnUpdate(this);
