@@ -1,28 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class IHealthHaver : MonoBehaviour {
 
-	public float health { private set; get; }
+	public byte health { private set; get; }
 
-	public void AddHealth(float addH) {
+	public void AddHealth(byte addH) {
 		health += addH;
 		Clamp();
 	}
 
-	public void TakeHealth(float takeH) {
+	public void TakeHealth(byte takeH) {
 		health -= takeH;
 		Clamp();
 	}
 
-	public void SetHealth(float setH) {
+	public void SetHealth(byte setH) {
 		health = setH;
 		Clamp();
 	}
 
+	public void Damage(byte amt) {
+		TakeHealth(amt);
+	}
+
 	private void Clamp() {
-		health = Mathf.Clamp(health, 0.0f, 100.0f);
+		health = Mathf.Clamp(health, 0, 100);
 	}
 
 }

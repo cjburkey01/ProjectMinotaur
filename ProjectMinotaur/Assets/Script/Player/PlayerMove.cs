@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof (CharacterController))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerMove : MonoBehaviour {
 
 	public float mouseSensitivity = 1.5f;
