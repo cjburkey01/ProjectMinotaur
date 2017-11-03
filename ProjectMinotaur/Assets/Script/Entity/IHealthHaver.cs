@@ -19,12 +19,16 @@ public class IHealthHaver : MonoBehaviour {
 		Clamp();
 	}
 
-	public void Damage(byte amt) {
+	public void Damage(object[] data) {
+		byte amt = (byte) data[0];
+		EntityDamageOrigin damageOrigin = (EntityDamageOrigin) data[1];
+		IHealthHaver damager = (IHealthHaver) data[2];
 		TakeHealth(amt);
+		print("Damage: " + amt + " From: " + damager.gameObject.name);
 	}
 
 	private void Clamp() {
-		health = Mathf.Clamp(health, 0, 100);
+		health = (byte) Mathf.Clamp(health, 0, 100);
 	}
 
 }
