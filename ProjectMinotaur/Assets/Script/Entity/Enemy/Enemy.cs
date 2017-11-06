@@ -9,9 +9,6 @@ public class Enemy : IHealthHaver {
 
 	public void OnCollisionStay(Collision collision) {
 		if (timeSinceLastDamage >= timeBetweenDamage) {
-			if () {
-
-			}
 			collision.collider.SendMessage("Damage", new object[] { (byte) damageAmt, EntityDamageOrigin.ENEMY_DAMAGE, this });
 			timeSinceLastDamage = 0.0f;
 		}
