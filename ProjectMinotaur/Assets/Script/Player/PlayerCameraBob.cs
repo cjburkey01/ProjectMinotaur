@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-[RequireComponent(typeof (PlayerMove))]
+[RequireComponent(typeof(PlayerMove))]
 public class PlayerCameraBob : MonoBehaviour {
 
 	public float walkingBob = 480.0f;

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Security.Cryptography;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -78,12 +76,12 @@ public class MazeGenerate : MonoBehaviour {
 			for (int y = 0; y < height; y++) {
 				foreach (IBuilding structure in structures) {
 					if (loadingHandler != null) {
-						float perc = (((float)x * width + (float)y) / (width * height)) * 100.0f;
+						float perc = (((float) x * width + (float) y) / (width * height)) * 100.0f;
 						loadingHandler.displayText.text = "Generating Structures: " + perc.ToString("00.00") + "%";
 					}
 					if (structure.ForCell(this, x, y)) {
 						seed++;
-						if (((float)BetterRandom.Between(0, max, seed) / (float)max) <= structure.generateChance) {
+						if (((float) BetterRandom.Between(0, max, seed) / (float) max) <= structure.generateChance) {
 							structure.OnGenerate(mesher.WorldPosOfCell(x, y), this, x, y, seed);
 						}
 					}
@@ -126,38 +124,38 @@ public class MazeGenerate : MonoBehaviour {
 			rand = keys[check - 1];
 
 			switch (rand) {
-				case 0:
-					if (!neighbors[0].init) {
-						ClearWalls(x, y, MazeCell.UP);
-						ClearWalls(x, y - 1, MazeCell.DOWN);
-						y--;
-						check = keys.Length;
-					}
-					break;
-				case 1:
-					if (!neighbors[1].init) {
-						ClearWalls(x, y, MazeCell.DOWN);
-						ClearWalls(x, y + 1, MazeCell.UP);
-						y++;
-						check = keys.Length;
-					}
-					break;
-				case 2:
-					if (!neighbors[2].init) {
-						ClearWalls(x, y, MazeCell.LEFT);
-						ClearWalls(x - 1, y, MazeCell.RIGHT);
-						x--;
-						check = keys.Length;
-					}
-					break;
-				case 3:
-					if (!neighbors[3].init) {
-						ClearWalls(x, y, MazeCell.RIGHT);
-						ClearWalls(x + 1, y, MazeCell.LEFT);
-						x++;
-						check = keys.Length;
-					}
-					break;
+			case 0:
+				if (!neighbors[0].init) {
+					ClearWalls(x, y, MazeCell.UP);
+					ClearWalls(x, y - 1, MazeCell.DOWN);
+					y--;
+					check = keys.Length;
+				}
+				break;
+			case 1:
+				if (!neighbors[1].init) {
+					ClearWalls(x, y, MazeCell.DOWN);
+					ClearWalls(x, y + 1, MazeCell.UP);
+					y++;
+					check = keys.Length;
+				}
+				break;
+			case 2:
+				if (!neighbors[2].init) {
+					ClearWalls(x, y, MazeCell.LEFT);
+					ClearWalls(x - 1, y, MazeCell.RIGHT);
+					x--;
+					check = keys.Length;
+				}
+				break;
+			case 3:
+				if (!neighbors[3].init) {
+					ClearWalls(x, y, MazeCell.RIGHT);
+					ClearWalls(x + 1, y, MazeCell.LEFT);
+					x++;
+					check = keys.Length;
+				}
+				break;
 			}
 
 			if (loadingHandler != null) {

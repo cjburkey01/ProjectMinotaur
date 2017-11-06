@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class WeaponFist : IMeleeWeapon {
+﻿public class WeaponFist : IMeleeWeapon {
 
 	public WeaponFist() {
 		this.damagePerHit = 10.0f;
