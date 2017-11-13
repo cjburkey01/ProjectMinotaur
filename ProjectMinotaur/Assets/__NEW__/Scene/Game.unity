@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028355, g: 0.22571374, b: 0.30692255, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -212,16 +212,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 231428785}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 561b35eb3b52f419e9b18b06e9129101, type: 3}
+  m_Script: {fileID: 11500000, guid: 8e43042c129ec4780a30d1ba029bac52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunksX: 4
-  chunksY: 4
-  cellSize: 10
-  wallSize: 2
-  textureSize: 1
-  chunkPrefab: {fileID: 1509645034344018, guid: 552ba3cf7c27a46df80208dc608efa6c,
-    type: 2}
+  chunkSize: 16
+  mazeChunkWidth: 2
+  mazeChunkHeight: 2
 --- !u!1 &1894689842
 GameObject:
   m_ObjectHideFlags: 0

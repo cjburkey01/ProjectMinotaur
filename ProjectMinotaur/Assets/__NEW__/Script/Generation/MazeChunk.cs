@@ -1,44 +1,36 @@
 ﻿using UnityEngine;
 
 public class MazeChunk : MonoBehaviour {
-	
-	// Walls: { top, left }
-	public static readonly int chunkSize = 16;
-	private static readonly int[] WALLS = new int[] { 0x10, 0x01 };
 
-	private int[,] data;
+	private MazeNode[,] nodes;
+	private Maze maze;
 
 	void Start() {
-		data = new int[chunkSize, chunkSize];
+		maze = GetComponentInParent<Maze>();
+		if (maze == null) {
+			return;
+		}
+		nodes = new MazeNode[maze.chunkSize, maze.chunkSize];
 	}
 
-	public void GenerateChunk() {
-
-	}
-
-	public void SetWalls(int x, int y, bool top, bool left) {
-		if (InChunk(x, y)) {
-			data[x, y] = ((top) ? WALLS[0] : 0) + ((left) ? WALLS[1] : 0);
+	public void setWalls(int x, int y, int walls) {
+		if (inChunk(x, y)) {
+			if (nodes[x, y] == null) {
+				nodes[x, y] = new MazeNode();
+			}
+			nodes[x, y].setWalls(walls);
 		}
 	}
 
-	public bool HasWall(int x, int y, int wall) {
-		if (wall < WALLS.Length && InChunk(x, y)) {
-			int wallCode = WALLS[wall];
-			return (data[x, y] & wallCode) == wallCode;
+	public MazeNode getNode(int x, int y) {
+		if (inChunk(x, y)) {
+			return nodes[x, y];
 		}
-		return false;
+		return null;
 	}
 
-	public bool[] GetWalls(int x, int y) {
-		if (InChunk(x, y)) {
-			return new bool[] { HasWall(x, y, 0), HasWall(x, y, 1) };
-		}
-		return new bool[] { false };
-	}
-
-	public bool InChunk(int x, int y) {
-		return x < chunkSize && y < chunkSize && x >= 0 && y >= 0;
+	public bool inChunk(int x, int y) {
+		return x >= 0 && x < maze.chunkSize && y >= 0 && y < maze.chunkSize;
 	}
 
 }
