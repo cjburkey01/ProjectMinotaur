@@ -1,36 +1,43 @@
 ﻿using UnityEngine;
 
-public class MazeChunk : MonoBehaviour {
+public class MazeChunk {
 
-	private MazeNode[,] nodes;
-	private Maze maze;
+	private readonly int chunkSize;
+	protected MazeNode[,] chunk;
 
-	void Start() {
-		maze = GetComponentInParent<Maze>();
-		if (maze == null) {
+	public MazeChunk(int chunkSize) {
+		this.chunkSize = chunkSize;
+		chunk = new MazeNode[chunkSize, chunkSize];
+	}
+
+	public MazeNode GetNode(int x, int y) {
+		if (!InChunk(x, y)) {
+			return null;
+		}
+		return chunk[x, y];
+	}
+
+	public void AddNode(int x, int y) {
+		if (!InChunk(x, y)) {
 			return;
 		}
-		nodes = new MazeNode[maze.chunkSize, maze.chunkSize];
+		if (GetNode(x, y) != null) {
+			return;
+		}
+		chunk[x, y] = new MazeNode();
 	}
 
-	public void setWalls(int x, int y, int walls) {
-		if (inChunk(x, y)) {
-			if (nodes[x, y] == null) {
-				nodes[x, y] = new MazeNode();
+	// Prepopulates the chunk with empty nodes.
+	public void InitializeNodes() {
+		for (int x = 0; x < chunkSize; x++) {
+			for (int y = 0; y < chunkSize; y++) {
+				AddNode(x, y);
 			}
-			nodes[x, y].setWalls(walls);
 		}
 	}
 
-	public MazeNode getNode(int x, int y) {
-		if (inChunk(x, y)) {
-			return nodes[x, y];
-		}
-		return null;
-	}
-
-	public bool inChunk(int x, int y) {
-		return x >= 0 && x < maze.chunkSize && y >= 0 && y < maze.chunkSize;
+	public bool InChunk(int x, int y) {
+		return x >= 0 && x < chunkSize && y >= 0 && y < chunkSize;
 	}
 
 }

@@ -14,7 +14,7 @@
 	}
 
 	// Adds the specified wall to the node, providing it is not already enabled.
-	public void addWall(int wallCode) {
+	public void AddWall(int wallCode) {
 		if (hasWall(wallCode)) {
 			return;
 		}
@@ -22,7 +22,7 @@
 	}
 
 	// Removes the specified wall from the node, providing it is enabled.
-	public void removeWall(int wallCode) {
+	public void RemoveWall(int wallCode) {
 		if (!hasWall(wallCode)) {
 			return;
 		}
@@ -30,16 +30,16 @@
 	}
 
 	// Sets the specified wall to enabled to disabled, providing that it is not already in that state.
-	public void setWall(int wallCode, bool enabled) {
+	public void SetWall(int wallCode, bool enabled) {
 		if (enabled) {
-			addWall(wallCode);
+			AddWall(wallCode);
 		} else {
-			removeWall(wallCode);
+			RemoveWall(wallCode);
 		}
 	}
 
 	// Sets all the walls to the specified walls.
-	public void setWalls(int walls) {
+	public void SetWalls(int walls) {
 		this.walls = walls;
 	}
 
@@ -50,7 +50,7 @@
 
 	// Returns the state of all walls for this node in the following order:
 	// TOP, BOTTOM, RIGHT, LEFT
-	public bool[] getWalls() {
+	public bool[] GetWalls() {
 		return new bool[] { hasWall(TOP), hasWall(BOTTOM), hasWall(RIGHT), hasWall(LEFT) };
 	}
 
