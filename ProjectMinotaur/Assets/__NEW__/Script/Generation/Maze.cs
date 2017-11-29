@@ -92,32 +92,32 @@ public class Maze {
 	// -- EVENTS -- //
 
 	// Fired when the maze begins to create all the chunks.
-	private void BeginPrepopulate<IPMEvent>(EventChunkPrePopulationBegin e) where IPMEvent : EventChunkPrePopulationBegin {
+	private void BeginPrepopulate<T>(T e) where T : EventChunkPrePopulationBegin {
 		Debug.Log("Begin chunk prepopulation chunk event");
 	}
 
 	// Fired when the maze finishes creating all the chunks.
-	private void FinishPrepopulate<IPMEvent>(EventChunkPrePopulationFinish e) where IPMEvent : EventChunkPrePopulationFinish {
+	private void FinishPrepopulate<T>(T e) where T : EventChunkPrePopulationFinish {
 		Debug.Log("Finish chunk prepopulation chunk event");
 	}
 
 	// Called when the maze generation begins.
-	private void BeginMaze<IPMEvent>(EventMazeGenerationBegin e) where IPMEvent : EventMazeGenerationBegin {
+	private void BeginMaze<T>(T e) where T : EventMazeGenerationBegin {
 		Debug.Log("Begin generating maze event");
 	}
 
 	// Called when the maze generation finishes.
-	private void FinishMaze<IPMEvent>(EventMazeGenerationFinish e) where IPMEvent : EventMazeGenerationFinish {
+	private void FinishMaze<T>(T e) where T : EventMazeGenerationFinish {
 		Debug.Log("Finish generating maze event");
 	}
 
 	// Called when a specific chunk begins to generate.
-	private void BeginChunk<IPMEvent>(EventChunkGenerationBegin e) where IPMEvent : EventChunkGenerationBegin {
+	private void BeginChunk<T>(T e) where T : EventChunkGenerationBegin {
 		Debug.Log("Begin generating chunk event");
 	}
 
 	// This event is fired when the current chunk has finished being generated.
-	private void FinishChunk<IPMEvent>(EventChunkGenerationFinish e) where IPMEvent : EventChunkGenerationFinish {
+	private void FinishChunk<T>(T e) where T : EventChunkGenerationFinish {
 		Debug.Log("Finish generating chunk event");
 	}
 

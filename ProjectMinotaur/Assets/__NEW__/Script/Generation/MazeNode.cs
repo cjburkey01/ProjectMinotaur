@@ -15,7 +15,7 @@
 
 	// Adds the specified wall to the node, providing it is not already enabled.
 	public void AddWall(int wallCode) {
-		if (hasWall(wallCode)) {
+		if (HasWall(wallCode)) {
 			return;
 		}
 		walls += wallCode;
@@ -23,7 +23,7 @@
 
 	// Removes the specified wall from the node, providing it is enabled.
 	public void RemoveWall(int wallCode) {
-		if (!hasWall(wallCode)) {
+		if (!HasWall(wallCode)) {
 			return;
 		}
 		walls -= wallCode;
@@ -44,14 +44,14 @@
 	}
 
 	// Returns whether or not the provided wall is enabled or disabled.
-	public bool hasWall(int wallCode) {
+	public bool HasWall(int wallCode) {
 		return (walls & wallCode) == wallCode;
 	}
 
 	// Returns the state of all walls for this node in the following order:
 	// TOP, BOTTOM, RIGHT, LEFT
 	public bool[] GetWalls() {
-		return new bool[] { hasWall(TOP), hasWall(BOTTOM), hasWall(RIGHT), hasWall(LEFT) };
+		return new bool[] { HasWall(TOP), HasWall(BOTTOM), HasWall(RIGHT), HasWall(LEFT) };
 	}
 
 }
