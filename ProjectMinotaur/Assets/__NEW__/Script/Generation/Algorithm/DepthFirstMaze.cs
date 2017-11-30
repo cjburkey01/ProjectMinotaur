@@ -49,6 +49,8 @@ public class DepthFirstMaze : IAlgorithm {
 			}
 		}
 
+		maze.GetNode(0, 0).SetWalls(0);
+
 		Debug.Log("Finished generating.");
 	}
 
@@ -62,7 +64,7 @@ public class DepthFirstMaze : IAlgorithm {
 		} else if (chosPos.GetX() < currPos.GetX()) {   // Remove current left wall
 			current.RemoveWall(MazeNode.LEFT);
 			next.RemoveWall(MazeNode.RIGHT);
-		} else if (chosPos.GetY() > currPos.GetY()) {   // Remove current top wall
+		} else if (chosPos.GetY() < currPos.GetY()) {   // Remove current top wall
 			current.RemoveWall(MazeNode.TOP);
 			next.RemoveWall(MazeNode.BOTTOM);
 		} else {                                        // Remove current bottom wall

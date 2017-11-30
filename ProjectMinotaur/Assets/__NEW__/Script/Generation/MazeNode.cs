@@ -18,6 +18,10 @@
 		globalP = new MazePos(gx, gy);
 	}
 
+	public void SetWalls(int walls) {
+		this.walls = walls;
+	}
+
 	// Adds the specified wall to the node, providing it is not already enabled.
 	public void AddWall(int wallCode) {
 		if (HasWall(wallCode)) {

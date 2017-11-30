@@ -3,15 +3,27 @@
 public class MazeHandler : MonoBehaviour {
 
 	public int chunkSize = 16;
-	public int chunksX = 2;
-	public int chunksY = 2;
+	public int chunksX = 4;
+	public int chunksY = 4;
+	public float pathWidth = 15.0f;
+	public float distanceVariability = 1.0f;
+	public float padding = 15.0f;
 
 	private Maze maze;
 
 	void Start() {
 		maze = new Maze(new DepthFirstMaze(), chunkSize, chunksX, chunksY);
-		maze.Generate(new MazePos(0, 0));
+		GenerateMaze();
+		RenderMaze();
+	}
 
+	public void GenerateMaze() {
+		maze.Generate(new MazePos(0, 0));
+		Debug.Log("Generted maze");
+	}
+
+	public void RenderMaze() {
+		// TMP Draw Code
 		for (int x = 0; x < maze.GetSizeX(); x++) {
 			for (int y = 0; y < maze.GetSizeY(); y++) {
 				MazeNode node = maze.GetNode(x, y);
