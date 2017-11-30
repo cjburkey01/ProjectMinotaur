@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class Maze {
 
@@ -6,23 +7,15 @@ public class Maze {
 	public readonly int mazeChunkWidth;
 	public readonly int mazeChunkHeight;
 
-	protected MazeChunk[,] maze;
+	protected readonly IAlgorithm mazeAlgorithm;
+	protected List<MazeChunk> chunks;
 
-	public Maze(int chunkSize, int mazeChunkWidth, int mazeChunkHeight) {
+	public Maze(IAlgorithm mazeAlgorithm, int chunkSize, int mazeChunkWidth, int mazeChunkHeight) {
+		this.mazeAlgorithm = mazeAlgorithm;
 		this.chunkSize = chunkSize;
 		this.mazeChunkWidth = mazeChunkWidth;
 		this.mazeChunkHeight = mazeChunkHeight;
-		maze = new MazeChunk[mazeChunkWidth, mazeChunkHeight];
-		AddGenerationListeners();
-	}
-
-	private void AddGenerationListeners() {
-		PMEventSystem.GetEventSystem().AddListener<EventChunkPrePopulationBegin>(BeginPrepopulate<EventChunkPrePopulationBegin>);
-		PMEventSystem.GetEventSystem().AddListener<EventChunkPrePopulationFinish>(FinishPrepopulate<EventChunkPrePopulationFinish>);
-		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationBegin>(BeginMaze<EventMazeGenerationBegin>);
-		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationFinish>(FinishMaze<EventMazeGenerationFinish>);
-		PMEventSystem.GetEventSystem().AddListener<EventChunkGenerationBegin>(BeginChunk<EventChunkGenerationBegin>);
-		PMEventSystem.GetEventSystem().AddListener<EventChunkGenerationFinish>(FinishChunk<EventChunkGenerationFinish>);
+		chunks = new List<MazeChunk>();
 	}
 
 	// Prepopulate the maze with chunks.
@@ -42,7 +35,12 @@ public class Maze {
 		if (!InMaze(x, y)) {
 			return null;
 		}
-		return maze[x, y];
+		foreach (MazeChunk chunk in chunks) {
+			if (chunk.GetPosition().GetX() == x && chunk.GetPosition().GetY() == y) {
+				return chunk;
+			}
+		}
+		return null;
 	}
 
 	public void AddChunk(int x, int y) {
@@ -52,7 +50,9 @@ public class Maze {
 		if (GetChunk(x, y) != null) {
 			return;
 		}
-		maze[x, y] = new MazeChunk(chunkSize);
+		MazeChunk chunk = new MazeChunk(x, y, chunkSize);
+		chunks.Add(chunk);
+		chunk.InitializeNodes();
 	}
 
 	public bool InMaze(int x, int y) {
@@ -60,65 +60,67 @@ public class Maze {
 	}
 
 	public MazeNode GetNode(int x, int y) {
-		int chunkX = Mathf.FloorToInt((float) chunkSize / (float) x);
-		int chunkY = Mathf.FloorToInt((float) chunkSize / (float) y);
+		int chunkX = Mathf.FloorToInt((float) x / (float) chunkSize);
+		int chunkY = Mathf.FloorToInt((float) y / (float) chunkSize);
 		MazeChunk chunk = GetChunk(chunkX, chunkY);
 		if (chunk == null) {
 			return null;
 		}
-		int inChunkX = chunkSize % x;
-		int inChunkY = chunkSize % y;
-		return chunk.GetNode(inChunkX, inChunkY);
+		int inChunkX = 0;
+		int inChunkY = 0;
+		if (x != 0) {
+			inChunkX = x % chunkSize;
+		}
+		if (y != 0) {
+			inChunkY = y % chunkSize;
+		}
+		MazeNode node = chunk.GetNode(inChunkX, inChunkY);
+		return node;
 	}
 
-	// -- The Rest -- //
+	public IAlgorithm GetMazeGenerationAlgorithm() {
+		return mazeAlgorithm;
+	}
 
-	public void Generate() {
+	public int GetSizeX() {
+		return mazeChunkWidth * chunkSize;
+	}
+
+	public int GetSizeY() {
+		return mazeChunkHeight * chunkSize;
+	}
+
+	// -- Actual Generation -- //
+
+	public void Generate(MazePos startingPoint) {
 		PMEventSystem.GetEventSystem().TriggerEvent<EventChunkPrePopulationBegin>(new EventChunkPrePopulationBegin(this));
 		InitializeChunks();
 		PMEventSystem.GetEventSystem().TriggerEvent<EventChunkPrePopulationFinish>(new EventChunkPrePopulationFinish(this));
 
 		PMEventSystem.GetEventSystem().TriggerEvent<EventMazeGenerationBegin>(new EventMazeGenerationBegin(this));
+
 		for (int x = 0; x < mazeChunkWidth; x++) {
 			for (int y = 0; y < mazeChunkWidth; y++) {
 				MazeChunk chunk = GetChunk(x, y);
 				PMEventSystem.GetEventSystem().TriggerEvent<EventChunkGenerationBegin>(new EventChunkGenerationBegin(this, chunk, x, y));
+				if (chunk == null) {
+					AddChunk(x, y);
+				}
+				if (chunk == null) {
+					Debug.LogError("Chunk was null after creation: " + x + ", " + y + ". This is a major error.");
+					return;
+				}
+				if (!chunk.IsInitialized()) {
+					chunk.InitializeNodes();
+				}
 				PMEventSystem.GetEventSystem().TriggerEvent<EventChunkGenerationFinish>(new EventChunkGenerationFinish(this, chunk, x, y));
 			}
 		}
+
+		Debug.Log("Generating maze using: " + mazeAlgorithm.GetName());
+		mazeAlgorithm.Generate(this, startingPoint);
+
 		PMEventSystem.GetEventSystem().TriggerEvent<EventMazeGenerationFinish>(new EventMazeGenerationFinish(this));
-	}
-
-	// -- EVENTS -- //
-
-	// Fired when the maze begins to create all the chunks.
-	private void BeginPrepopulate<T>(T e) where T : EventChunkPrePopulationBegin {
-		Debug.Log("Begin chunk prepopulation chunk event");
-	}
-
-	// Fired when the maze finishes creating all the chunks.
-	private void FinishPrepopulate<T>(T e) where T : EventChunkPrePopulationFinish {
-		Debug.Log("Finish chunk prepopulation chunk event");
-	}
-
-	// Called when the maze generation begins.
-	private void BeginMaze<T>(T e) where T : EventMazeGenerationBegin {
-		Debug.Log("Begin generating maze event");
-	}
-
-	// Called when the maze generation finishes.
-	private void FinishMaze<T>(T e) where T : EventMazeGenerationFinish {
-		Debug.Log("Finish generating maze event");
-	}
-
-	// Called when a specific chunk begins to generate.
-	private void BeginChunk<T>(T e) where T : EventChunkGenerationBegin {
-		Debug.Log("Begin generating chunk event");
-	}
-
-	// This event is fired when the current chunk has finished being generated.
-	private void FinishChunk<T>(T e) where T : EventChunkGenerationFinish {
-		Debug.Log("Finish generating chunk event");
 	}
 
 }
