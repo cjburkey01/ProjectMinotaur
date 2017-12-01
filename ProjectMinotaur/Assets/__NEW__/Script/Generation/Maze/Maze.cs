@@ -50,7 +50,7 @@ public class Maze {
 		if (GetChunk(x, y) != null) {
 			return;
 		}
-		MazeChunk chunk = new MazeChunk(x, y, chunkSize);
+		MazeChunk chunk = new MazeChunk(this, x, y, chunkSize);
 		chunks.Add(chunk);
 		chunk.InitializeNodes();
 	}
@@ -92,12 +92,10 @@ public class Maze {
 
 	// -- Actual Generation -- //
 
-	public void Generate(MazePos startingPoint) {
+	public void Generate(MonoBehaviour executor, MazePos startingPoint) {
 		PMEventSystem.GetEventSystem().TriggerEvent<EventChunkPrePopulationBegin>(new EventChunkPrePopulationBegin(this));
 		InitializeChunks();
 		PMEventSystem.GetEventSystem().TriggerEvent<EventChunkPrePopulationFinish>(new EventChunkPrePopulationFinish(this));
-
-		PMEventSystem.GetEventSystem().TriggerEvent<EventMazeGenerationBegin>(new EventMazeGenerationBegin(this));
 
 		for (int x = 0; x < mazeChunkWidth; x++) {
 			for (int y = 0; y < mazeChunkWidth; y++) {
@@ -118,9 +116,7 @@ public class Maze {
 		}
 
 		Debug.Log("Generating maze using: " + mazeAlgorithm.GetName());
-		mazeAlgorithm.Generate(this, startingPoint);
-
-		PMEventSystem.GetEventSystem().TriggerEvent<EventMazeGenerationFinish>(new EventMazeGenerationFinish(this));
+		executor.StartCoroutine(mazeAlgorithm.Generate(this, startingPoint));
 	}
 
 }

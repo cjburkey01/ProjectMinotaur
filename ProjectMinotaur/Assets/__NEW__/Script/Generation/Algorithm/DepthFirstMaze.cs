@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DepthFirstMaze : IAlgorithm {
@@ -6,6 +7,8 @@ public class DepthFirstMaze : IAlgorithm {
 	private Stack<MazeNode> cells;
 	private int totalCells;
 	private int visitedCells;
+
+	public readonly double UpdatesPerSecond = 5.0d;
 
 	public DepthFirstMaze() {
 		cells = new Stack<MazeNode>();
@@ -15,23 +18,27 @@ public class DepthFirstMaze : IAlgorithm {
 		return "Recursive Backtracker Maze";
 	}
 
-	public void Generate(Maze maze, MazePos starting) {
+	public IEnumerator Generate(Maze maze, MazePos starting) {
 		totalCells = maze.GetSizeX() * maze.GetSizeY();
 		visitedCells = 0;
+
+		PMEventSystem.GetEventSystem().TriggerEvent<EventMazeGenerationBegin>(new EventMazeGenerationBegin(maze));
 
 		// Make the initial cell the current cell and mark it as visited
 		MazeNode current = maze.GetNode(starting.GetX(), starting.GetY());
 		if (current == null) {
 			Debug.LogError("Failed to generate maze, the starting node didn't exist.");
-			return;
 		}
 		MarkVisited(current);
 
-		// While there are unvisited cells 
+		int i = 0;
+
+		double time = GetMillis();
+		// While there are unvisited cells
 		while (visitedCells < totalCells) {
 			if (current == null) {
 				Debug.LogError("Failed to generate maze, an unexpected node was null.");
-				return;
+				break;
 			}
 			MazeNode[] unvisited = GetUnvisitedNeighbors(maze, current.GetGlobalPos());
 
@@ -47,17 +54,20 @@ public class DepthFirstMaze : IAlgorithm {
 			} else {
 				break; // SHOULD be done generating.
 			}
+			i++;
+			if (GetMillis() > time + (1000.0d / UpdatesPerSecond)) {
+				time = GetMillis();
+				PMEventSystem.GetEventSystem().TriggerEvent<EventMazeGenerationUpdate>(new EventMazeGenerationUpdate(maze, i));
+				yield return null;
+			}
 		}
 
-		maze.GetNode(0, 0).SetWalls(0);
-
-		Debug.Log("Finished generating.");
+		PMEventSystem.GetEventSystem().TriggerEvent<EventMazeGenerationFinish>(new EventMazeGenerationFinish(maze));
 	}
 
 	private void RemoveWallBetween(MazeNode current, MazeNode next) {
 		MazePos currPos = current.GetGlobalPos();
 		MazePos chosPos = next.GetGlobalPos();
-		Debug.Log("Remove wall between " + currPos + " and " + chosPos);
 		if (chosPos.GetX() > currPos.GetX()) {          // Remove current right wall
 			current.RemoveWall(MazeNode.RIGHT);
 			next.RemoveWall(MazeNode.LEFT);
@@ -97,6 +107,10 @@ public class DepthFirstMaze : IAlgorithm {
 			outt.Add(left);
 		}
 		return outt.ToArray();
+	}
+
+	private double GetMillis() {
+		return System.DateTime.Now.TimeOfDay.TotalMilliseconds;
 	}
 
 }

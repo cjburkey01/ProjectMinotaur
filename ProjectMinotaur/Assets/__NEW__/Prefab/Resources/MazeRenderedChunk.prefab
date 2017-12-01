@@ -9,45 +9,46 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1340326602390376}
+  m_RootGameObject: {fileID: 1165648467673994}
   m_IsPrefabParent: 1
---- !u!1 &1340326602390376
+--- !u!1 &1165648467673994
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4848430191865102}
-  - component: {fileID: 114378950012709802}
+  - component: {fileID: 4008492060805892}
+  - component: {fileID: 114546506504197874}
   m_Layer: 0
-  m_Name: MazeChunk
+  m_Name: MazeRenderedChunk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4848430191865102
+--- !u!4 &4008492060805892
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1340326602390376}
+  m_GameObject: {fileID: 1165648467673994}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 60.8974, y: 71.578026, z: -3.4670258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114378950012709802
+--- !u!114 &114546506504197874
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1340326602390376}
+  m_GameObject: {fileID: 1165648467673994}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f07e563489ec43f695d2be3c4b88c6d, type: 3}
+  m_Script: {fileID: 11500000, guid: 2ce1ce756243f41ed82af79819e86d62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wallMaterial: {fileID: 2100000, guid: 79f2c0cf94eb047e1988c9250f14c8a8, type: 2}

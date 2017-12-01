@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
 
 public interface IAlgorithm {
 
 	string GetName();
-	void Generate(Maze maze, MazePos starting);
+	IEnumerator Generate(Maze maze, MazePos starting);
 
 }

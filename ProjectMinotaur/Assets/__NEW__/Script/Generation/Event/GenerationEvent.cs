@@ -76,6 +76,20 @@ public class EventMazeGenerationBegin : MazeGenerationEvent {
 
 }
 
+public class EventMazeGenerationUpdate : MazeGenerationEvent {
+
+	private readonly int progress;
+
+	public EventMazeGenerationUpdate(Maze maze, int progress) : base(maze) {
+		this.progress = progress;
+	}
+
+	public int GetProgress() {
+		return progress;
+	}
+
+}
+
 public class EventMazeGenerationFinish : MazeGenerationEvent {
 
 	public EventMazeGenerationFinish(Maze maze) : base(maze) {

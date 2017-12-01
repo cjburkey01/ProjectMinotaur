@@ -5,10 +5,12 @@ public class MazeChunk {
 
 	private readonly int chunkSize;
 	private readonly MazePos pos;
+	private readonly Maze maze;
 	private bool initialized = false;
 	protected List<MazeNode> nodes;
 
-	public MazeChunk(int x, int y, int chunkSize) {
+	public MazeChunk(Maze maze, int x, int y, int chunkSize) {
+		this.maze = maze;
 		pos = new MazePos(x, y);
 		this.chunkSize = chunkSize;
 		nodes = new List<MazeNode>();
@@ -60,6 +62,10 @@ public class MazeChunk {
 
 	public MazePos GetPosition() {
 		return pos;
+	}
+
+	public int GetSize() {
+		return chunkSize;
 	}
 
 }
