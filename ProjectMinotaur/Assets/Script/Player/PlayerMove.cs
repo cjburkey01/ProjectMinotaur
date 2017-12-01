@@ -10,6 +10,8 @@ public class PlayerMove : MonoBehaviour {
 	public float playerInAirRatio = 0.8f;
 	public float playerJumpHeight = 6.0f;
 	public float playerGravity = 9.0f;
+	public float armRotation;
+	public GameObject playerArm;
 
 	public bool running { private set; get; }
 
@@ -24,6 +26,7 @@ public class PlayerMove : MonoBehaviour {
 	private Vector2 rotation;
 	private Vector2 moveVel;
 	private Vector3 previousPosition;
+	private Vector3 rotationOffset;
 	private float pedalSpeed;
 
 	// Initialize variables
@@ -32,6 +35,7 @@ public class PlayerMove : MonoBehaviour {
 		currentSpeed = playerWalkSpeed;
 		moveDirection = Vector3.zero;
 		rotation = Vector3.zero;
+		rotationOffset = new Vector3 (playerArm.transform.rotation.x, playerArm.transform.rotation.y, playerArm.transform.rotation.z);
 
 		controller = GetComponent<CharacterController>();
 		if (controller == null) {
@@ -98,6 +102,15 @@ public class PlayerMove : MonoBehaviour {
 	private void HandleGravity() {
 		if (!controller.isGrounded) {
 			moveDirection.y -= playerGravity * Time.deltaTime;
+		}
+	}
+
+	//controls arm rotation
+	private void handleArmRotation() {
+		while (moving) {
+			if(playerArm.transform.rotation.x != armRotation) {
+				rotationOffset = rotationOffset + new Vector3(armRotation, 0, 0);
+			}
 		}
 	}
 
