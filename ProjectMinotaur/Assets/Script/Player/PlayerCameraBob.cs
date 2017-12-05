@@ -41,8 +41,8 @@ public class PlayerCameraBob : MonoBehaviour {
 			if (!playerMove.Grounded()) {
 				timer = Mathf.SmoothDamp(timer, 270.0f / bobbing, ref smoothVel, 0.75f);
 			} else {
-				if (playerMove.moving) {
-					bobbing = ((playerMove.running) ? (runningBob) : (walkingBob));
+				if (playerMove.Moving) {
+					bobbing = ((playerMove.Running) ? (runningBob) : (walkingBob));
 					timer += Time.deltaTime;
 				} else {
 					timer = Mathf.SmoothDamp(timer, 0.0f, ref smoothVel, 0.25f);

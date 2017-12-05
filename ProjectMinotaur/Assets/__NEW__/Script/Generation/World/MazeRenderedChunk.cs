@@ -27,10 +27,18 @@ public class MazeRenderedChunk : MonoBehaviour {
 		Vector3 up = Vector3.up * handler.pathHeight;
 		Vector3 right = Vector3.right * width;
 		Vector3 forward = Vector3.forward * width;
-		AddQuad(verts, tris, uvs, pos + new Vector3(0.0f, 0.0f, width), up, right, true);// (TOP wall)
-		AddQuad(verts, tris, uvs, pos, up, forward, true);// (LEFT wall)
-		AddQuad(verts, tris, uvs, pos + new Vector3(width, 0.0f, 0.0f), up, -right, true);// (BOTTOM wall)
-		AddQuad(verts, tris, uvs, pos + new Vector3(width, 0.0f, width), up, -forward, true);// (RIGHT wall)
+		if (node.HasWall(MazeNode.BOTTOM)) {
+			AddQuad(verts, tris, uvs, pos + new Vector3(0.0f, 0.0f, width), up, right, true);// (BOTTOM wall)
+		}
+		if (node.HasWall(MazeNode.LEFT)) {
+			AddQuad(verts, tris, uvs, pos, up, forward, true);// (LEFT wall)
+		}
+		if (node.HasWall(MazeNode.TOP)) {
+			AddQuad(verts, tris, uvs, pos + new Vector3(width, 0.0f, 0.0f), up, -right, true);// (TOP wall)
+		}
+		if (node.HasWall(MazeNode.RIGHT)) {
+			AddQuad(verts, tris, uvs, pos + new Vector3(width, 0.0f, width), up, -forward, true);// (RIGHT wall)
+		}
 	}
 
 	private void AddQuad(List<Vector3> verts, List<int> tris, List<Vector2> uvs, Vector3 corner, Vector3 up, Vector3 right, bool drawTexture) {

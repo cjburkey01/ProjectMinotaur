@@ -13,9 +13,9 @@ public class PlayerMove : MonoBehaviour {
 	public float armRotation;
 	public GameObject playerArm;
 
-	public bool running { private set; get; }
+	public bool Running { private set; get; }
 
-	public bool moving { private set; get; }
+	public bool Moving { private set; get; }
 
 	private CharacterController controller;
 	private GameObject playerCamera;
@@ -35,7 +35,7 @@ public class PlayerMove : MonoBehaviour {
 		currentSpeed = playerWalkSpeed;
 		moveDirection = Vector3.zero;
 		rotation = Vector3.zero;
-		rotationOffset = new Vector3 (playerArm.transform.rotation.x, playerArm.transform.rotation.y, playerArm.transform.rotation.z);
+		rotationOffset = new Vector3(playerArm.transform.rotation.x, playerArm.transform.rotation.y, playerArm.transform.rotation.z);
 
 		controller = GetComponent<CharacterController>();
 		if (controller == null) {
@@ -75,14 +75,14 @@ public class PlayerMove : MonoBehaviour {
 		HandleJumping();
 		HandleGravity();
 		controller.Move(moveDirection * Time.deltaTime);
-		moving = previousPosition != transform.position;
+		Moving = previousPosition != transform.position;
 		previousPosition = transform.position;
 	}
 
 	// Handle walking, specifically
 	private void HandleWalking() {
-		running = Input.GetKey(KeyCode.LeftShift);
-		currentSpeed = ((running) ? (playerRunSpeed) : (playerWalkSpeed));
+		Running = Input.GetKey(KeyCode.LeftShift);
+		currentSpeed = ((Running) ? (playerRunSpeed) : (playerWalkSpeed));
 		walkInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 		walkMove = Vector2.SmoothDamp(walkMove, walkInput.normalized, ref moveVel, playerMoveDamp, 100.0f, Time.deltaTime);
 		pedalSpeed = ((controller.isGrounded) ? (currentSpeed) : (currentSpeed * playerInAirRatio));
@@ -106,9 +106,9 @@ public class PlayerMove : MonoBehaviour {
 	}
 
 	//controls arm rotation
-	private void handleArmRotation() {
-		while (moving) {
-			if(playerArm.transform.rotation.x != armRotation) {
+	private void HandleArmRotation() {
+		while (Moving) {
+			if (Mathf.Approximately(playerArm.transform.rotation.x, armRotation)) {
 				rotationOffset = rotationOffset + new Vector3(armRotation, 0, 0);
 			}
 		}
