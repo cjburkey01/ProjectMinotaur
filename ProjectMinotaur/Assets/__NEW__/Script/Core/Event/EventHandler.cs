@@ -2,7 +2,7 @@
 
 public class EventHandler<T> where T : IPMEvent {
 
-	private List<PMEventListener<T>> listeners;
+	private readonly List<PMEventListener<T>> listeners;
 
 	// Initialize the list.
 	public EventHandler() {

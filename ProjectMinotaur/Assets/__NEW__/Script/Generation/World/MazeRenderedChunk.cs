@@ -9,7 +9,8 @@ public class MazeRenderedChunk : MonoBehaviour {
 
 	public Material wallMaterial;
 
-	public void Render(MazeHandler handler, MazeChunk chunk) {
+	public IEnumerator Render(MazeHandler handler, MazeChunk chunk) {
+		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeRenderChunkBegin(handler.GetMaze(), chunk));
 		List<Vector3> verts = new List<Vector3>();
 		List<int> tris = new List<int>();
 		List<Vector2> uvs = new List<Vector2>();
@@ -17,8 +18,10 @@ public class MazeRenderedChunk : MonoBehaviour {
 			for (int y = 0; y < chunk.GetSize(); y++) {
 				DrawNode(verts, tris, uvs, handler, chunk.GetNode(x, y));
 			}
+			yield return null;
 		}
 		GenerateMesh(verts, tris, uvs);
+		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeRenderChunkFinish(handler.GetMaze(), chunk));
 	}
 
 	private void DrawNode(List<Vector3> verts, List<int> tris, List<Vector2> uvs, MazeHandler handler, MazeNode node) {
@@ -35,9 +38,13 @@ public class MazeRenderedChunk : MonoBehaviour {
 		}
 		if (node.HasWall(MazeNode.TOP)) {
 			AddQuad(verts, tris, uvs, pos + new Vector3(width, 0.0f, 0.0f), up, -right, true);// (TOP wall)
+		} else {
+			Debug.DrawLine(new Vector3(pos.x + 0.5f, 2.0f, pos.z + 0.5f), new Vector3(pos.x + 0.5f, 2.0f, pos.z - 0.5f), Color.red, 60.0f, false);
 		}
 		if (node.HasWall(MazeNode.RIGHT)) {
 			AddQuad(verts, tris, uvs, pos + new Vector3(width, 0.0f, width), up, -forward, true);// (RIGHT wall)
+		} else {
+			Debug.DrawLine(new Vector3(pos.x + 0.5f, 2.0f, pos.z + 0.5f), new Vector3(pos.x + 1.5f, 2.0f, pos.z + 0.5f), Color.red, 60.0f, false);
 		}
 	}
 
@@ -56,10 +63,11 @@ public class MazeRenderedChunk : MonoBehaviour {
 		if (meshFilter == null || meshRenderer == null) {
 			Init();
 		}
-		Mesh mesh = new Mesh();
-		mesh.vertices = verts.ToArray();
-		mesh.triangles = tris.ToArray();
-		mesh.uv = uvs.ToArray();
+		Mesh mesh = new Mesh() {
+			vertices = verts.ToArray(),
+			triangles = tris.ToArray(),
+			uv = uvs.ToArray()
+		};
 		mesh.RecalculateTangents();
 		mesh.RecalculateBounds();
 		mesh.RecalculateNormals();

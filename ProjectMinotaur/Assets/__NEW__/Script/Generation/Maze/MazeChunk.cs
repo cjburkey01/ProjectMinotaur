@@ -6,7 +6,7 @@ public class MazeChunk {
 	private readonly int chunkSize;
 	private readonly MazePos pos;
 	private readonly Maze maze;
-	private bool initialized = false;
+	private bool initialized;
 	protected List<MazeNode> nodes;
 
 	public MazeChunk(Maze maze, int x, int y, int chunkSize) {

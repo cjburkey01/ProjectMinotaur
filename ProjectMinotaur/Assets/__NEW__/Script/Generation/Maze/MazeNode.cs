@@ -9,7 +9,7 @@
 	private int walls;
 	private readonly MazePos pos;
 	private readonly MazePos globalP;
-	public bool Visited = false;
+	public bool Visited;
 
 	// Defaults the walls to none
 	public MazeNode(int x, int y, int gx, int gy) {

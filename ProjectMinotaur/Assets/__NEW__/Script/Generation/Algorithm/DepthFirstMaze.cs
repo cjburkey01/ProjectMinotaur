@@ -8,7 +8,7 @@ public class DepthFirstMaze : IAlgorithm {
 	private int totalCells;
 	private int visitedCells;
 
-	public readonly double UpdatesPerSecond = 5.0d;
+	public readonly double UpdatesPerSecond = 2.0d;
 
 	public DepthFirstMaze() {
 		cells = new Stack<MazeNode>();
@@ -22,9 +22,9 @@ public class DepthFirstMaze : IAlgorithm {
 		totalCells = maze.GetSizeX() * maze.GetSizeY();
 		visitedCells = 0;
 
-		PMEventSystem.GetEventSystem().TriggerEvent<EventMazeGenerationBegin>(new EventMazeGenerationBegin(maze));
+		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationBegin(maze));
 
-		// Make the initial cell the current cell and mark it as visited
+		// Make the initial cell the current cell and mark it as visited.
 		MazeNode current = maze.GetNode(starting.GetX(), starting.GetY());
 		if (current == null) {
 			Debug.LogError("Failed to generate maze, the starting node didn't exist.");
@@ -34,7 +34,7 @@ public class DepthFirstMaze : IAlgorithm {
 		int i = 0;
 
 		double time = GetMillis();
-		// While there are unvisited cells
+		// While there are unvisited cells.
 		while (visitedCells < totalCells) {
 			if (current == null) {
 				Debug.LogError("Failed to generate maze, an unexpected node was null.");
@@ -42,27 +42,27 @@ public class DepthFirstMaze : IAlgorithm {
 			}
 			MazeNode[] unvisited = GetUnvisitedNeighbors(maze, current.GetGlobalPos());
 
-			// If the current cell has any neighbors which have not been visited
+			// If the current cell has any neighbors which have not been visited.
 			if (unvisited.Length > 0) {
 				MazeNode chosen = unvisited[Random.Range(0, unvisited.Length)];
 				cells.Push(current);
 				RemoveWallBetween(current, chosen);
 				current = chosen;
 				MarkVisited(current);
-			} else if (cells.Count > 0) { // Else if stack is not empty
+			} else if (cells.Count > 0) { // If we have some cells to process.
 				current = cells.Pop();
 			} else {
-				break; // SHOULD be done generating.
+				break;
 			}
 			i++;
 			if (GetMillis() > time + (1000.0d / UpdatesPerSecond)) {
 				time = GetMillis();
-				PMEventSystem.GetEventSystem().TriggerEvent<EventMazeGenerationUpdate>(new EventMazeGenerationUpdate(maze, i));
+				PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, i));
 				yield return null;
 			}
 		}
 
-		PMEventSystem.GetEventSystem().TriggerEvent<EventMazeGenerationFinish>(new EventMazeGenerationFinish(maze));
+		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationFinish(maze));
 	}
 
 	private void RemoveWallBetween(MazeNode current, MazeNode next) {

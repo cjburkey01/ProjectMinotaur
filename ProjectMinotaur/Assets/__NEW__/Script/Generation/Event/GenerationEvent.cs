@@ -30,8 +30,8 @@
 public abstract class MazeChunkGenerationEvent : MazeGenerationEvent {
 
 	private readonly MazeChunk chunk;
-	private int x;
-	private int y;
+	private readonly int x;
+	private readonly int y;
 
 	protected MazeChunkGenerationEvent(Maze maze, MazeChunk chunk, int x, int y) : base(maze) {
 		this.chunk = chunk;

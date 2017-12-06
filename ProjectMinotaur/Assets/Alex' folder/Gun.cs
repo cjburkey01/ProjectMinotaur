@@ -6,36 +6,33 @@ public class Gun : MonoBehaviour {
 
 	//variables 
 	public float target;
-	public Rigidbody rb;
 	public GameObject player;
 	public GameObject playerArm;
 	public GameObject enemy;
-	public GameObject bulletLineBegin;
-	public GameObject bulletLineEnd;
+	public GameObject barrelEnd;
 
 	private Vector3 Offset;
 	private RaycastHit hit;
 
 	// Use this for initialization
 	void Start() {
-		rb = GetComponent<Rigidbody>();
 		Offset = transform.position;
 	}
 
 	// Update is called once per frame
 	void Update() {
-		gunHandler();
+		GunHandler();
 	}
 
-	void gunHandler() {
-		if (Input.GetKey(KeyCode.X)) {
-			Physics.Raycast(bulletLineBegin.transform.position, transform.TransformDirection(Vector3.forward), out hit);
-			OnDrawGizmos();
+	//gun stuff
+	void GunHandler() {
+		if (Input.GetKeyDown(KeyCode.X)) {
+			Physics.Raycast(barrelEnd.transform.position, barrelEnd.transform.TransformDirection(Vector3.forward), out hit);
 		}
 	}
 
 	void OnDrawGizmos() {
 		Gizmos.color = Color.white;
-		Gizmos.DrawRay(transform.position, Vector3.forward);
+		Gizmos.DrawRay(barrelEnd.transform.position, barrelEnd.transform.TransformDirection(Vector3.forward));
 	}
 }

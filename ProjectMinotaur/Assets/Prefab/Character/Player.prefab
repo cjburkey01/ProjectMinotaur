@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 114947826903144822}
   m_Layer: 2
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -263,6 +263,8 @@ MonoBehaviour:
   playerInAirRatio: 0.8
   playerJumpHeight: 9
   playerGravity: 20
+  armRotation: 0
+  playerArm: {fileID: 0}
 --- !u!114 &114805776067938024
 MonoBehaviour:
   m_ObjectHideFlags: 1

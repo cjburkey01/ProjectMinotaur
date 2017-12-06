@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class MazeHandler : MonoBehaviour {
 
@@ -9,6 +11,7 @@ public class MazeHandler : MonoBehaviour {
 	public float pathHeight = 25.0f;
 	public float distanceVariability = 1.0f;
 	public string chunkPrefabName = "MazeRenderedChunk";
+	public GameObject[] nearnessObjects;
 
 	private GameObject chunkPrefab;
 	private Maze maze;
@@ -33,39 +36,17 @@ public class MazeHandler : MonoBehaviour {
 		GenerateMaze();
 	}
 
-	public void GenerateMaze() {
-		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationBegin>(MazeBegin);
-		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationFinish>(MazeFinish);
-		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationUpdate>(MazeUpdate);
-		maze.Generate(this, new MazePos(0, 0));
-	}
-
-	private void MazeBegin<T>(T e) where T : EventMazeGenerationBegin {
-		Debug.Log("Began maze generation.");
-	}
-
-	private void MazeFinish<T>(T e) where T : EventMazeGenerationFinish {
-		Debug.Log("Finished maze generation, rendering.");
-		//RenderMaze();
-		RenderChunk(new MazePos(0, 0));
-		TemporaryDrawCode();
-		Debug.Log("Rendered maze.");
-	}
-
-	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {
-		Debug.Log("Generating. Cycles: " + e.GetProgress());
-	}
-
-	public void RenderMaze() {
+	public IEnumerator RenderMazeAroundObject(GameObject obj) {
 		for (int x = 0; x < chunksX; x++) {
 			for (int y = 0; y < chunksY; y++) {
 				RenderChunk(new MazePos(x, y));
+				yield return null;
 			}
 		}
 	}
 
 	private void RenderChunk(MazePos pos) {
-		GameObject instance = Instantiate(chunkPrefab, new Vector3(pos.GetX() * chunkSize, 0.0f, pos.GetY() * chunkSize), Quaternion.identity);
+		GameObject instance = Instantiate(chunkPrefab, Vector3.zero, Quaternion.identity);
 		instance.transform.name = "Chunk: " + pos;
 		instance.transform.parent = transform;
 		MazeRenderedChunk chunkObj = instance.GetComponent<MazeRenderedChunk>();
@@ -73,11 +54,107 @@ public class MazeHandler : MonoBehaviour {
 			Debug.LogError("Failed to get maze chunk on chunk: " + pos);
 			return;
 		}
-		Debug.Log("Rendering chunk: " + pos);
-		chunkObj.Render(this, maze.GetChunk(pos.GetX(), pos.GetY()));
+		StartCoroutine(chunkObj.Render(this, maze.GetChunk(pos.GetX(), pos.GetY())));
 	}
 
-	private void TemporaryDrawCode() {
+	public Maze GetMaze() {
+		return maze;
+	}
+
+	public void GenerateMaze() {
+		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationBegin>(MazeBegin);
+		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationFinish>(MazeFinish);
+		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationUpdate>(MazeUpdate);
+		PMEventSystem.GetEventSystem().AddListener<EventMazeRenderChunkBegin>(OnMazeRenderChunkBegin);
+		PMEventSystem.GetEventSystem().AddListener<EventMazeRenderChunkFinish>(OnMazeRenderChunkFinish);
+		maze.Generate(this, new MazePos(0, 0));
+	}
+
+	private void MazeBegin<T>(T e) where T : EventMazeGenerationBegin {
+		e.IsCancellable();
+		Debug.Log("Began maze generation.");
+	}
+
+	private void MazeFinish<T>(T e) where T : EventMazeGenerationFinish {
+		e.IsCancellable();
+		Debug.Log("Finished maze generation.");
+		foreach (GameObject obj in nearnessObjects) {
+			StartCoroutine(RenderMazeAroundObject(obj));
+		}
+	}
+
+	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {
+		Debug.Log("Generating. Cycles: " + e.GetProgress());
+	}
+
+	private void OnMazeRenderChunkBegin<T>(T e) where T : EventMazeRenderChunkBegin {
+		Debug.Log("Rendering chunk: " + e.GetChunk().GetPosition());
+	}
+
+	private void OnMazeRenderChunkFinish<T>(T e) where T : EventMazeRenderChunkFinish {
+		Debug.Log("Rendered chunk: " + e.GetChunk().GetPosition());
+	}
+
+}
+
+public class MazeRenderEvent : IPMEvent {
+
+	private readonly Maze maze;
+
+	public MazeRenderEvent(Maze maze) {
+		this.maze = maze;
+	}
+
+	public string GetName() {
+		return GetType().Name;
+	}
+
+	public bool IsCancellable() {
+		return false;
+	}
+
+	public bool IsCancelled() {
+		return false;
+	}
+
+	public void Cancel() {
+	}
+
+	public Maze GetMaze() {
+		return maze;
+	}
+
+}
+
+public class EventMazeRenderChunkBegin : MazeRenderEvent {
+
+	private readonly MazeChunk chunk;
+
+	public EventMazeRenderChunkBegin(Maze maze, MazeChunk chunk) : base(maze) {
+		this.chunk = chunk;
+	}
+
+	public MazeChunk GetChunk() {
+		return chunk;
+	}
+
+}
+
+public class EventMazeRenderChunkFinish : MazeRenderEvent {
+
+	private readonly MazeChunk chunk;
+
+	public EventMazeRenderChunkFinish(Maze maze, MazeChunk chunk) : base(maze) {
+		this.chunk = chunk;
+	}
+
+	public MazeChunk GetChunk() {
+		return chunk;
+	}
+
+}
+
+/*private void TemporaryDrawCode() {
 		float time = 300.0f;
 		for (int x = 0; x < maze.GetSizeX(); x++) {
 			for (int y = 0; y < maze.GetSizeY(); y++) {
@@ -101,6 +178,4 @@ public class MazeHandler : MonoBehaviour {
 				}
 			}
 		}
-	}
-
-}
+	}*/
