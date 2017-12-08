@@ -78,6 +78,27 @@ public class Maze {
 		return node;
 	}
 
+	public MazePos[] GetConnectedNeighbors(MazePos pos) {
+		MazeNode nodeAt = GetNode(pos.GetX(), pos.GetY());
+		if (nodeAt == null) {
+			return null;
+		}
+		List<MazePos> neighs = new List<MazePos>();
+		if (pos.GetX() > 0 && !nodeAt.HasWall(MazeNode.LEFT)) {
+			neighs.Add(new MazePos(pos.GetX() - 1, pos.GetY()));
+		}
+		if (pos.GetX() < GetSizeX() - 1 && !nodeAt.HasWall(MazeNode.RIGHT)) {
+			neighs.Add(new MazePos(pos.GetX() + 1, pos.GetY()));
+		}
+		if (pos.GetY() > 0 && !nodeAt.HasWall(MazeNode.TOP)) {
+			neighs.Add(new MazePos(pos.GetX(), pos.GetY() - 1));
+		}
+		if (pos.GetY() < GetSizeY() - 1 && !nodeAt.HasWall(MazeNode.BOTTOM)) {
+			neighs.Add(new MazePos(pos.GetX(), pos.GetY() + 1));
+		}
+		return neighs.ToArray();
+	}
+
 	public IAlgorithm GetMazeGenerationAlgorithm() {
 		return mazeAlgorithm;
 	}

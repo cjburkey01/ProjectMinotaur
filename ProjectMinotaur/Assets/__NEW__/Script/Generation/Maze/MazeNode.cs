@@ -59,4 +59,8 @@
 		return globalP;
 	}
 
+	public override int GetHashCode() {
+		return pos.GetHashCode();
+	}
+
 }

@@ -36,4 +36,11 @@
 		return "{" + x + ", " + y + "}";
 	}
 
+	public override int GetHashCode() {
+		int result = 17;
+		result = 37 * result + (x ^ (x >> 32));
+		result = 37 * result + (y ^ (y >> 32));
+		return result;
+	}
+
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AI;
 
 public class Enemy : IHealthHaver {
@@ -10,12 +11,12 @@ public class Enemy : IHealthHaver {
 
 	private float timeSinceLastDamage = 0.0f;
 	private Transform playerFind;
-	private NavMeshAgent nav; 
+	private NavMeshAgent nav;
 
-	void Start(){
+	void Start() {
 
-		playerFind = GameObject.FindGameObjectWithTag ("Player").transform;
-		nav = GetComponent<NavMeshAgent> ();
+		playerFind = GameObject.FindGameObjectWithTag("Player").transform;
+		nav = GetComponent<NavMeshAgent>();
 	}
 
 
@@ -32,7 +33,7 @@ public class Enemy : IHealthHaver {
 		}
 
 		//finds player
-		nav.SetDestination (playerFind.position);
+		nav.SetDestination(playerFind.position);
 	}
 
 }

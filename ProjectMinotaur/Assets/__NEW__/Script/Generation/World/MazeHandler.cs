@@ -36,11 +36,20 @@ public class MazeHandler : MonoBehaviour {
 		GenerateMaze();
 	}
 
+	public MazePos GetWorldPosAsNode(Vector3 pos) {
+		int x = Mathf.FloorToInt(pos.x);
+		int y = Mathf.FloorToInt(pos.z);
+		return new MazePos(x, y);
+	}
+
 	public IEnumerator RenderMazeAroundObject(GameObject obj) {
+		// TODO: To get it to stop telling me it's never used.
+		obj.ToString();
 		for (int x = 0; x < chunksX; x++) {
 			for (int y = 0; y < chunksY; y++) {
 				RenderChunk(new MazePos(x, y));
-				yield return null;
+				yield return null; // Render another frame of the game to give the game
+								   // time to refresh and prevent "not responding".
 			}
 		}
 	}
@@ -76,11 +85,17 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	private void MazeFinish<T>(T e) where T : EventMazeGenerationFinish {
-		e.IsCancellable();
 		Debug.Log("Finished maze generation.");
-		foreach (GameObject obj in nearnessObjects) {
-			StartCoroutine(RenderMazeAroundObject(obj));
-		}
+		//foreach (GameObject obj in nearnessObjects) {
+		//	StartCoroutine(RenderMazeAroundObject(obj));
+		//}
+		Debug.Log("Let's test pathfinding!");
+		/*Stack<MazePos> path = AStartMaze.PathFind(e.GetMaze(), new MazePos(0, 0), new MazePos(5, 5));
+		Debug.Log("Failed: " + path == null);
+		if (path != null) {
+			Debug.Log("Nodes traversed:" + path.Count);
+		}*/
+		StartCoroutine(AStarMaze.PathFind(e.GetMaze(), new MazePos(0, 0), new MazePos(5, 5)));
 	}
 
 	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {
@@ -155,27 +170,27 @@ public class EventMazeRenderChunkFinish : MazeRenderEvent {
 }
 
 /*private void TemporaryDrawCode() {
-		float time = 300.0f;
-		for (int x = 0; x < maze.GetSizeX(); x++) {
-			for (int y = 0; y < maze.GetSizeY(); y++) {
-				MazeNode node = maze.GetNode(x, y);
-				if (node == null) {
-					Debug.LogError("How did this happen?");
-					return;
-				}
-				bool[] walls = node.GetWalls();
-				if (walls[0]) { // TOP
-					Debug.DrawLine(new Vector3(x * pathWidth, 25.0f, y * pathWidth), new Vector3((x + 1) * pathWidth, 25.0f, y * pathWidth), Color.red, time, false);
-				}
-				if (walls[1]) { // BOTTOM
-					Debug.DrawLine(new Vector3(x * pathWidth, 25.0f, (y + 1) * pathWidth), new Vector3((x + 1) * pathWidth, 25.0f, (y + 1) * pathWidth), Color.red, time, false);
-				}
-				if (walls[2]) { // RIGHT
-					Debug.DrawLine(new Vector3((x + 1) * pathWidth, 25.0f, y * pathWidth), new Vector3((x + 1) * pathWidth, 25.0f, (y + 1) * pathWidth), Color.red, time, false);
-				}
-				if (walls[3]) { // LEFT
-					Debug.DrawLine(new Vector3(x * pathWidth, 25.0f, y * pathWidth), new Vector3(x * pathWidth, 25.0f, (y + 1) * pathWidth), Color.red, time, false);
-				}
+	float time = 300.0f;
+	for (int x = 0; x < maze.GetSizeX(); x++) {
+		for (int y = 0; y < maze.GetSizeY(); y++) {
+			MazeNode node = maze.GetNode(x, y);
+			if (node == null) {
+				Debug.LogError("How did this happen?");
+				return;
+			}
+			bool[] walls = node.GetWalls();
+			if (walls[0]) { // TOP
+				Debug.DrawLine(new Vector3(x * pathWidth, 25.0f, y * pathWidth), new Vector3((x + 1) * pathWidth, 25.0f, y * pathWidth), Color.red, time, false);
+			}
+			if (walls[1]) { // BOTTOM
+				Debug.DrawLine(new Vector3(x * pathWidth, 25.0f, (y + 1) * pathWidth), new Vector3((x + 1) * pathWidth, 25.0f, (y + 1) * pathWidth), Color.red, time, false);
+			}
+			if (walls[2]) { // RIGHT
+				Debug.DrawLine(new Vector3((x + 1) * pathWidth, 25.0f, y * pathWidth), new Vector3((x + 1) * pathWidth, 25.0f, (y + 1) * pathWidth), Color.red, time, false);
+			}
+			if (walls[3]) { // LEFT
+				Debug.DrawLine(new Vector3(x * pathWidth, 25.0f, y * pathWidth), new Vector3(x * pathWidth, 25.0f, (y + 1) * pathWidth), Color.red, time, false);
 			}
 		}
-	}*/
+	}
+}*/
