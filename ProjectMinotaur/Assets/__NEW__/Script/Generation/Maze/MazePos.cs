@@ -1,5 +1,7 @@
 ﻿public struct MazePos {
 
+	public static readonly MazePos NONE = new MazePos(-1, -1);
+
 	private readonly int x;
 	private readonly int y;
 
@@ -38,8 +40,8 @@
 
 	public override int GetHashCode() {
 		int result = 17;
-		result = 37 * result + (x ^ (x >> 32));
-		result = 37 * result + (y ^ (y >> 32));
+		result = result * 37 + x.GetHashCode();
+		result = result * 37 + y.GetHashCode();
 		return result;
 	}
 

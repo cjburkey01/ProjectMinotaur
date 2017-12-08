@@ -6,80 +6,97 @@ public static class AStarMaze {
 
 	// Will return null on failure to find the end node.
 	public static IEnumerator PathFind(Maze maze, MazePos start, MazePos destination) {
+		double startTime = Util.GetMillis();
 		List<MazePos> closed = new List<MazePos>();
-		List<MazePos> open = new List<MazePos> { destination };
+		List<MazePos> testing = new List<MazePos> { start };
 		Dictionary<MazePos, MazePos> cameFrom = new Dictionary<MazePos, MazePos>();
-		Dictionary<MazePos, float> gScore = new Dictionary<MazePos, float>();
-		Dictionary<MazePos, float> fScore = new Dictionary<MazePos, float>();
+		Dictionary<MazePos, float> localScores = new Dictionary<MazePos, float>();
+		Dictionary<MazePos, float> globalScores = new Dictionary<MazePos, float>();
 
-		for (int y = 0; y < maze.GetSizeY(); y++) {
-			for (int x = 0; x < maze.GetSizeX(); x++) {
-				cameFrom.Add(new MazePos(x, y), new MazePos(-1, -1));
-				gScore.Add(new MazePos(x, y), Mathf.Infinity);
-				fScore.Add(new MazePos(x, y), Mathf.Infinity);
+		// Default the values
+		for (int x = 0; x < maze.GetSizeX(); x++) {
+			for (int y = 0; y < maze.GetSizeY(); y++) {
+				MazePos pos = new MazePos(x, y);
+				cameFrom.Add(pos, MazePos.NONE);
+				localScores.Add(pos, Mathf.Infinity);
+				globalScores.Add(pos, Mathf.Infinity);
 			}
 		}
 
-		gScore[start] = 0.0f;
-		fScore[start] = GetHeuristic(start, destination);
+		MazePos current = MazePos.NONE;
+		localScores[start] = 0.0f;
+		globalScores[start] = GetDistSq(start, destination);
 
-		MazePos current;
-		while (open.Count > 0) {
-			current = GetLowestHeuristic(fScore);
-
+		bool done = false;
+		while (testing.Count > 0 && !done) {
+			current = GetLowestGlobal(testing, globalScores);
 			if (current.Equals(destination)) {
-				//return BuildPath(cameFrom, current);
-				yield break;
+				// Success!
+				done = true;
+				break;
 			}
-
-			open.Remove(current);
+			testing.Remove(current);
 			closed.Add(current);
 
 			MazePos[] neighbors = maze.GetConnectedNeighbors(current);
 			foreach (MazePos neighbor in neighbors) {
-				Debug.Log("On node: " + current + ". Neighbor: " + neighbor);
-				yield return null;
 				if (closed.Contains(neighbor)) {
 					continue;
 				}
-
-				if (!open.Contains(neighbor)) {
-					open.Add(neighbor);
+				if (!testing.Contains(neighbor)) {
+					testing.Add(neighbor);
 				}
-
-				float tGScore = gScore[current] + GetHeuristic(current, neighbor);
-				if (tGScore >= gScore[neighbor]) {
+				float tentativeScore = localScores[current] + 1;
+				if (tentativeScore >= localScores[neighbor]) {
 					continue;
 				}
-
 				cameFrom[neighbor] = current;
-
-				gScore[neighbor] = tGScore;
-				fScore[neighbor] = gScore[neighbor] + GetHeuristic(neighbor, destination);
+				localScores[neighbor] = tentativeScore;
+				globalScores[neighbor] = localScores[neighbor] + GetDistSq(neighbor, destination);
 			}
 		}
 
-		// No possible path was found.
-		//return null;
+		Stack<MazePos> path = BuildPath(cameFrom, current);
+
+		double timeTakenMs = Util.GetMillis() - startTime;
+		Debug.Log("Done, path has " + path.Count + " nodes. Took " + (timeTakenMs / 1000.0d).ToString("0.##") + "s.");
+
+		// Just draw a path, for now.
+		MazePos prev = MazePos.NONE;
+		int i = 0;
+		while (path.Count > 0) {
+			MazePos node = path.Pop();
+			if (!prev.Equals(MazePos.NONE)) {
+				Debug.DrawLine(new Vector3(prev.GetX() + 0.5f, 0.1f, prev.GetY() + 0.5f), new Vector3(node.GetX() + 0.5f, 0.1f, node.GetY() + 0.5f), Color.blue, 120.0f, false);
+			}
+			i++;
+			if (i >= 60) {
+				i = 0;
+				yield return null;
+			}
+			prev = node;
+		}
+
 		yield break;
 	}
 
-	public static float GetHeuristic(MazePos start, MazePos end) {
-		return (end.GetX() - start.GetX()) + (end.GetY() - start.GetY());
-		//return -Mathf.Infinity;
+	private static float GetDistSq(MazePos start, MazePos end) {
+		return Mathf.Pow((end.GetX() - start.GetX()), 2) + Mathf.Pow((end.GetY() - start.GetY()), 2);
 	}
 
-	public static MazePos GetLowestHeuristic(Dictionary<MazePos, float> dict) {
-		KeyValuePair<MazePos, float> lowest = new KeyValuePair<MazePos, float>();
-		foreach (KeyValuePair<MazePos, float> entry in dict) {
-			if (lowest.Value < entry.Value) {
-				lowest = entry;
+	private static MazePos GetLowestGlobal(List<MazePos> open, Dictionary<MazePos, float> dict) {
+		MazePos lowest = MazePos.NONE;
+		float min = Mathf.Infinity;
+		foreach (MazePos pos in open) {
+			if (dict[pos] < min) {
+				lowest = pos;
+				min = dict[pos];
 			}
 		}
-		return lowest.Key;
+		return lowest;
 	}
 
-	public static Stack<MazePos> BuildPath(Dictionary<MazePos, MazePos> cameFrom, MazePos current) {
+	private static Stack<MazePos> BuildPath(Dictionary<MazePos, MazePos> cameFrom, MazePos current) {
 		Stack<MazePos> path = new Stack<MazePos>();
 		while (cameFrom.ContainsKey(current)) {
 			current = cameFrom[current];

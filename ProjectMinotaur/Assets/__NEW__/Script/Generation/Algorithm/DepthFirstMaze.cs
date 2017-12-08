@@ -33,7 +33,7 @@ public class DepthFirstMaze : IAlgorithm {
 
 		int i = 0;
 
-		double time = GetMillis();
+		double time = Util.GetMillis();
 		// While there are unvisited cells.
 		while (visitedCells < totalCells) {
 			if (current == null) {
@@ -55,8 +55,8 @@ public class DepthFirstMaze : IAlgorithm {
 				break;
 			}
 			i++;
-			if (GetMillis() > time + (1000.0d / UpdatesPerSecond)) {
-				time = GetMillis();
+			if (Util.GetMillis() > time + (1000.0d / UpdatesPerSecond)) {
+				time = Util.GetMillis();
 				PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, i));
 				yield return null;
 			}
@@ -107,10 +107,6 @@ public class DepthFirstMaze : IAlgorithm {
 			outt.Add(left);
 		}
 		return outt.ToArray();
-	}
-
-	private double GetMillis() {
-		return System.DateTime.Now.TimeOfDay.TotalMilliseconds;
 	}
 
 }
