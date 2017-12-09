@@ -44,7 +44,7 @@ public class DepthFirstMaze : IAlgorithm {
 
 			// If the current cell has any neighbors which have not been visited.
 			if (unvisited.Length > 0) {
-				MazeNode chosen = unvisited[Random.Range(0, unvisited.Length)];
+				MazeNode chosen = unvisited[Util.NextRand(0, unvisited.Length - 1)];
 				cells.Push(current);
 				RemoveWallBetween(current, chosen);
 				current = chosen;

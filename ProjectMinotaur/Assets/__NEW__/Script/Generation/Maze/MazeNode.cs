@@ -1,4 +1,6 @@
-﻿public class MazeNode {
+﻿using UnityEngine;
+
+public class MazeNode {
 
 	public readonly static int TOP = 1 << 0;        // The top wall
 	public readonly static int BOTTOM = 1 << 1;     // The bottom wall
@@ -9,6 +11,7 @@
 	private int walls;
 	private readonly MazePos pos;
 	private readonly MazePos globalP;
+	private Vector3 worldOffset = Vector3.zero;
 	public bool Visited;
 
 	// Defaults the walls to none
@@ -57,6 +60,14 @@
 	// Global position
 	public MazePos GetGlobalPos() {
 		return globalP;
+	}
+
+	public Vector3 GetWorldOffset() {
+		return worldOffset;
+	}
+
+	public void SetWorldOffset(Vector3 worldOffset) {
+		this.worldOffset = worldOffset;
 	}
 
 	public override int GetHashCode() {

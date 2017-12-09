@@ -35,7 +35,9 @@ public class PlayerMove : MonoBehaviour {
 		currentSpeed = playerWalkSpeed;
 		moveDirection = Vector3.zero;
 		rotation = Vector3.zero;
-		rotationOffset = new Vector3(playerArm.transform.rotation.x, playerArm.transform.rotation.y, playerArm.transform.rotation.z);
+		if (playerArm != null) {
+			rotationOffset = new Vector3(playerArm.transform.rotation.x, playerArm.transform.rotation.y, playerArm.transform.rotation.z);
+		}
 
 		controller = GetComponent<CharacterController>();
 		if (controller == null) {

@@ -3,6 +3,7 @@ using UnityEngine.PostProcessing;
 
 public class GraphicsOptionsHandler : MonoBehaviour {
 
+	public bool overrideDef = true;
 	public bool antialiasing;
 	public bool ambientOcclusion;
 	public bool motionBlur;
@@ -38,7 +39,9 @@ public class GraphicsOptionsHandler : MonoBehaviour {
 
 	// Reload the graphics settings. Useful for in-game editing
 	public void RefreshSettings() {
-		ReloadSettings();
+		if (!overrideDef) {
+			ReloadSettings();
+		}
 		if (ppp != null) {
 			ppp.antialiasing.enabled = antialiasing;
 			ppp.ambientOcclusion.enabled = ambientOcclusion;

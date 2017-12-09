@@ -1,5 +1,6 @@
 ﻿public struct MazePos {
 
+	public static readonly MazePos ZERO = new MazePos(0, 0);
 	public static readonly MazePos NONE = new MazePos(-1, -1);
 
 	private readonly int x;

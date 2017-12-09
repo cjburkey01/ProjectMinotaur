@@ -2,11 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public delegate void OnPathingDone(Stack<MazePos> path);
+
 public static class AStarMaze {
 
-	// Will return null on failure to find the end node.
-	public static IEnumerator PathFind(Maze maze, MazePos start, MazePos destination) {
+	public static readonly double LOWEST_FPS = 25;
+
+	public static void PathFind(MonoBehaviour obj, Maze maze, MazePos start, MazePos destination, OnPathingDone finish) {
+		obj.StartCoroutine(DoPathFind(maze, start, destination, finish));
+	}
+
+	// Will give null on failure to find the end node.
+	private static IEnumerator DoPathFind(Maze maze, MazePos start, MazePos destination, OnPathingDone finish) {
 		double startTime = Util.GetMillis();
+		double lastUpdateTime = Util.GetMillis();
 		List<MazePos> closed = new List<MazePos>();
 		List<MazePos> testing = new List<MazePos> { start };
 		Dictionary<MazePos, MazePos> cameFrom = new Dictionary<MazePos, MazePos>();
@@ -28,6 +37,7 @@ public static class AStarMaze {
 		globalScores[start] = GetDistSq(start, destination);
 
 		bool done = false;
+		int i = 0;
 		while (testing.Count > 0 && !done) {
 			current = GetLowestGlobal(testing, globalScores);
 			if (current.Equals(destination)) {
@@ -54,14 +64,28 @@ public static class AStarMaze {
 				localScores[neighbor] = tentativeScore;
 				globalScores[neighbor] = localScores[neighbor] + GetDistSq(neighbor, destination);
 			}
+			i++;
+			if (lastUpdateTime + (1000 / LOWEST_FPS) <= Util.GetMillis()) {
+				lastUpdateTime = Util.GetMillis();
+				i = 0;
+				yield return null;
+			}
+		}
+
+		double timeTakenMs = Util.GetMillis() - startTime;
+		string taken = (timeTakenMs / 1000.0d).ToString("0.####");
+
+		if (!done) {
+			Debug.Log("No solution found to pathfinding. Took: " + taken + "s.");
+			finish.Invoke(null);
+			yield break;
 		}
 
 		Stack<MazePos> path = BuildPath(cameFrom, current);
+		Debug.Log("Done. Path has " + path.Count + " nodes. Took " + taken + "s.");
+		finish.Invoke(path);
 
-		double timeTakenMs = Util.GetMillis() - startTime;
-		Debug.Log("Done, path has " + path.Count + " nodes. Took " + (timeTakenMs / 1000.0d).ToString("0.##") + "s.");
-
-		// Just draw a path, for now.
+		/* Draw a path through the maze for testing purposes.
 		MazePos prev = MazePos.NONE;
 		int i = 0;
 		while (path.Count > 0) {
@@ -75,7 +99,7 @@ public static class AStarMaze {
 				yield return null;
 			}
 			prev = node;
-		}
+		}*/
 
 		yield break;
 	}

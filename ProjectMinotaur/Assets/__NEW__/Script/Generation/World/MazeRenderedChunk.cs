@@ -8,6 +8,7 @@ public class MazeRenderedChunk : MonoBehaviour {
 	private MeshRenderer meshRenderer;
 
 	public Material wallMaterial;
+	public bool destroyed;
 
 	public IEnumerator Render(MazeHandler handler, MazeChunk chunk) {
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeRenderChunkBegin(handler.GetMaze(), chunk));
@@ -26,32 +27,46 @@ public class MazeRenderedChunk : MonoBehaviour {
 
 	private void DrawNode(List<Vector3> verts, List<int> tris, List<Vector2> uvs, MazeHandler handler, MazeNode node) {
 		float width = handler.pathWidth;
-		Vector3 pos = new Vector3(node.GetGlobalPos().GetX() * width, 0.0f, node.GetGlobalPos().GetY() * width);
+		float spread = handler.pathSpread;
+		Vector3 corner = handler.GetWorldPosOfNode(node.GetGlobalPos(), 0.0f);
 		Vector3 up = Vector3.up * handler.pathHeight;
 		Vector3 right = Vector3.right * width;
 		Vector3 forward = Vector3.forward * width;
-		if (node.HasWall(MazeNode.BOTTOM)) {
-			AddQuad(verts, tris, uvs, pos + new Vector3(0.0f, 0.0f, width), up, right, true);// (BOTTOM wall)
+		if (node.HasWall(MazeNode.TOP)) {
+			AddQuad(verts, tris, uvs, corner + right, up, -right, true);
 		}
 		if (node.HasWall(MazeNode.LEFT)) {
-			AddQuad(verts, tris, uvs, pos, up, forward, true);// (LEFT wall)
+			AddQuad(verts, tris, uvs, corner, up, forward, true);
 		}
-		if (node.HasWall(MazeNode.TOP)) {
-			AddQuad(verts, tris, uvs, pos + new Vector3(width, 0.0f, 0.0f), up, -right, true);// (TOP wall)
+		if (node.HasWall(MazeNode.BOTTOM)) {
+			AddQuad(verts, tris, uvs, corner + forward, up, right, true);
 		} else {
-			Debug.DrawLine(new Vector3(pos.x + 0.5f, 2.0f, pos.z + 0.5f), new Vector3(pos.x + 0.5f, 2.0f, pos.z - 0.5f), Color.red, 60.0f, false);
+			AddQuad(verts, tris, uvs, corner + forward, up, Vector3.forward * spread, true);
+			AddQuad(verts, tris, uvs, corner + (Vector3.forward * spread) + forward + right, up, -Vector3.forward * spread, true);
 		}
 		if (node.HasWall(MazeNode.RIGHT)) {
-			AddQuad(verts, tris, uvs, pos + new Vector3(width, 0.0f, width), up, -forward, true);// (RIGHT wall)
+			AddQuad(verts, tris, uvs, corner + right + forward, up, -forward, true);
 		} else {
-			Debug.DrawLine(new Vector3(pos.x + 0.5f, 2.0f, pos.z + 0.5f), new Vector3(pos.x + 1.5f, 2.0f, pos.z + 0.5f), Color.red, 60.0f, false);
+			AddQuad(verts, tris, uvs, corner + right + forward, up, Vector3.right * spread, true);
+			AddQuad(verts, tris, uvs, corner + (Vector3.right * spread) + right, up, -Vector3.right * spread, true);
 		}
 	}
 
-	private void AddQuad(List<Vector3> verts, List<int> tris, List<Vector2> uvs, Vector3 corner, Vector3 up, Vector3 right, bool drawTexture) {
+	private void AddQuad(List<Vector3> verts, List<int> tris, List<Vector2> uvs, Vector3 corner, Vector3 up, Vector3 right, bool drawBack) {
+		AddQuad(verts, tris, uvs, corner, up, right, true, false);
+		if (drawBack) {
+			AddQuad(verts, tris, uvs, corner, up, right, false, true);
+		}
+	}
+
+	private void AddQuad(List<Vector3> verts, List<int> tris, List<Vector2> uvs, Vector3 corner, Vector3 up, Vector3 right, bool drawTexture, bool reverse) {
 		int i = verts.Count;
 		verts.AddRange(new Vector3[] { corner, corner + up, corner + up + right, corner + right });
-		tris.AddRange(new int[] { i + 1, i + 2, i, i + 3, i, i + 2 });
+		if (!reverse) {
+			tris.AddRange(new int[] { i + 1, i + 2, i, i + 3, i, i + 2 });
+		} else {
+			tris.AddRange(new int[] { i, i + 2, i + 1, i + 2, i, i + 3 });
+		}
 		if (drawTexture) {
 			uvs.AddRange(new Vector2[] { new Vector2(0.0f, 1.0f), new Vector2(0.0f, 0.0f), new Vector2(1.0f, 0.0f), new Vector2(1.0f, 1.0f) });
 		} else {
@@ -60,6 +75,9 @@ public class MazeRenderedChunk : MonoBehaviour {
 	}
 
 	private void GenerateMesh(List<Vector3> verts, List<int> tris, List<Vector2> uvs) {
+		if (destroyed) {
+			return;
+		}
 		if (meshFilter == null || meshRenderer == null) {
 			Init();
 		}
