@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MazeHandler : MonoBehaviour {
 
@@ -16,6 +17,8 @@ public class MazeHandler : MonoBehaviour {
 	public float updateInterval = 1.0f;
 	public float chunkUnloadDistancePadding = 100.0f;
 	public bool drawLines = true;
+
+	public Text infoText;
 
 	private GameObject chunkPrefab;
 	private Maze maze;
@@ -48,6 +51,19 @@ public class MazeHandler : MonoBehaviour {
 
 	void Update() {
 		if (generated) {
+			if (infoText != null) {
+				infoText.text = "Project Minotaur v0.0.1";
+				infoText.text += "\n\nLoaded chunks: " + loadedChunks.Count;
+				infoText.text += "\nGenerated chunks: " + chunksX * chunksY;
+				infoText.text += "\nNodes per chunk: " + chunkSize + "x" + chunkSize;
+				infoText.text += "\nGenerated nodes: " + maze.GetSizeX() * maze.GetSizeY();
+				infoText.text += "\nSize: " + maze.GetSizeX() + "x" + maze.GetSizeY();
+				infoText.text += "\nChunks: " + chunksX + "x" + chunksY;
+				infoText.text += "\nChunk loader check in " + (updateInterval - loadTimer).ToString("0.##") + "s";
+				infoText.text += "\nPath width: " + pathWidth;
+				infoText.text += "\nPath height: " + pathHeight;
+				infoText.text += "\nNode interval: " + pathSpread;
+			}
 			loadTimer += Time.deltaTime;
 			if (loadTimer >= updateInterval) {
 				loadTimer = 0;
@@ -167,16 +183,22 @@ public class MazeHandler : MonoBehaviour {
 	private void MazeBegin<T>(T e) where T : EventMazeGenerationBegin {
 		e.IsCancellable();
 		generated = false;
-		Debug.Log("Began maze generation.");
+		if (infoText != null) {
+			infoText.text = "Generating maze... ";
+		}
 	}
 
 	private void MazeFinish<T>(T e) where T : EventMazeGenerationFinish {
 		generated = true;
-		Debug.Log("Finished maze generation.");
+		if (infoText != null) {
+			infoText.text = "Finished generating.";
+		}
 	}
 
 	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {
-		Debug.Log("Generating. Cycles: " + e.GetProgress());
+		if (infoText != null) {
+			infoText.text = "Generating maze: " + (e.GetProgress() * 100.0f).ToString("00.00") + "%";
+		}
 	}
 
 	// Will return the top(in the world, bottom) left corner of the node at the specified y position

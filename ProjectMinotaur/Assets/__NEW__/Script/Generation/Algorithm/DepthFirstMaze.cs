@@ -57,7 +57,7 @@ public class DepthFirstMaze : IAlgorithm {
 			i++;
 			if (Util.GetMillis() > time + (1000.0d / UpdatesPerSecond)) {
 				time = Util.GetMillis();
-				PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, i));
+				PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, (float) visitedCells / (float) totalCells));
 				yield return null;
 			}
 		}

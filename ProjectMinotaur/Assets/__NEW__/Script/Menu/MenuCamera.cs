@@ -17,6 +17,7 @@ public class MenuCamera : MonoBehaviour {
 	private MazePos movingTowards = MazePos.NONE;
 	private float beginTime;
 	private float length;
+	private Vector3 refVel = Vector3.zero;
 
 	void Start() {
 		PMEventSystem.GetEventSystem().AddListener<EventMazeRenderChunkFinish>(OnMazeGenerated);
@@ -57,11 +58,15 @@ public class MenuCamera : MonoBehaviour {
 	}
 
 	private void DoRotation() {
-		//if (transform.position != NodePos(movingTowards)) {
-		//Quaternion lookAt = Quaternion.LookRotation(NodePos(movingTowards) - transform.position, Vector3.up);
-		//transform.rotation = Quaternion.Slerp(transform.rotation, lookAt, speed * Time.deltaTime);
-		//}
-		transform.LookAt(NodePos(movingTowards));
+		if (transform.position == NodePos(movingTowards)) {
+			return;
+		}
+		Vector3 lookAt = Quaternion.LookRotation(NodePos(movingTowards) - transform.position, Vector3.up).eulerAngles;
+		Vector3 current = transform.eulerAngles;
+		current.x = Mathf.SmoothDampAngle(current.x, lookAt.x, ref refVel.x, rotationSpeed);
+		current.y = Mathf.SmoothDampAngle(current.y, lookAt.y, ref refVel.y, rotationSpeed);
+		current.z = Mathf.SmoothDampAngle(current.z, lookAt.z, ref refVel.z, rotationSpeed);
+		transform.rotation = Quaternion.Euler(current);
 	}
 
 	private void OnMazeGenerated<T>(T e) where T : EventMazeRenderChunkFinish {
