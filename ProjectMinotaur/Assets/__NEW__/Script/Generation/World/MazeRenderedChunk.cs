@@ -4,17 +4,29 @@ using UnityEngine;
 
 public class MazeRenderedChunk : MonoBehaviour {
 
-	private MeshFilter meshFilter;
-	private MeshRenderer meshRenderer;
-
 	public Material wallMaterial;
 	public bool destroyed;
+	public GameObject[] lights;
+
+	private MeshFilter meshFilter;
+	private MeshRenderer meshRenderer;
 
 	public IEnumerator Render(MazeHandler handler, MazeChunk chunk) {
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeRenderChunkBegin(handler.GetMaze(), chunk));
 		List<Vector3> verts = new List<Vector3>();
 		List<int> tris = new List<int>();
 		List<Vector2> uvs = new List<Vector2>();
+		for (int x = 0; x < chunk.GetSize(); x++) {
+			for (int y = 0; y < chunk.GetSize(); y++) {
+				if (lights.Length > 0) {
+					GameObject objLight = lights[Util.NextRand(0, lights.Length - 1)];
+					GameObject outLight = Instantiate(objLight, handler.GetWorldPosOfNode(chunk.GetNode(x, y).GetGlobalPos(), 0.0f) + new Vector3(handler.pathWidth / 2.0f, 0.5f, handler.pathWidth / 2.0f), Quaternion.identity);
+					outLight.transform.parent = transform;
+					outLight.transform.name = "Light: " + new MazePos(x, y);
+				}
+			}
+			yield return null;
+		}
 		for (int x = 0; x < chunk.GetSize(); x++) {
 			for (int y = 0; y < chunk.GetSize(); y++) {
 				DrawNode(verts, tris, uvs, handler, chunk.GetNode(x, y));
@@ -33,22 +45,22 @@ public class MazeRenderedChunk : MonoBehaviour {
 		Vector3 right = Vector3.right * width;
 		Vector3 forward = Vector3.forward * width;
 		if (node.HasWall(MazeNode.TOP)) {
-			AddQuad(verts, tris, uvs, corner + right, up, -right, true);
+			AddQuad(verts, tris, uvs, corner + right, up, -right, false);
 		}
 		if (node.HasWall(MazeNode.LEFT)) {
-			AddQuad(verts, tris, uvs, corner, up, forward, true);
+			AddQuad(verts, tris, uvs, corner, up, forward, false);
 		}
 		if (node.HasWall(MazeNode.BOTTOM)) {
-			AddQuad(verts, tris, uvs, corner + forward, up, right, true);
+			AddQuad(verts, tris, uvs, corner + forward, up, right, false);
 		} else {
-			AddQuad(verts, tris, uvs, corner + forward, up, Vector3.forward * spread, true);
-			AddQuad(verts, tris, uvs, corner + (Vector3.forward * spread) + forward + right, up, -Vector3.forward * spread, true);
+			AddQuad(verts, tris, uvs, corner + forward, up, Vector3.forward * spread, false);
+			AddQuad(verts, tris, uvs, corner + (Vector3.forward * spread) + forward + right, up, -Vector3.forward * spread, false);
 		}
 		if (node.HasWall(MazeNode.RIGHT)) {
-			AddQuad(verts, tris, uvs, corner + right + forward, up, -forward, true);
+			AddQuad(verts, tris, uvs, corner + right + forward, up, -forward, false);
 		} else {
-			AddQuad(verts, tris, uvs, corner + right + forward, up, Vector3.right * spread, true);
-			AddQuad(verts, tris, uvs, corner + (Vector3.right * spread) + right, up, -Vector3.right * spread, true);
+			AddQuad(verts, tris, uvs, corner + right + forward, up, Vector3.right * spread, false);
+			AddQuad(verts, tris, uvs, corner + (Vector3.right * spread) + right, up, -Vector3.right * spread, false);
 		}
 	}
 

@@ -14,6 +14,7 @@ public class MenuCamera : MonoBehaviour {
 	private MazePos start = MazePos.NONE;
 	private MazePos goal = MazePos.NONE;
 	private MazePos previous = MazePos.NONE;
+	private MazePos previous2 = MazePos.NONE;
 	private MazePos movingTowards = MazePos.NONE;
 	private float beginTime;
 	private float length;
@@ -35,33 +36,34 @@ public class MenuCamera : MonoBehaviour {
 		if (movingTowards.Equals(MazePos.NONE)) {
 			BeginMovingTowardsNewNeighbor(start);
 		}
-		if (transform.position.Equals(NodePos(movingTowards))) {
+		if (transform.position.Equals(GoalNodePos(movingTowards, previous))) {
 			BeginMovingTowardsNewNeighbor(movingTowards);
 		}
 		float covered = (Time.time - beginTime) * speed;
 		float fracDone = covered / length;
-		transform.position = Vector3.Lerp(NodePos(previous), NodePos(movingTowards), fracDone);
+		transform.position = Vector3.Lerp(GoalNodePos(previous, previous2), GoalNodePos(movingTowards, previous), fracDone);
 		DoRotation();
 	}
 
 	private void BeginMovingTowardsNewNeighbor(MazePos currentNode) {
 		visited[currentNode] = true;
+		movingTowards = RandNeighbor(currentNode);
+		previous2 = previous;
 		previous = currentNode;
-		movingTowards = RandNeighbor(previous);
 		if (movingTowards.Equals(MazePos.NONE)) {
 			movingTowards = path.Pop();
 		} else {
 			path.Push(currentNode);
 		}
-		length = Vector3.Distance(NodePos(previous), NodePos(movingTowards));
+		length = Vector3.Distance(GoalNodePos(currentNode, previous2), GoalNodePos(movingTowards, currentNode));
 		beginTime = Time.time;
 	}
 
 	private void DoRotation() {
-		if (transform.position == NodePos(movingTowards)) {
+		if (transform.position == GoalNodePos(movingTowards, previous)) {
 			return;
 		}
-		Vector3 lookAt = Quaternion.LookRotation(NodePos(movingTowards) - transform.position, Vector3.up).eulerAngles;
+		Vector3 lookAt = Quaternion.LookRotation(GoalNodePos(movingTowards, previous) - transform.position, Vector3.up).eulerAngles;
 		Vector3 current = transform.eulerAngles;
 		current.x = Mathf.SmoothDampAngle(current.x, lookAt.x, ref refVel.x, rotationSpeed);
 		current.y = Mathf.SmoothDampAngle(current.y, lookAt.y, ref refVel.y, rotationSpeed);
@@ -70,6 +72,7 @@ public class MenuCamera : MonoBehaviour {
 	}
 
 	private void OnMazeGenerated<T>(T e) where T : EventMazeRenderChunkFinish {
+		e.ToString();
 		if (start.Equals(MazePos.NONE) && goal.Equals(MazePos.NONE)) {
 			DoInit();
 		}
@@ -80,11 +83,26 @@ public class MenuCamera : MonoBehaviour {
 		goal = new MazePos(mazeHandler.GetMaze().GetSizeX() - 1, mazeHandler.GetMaze().GetSizeY() - 1);
 	}
 
-	private Vector3 NodePos(MazePos node) {
+	private Vector3 TrueNodePos(MazePos node) {
 		Vector3 o = mazeHandler.GetWorldPosOfNode(node, yPosRatio * mazeHandler.pathHeight);
 		o.x += mazeHandler.pathWidth / 2.0f;
 		o.z += mazeHandler.pathWidth / 2.0f;
 		return o;
+	}
+
+	private Vector3 GoalNodePos(MazePos node, MazePos prev) {
+		Vector3 n = TrueNodePos(node);
+		Vector3 p = TrueNodePos(prev);
+		if (n.x > p.x) {
+			n.x -= mazeHandler.pathWidth / 2.0f;
+		} else if (n.x < p.x) {
+			n.x += mazeHandler.pathWidth / 2.0f;
+		} else if (n.z > p.z) {
+			n.z -= mazeHandler.pathWidth / 2.0f;
+		} else if (n.z < p.z) {
+			n.z += mazeHandler.pathWidth / 2.0f;
+		}
+		return n;
 	}
 
 	private MazePos[] Neighbors(MazePos node) {
