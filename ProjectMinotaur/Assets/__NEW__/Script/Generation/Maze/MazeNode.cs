@@ -11,14 +11,15 @@ public class MazeNode {
 	private int walls;
 	private readonly MazePos pos;
 	private readonly MazePos globalP;
-	private Vector3 worldOffset = Vector3.zero;
+	private Vector3 worldOffset;
 	public bool Visited;
 
 	// Defaults the walls to none
-	public MazeNode(int x, int y, int gx, int gy) {
+	public MazeNode(int x, int y, int gx, int gy, Vector3 worldOffset) {
 		walls = TOP | BOTTOM | RIGHT | LEFT;
 		pos = new MazePos(x, y);
 		globalP = new MazePos(gx, gy);
+		this.worldOffset = worldOffset;
 	}
 
 	public void SetWalls(int walls) {

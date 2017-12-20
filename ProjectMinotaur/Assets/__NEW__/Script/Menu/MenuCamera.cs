@@ -8,6 +8,7 @@ public class MenuCamera : MonoBehaviour {
 	public float rotationSpeed = 5.0f;
 	public float yPosRatio = 0.5f;
 	public MazeHandler mazeHandler;
+	public GameObject loadingScreen;
 
 	private readonly Dictionary<MazePos, bool> visited = new Dictionary<MazePos, bool>();
 	private readonly Stack<MazePos> path = new Stack<MazePos>();
@@ -72,8 +73,13 @@ public class MenuCamera : MonoBehaviour {
 	}
 
 	private void OnMazeGenerated<T>(T e) where T : EventMazeRenderChunkFinish {
+		PlayerMove ply = FindObjectOfType<PlayerMove>();
+		if (ply != null) {
+			ply.locked = false;
+		}
+		loadingScreen.SetActive(false);
 		e.ToString();
-		if (start.Equals(MazePos.NONE) && goal.Equals(MazePos.NONE)) {
+		if (start.Equals(MazePos.NONE) && goal.Equals(MazePos.NONE) && gameObject.activeSelf && gameObject.activeInHierarchy) {
 			DoInit();
 		}
 	}
@@ -92,14 +98,13 @@ public class MenuCamera : MonoBehaviour {
 
 	private Vector3 GoalNodePos(MazePos node, MazePos prev) {
 		Vector3 n = TrueNodePos(node);
-		Vector3 p = TrueNodePos(prev);
-		if (n.x > p.x) {
+		if (node.GetX() > prev.GetX()) {
 			n.x -= mazeHandler.pathWidth / 2.0f;
-		} else if (n.x < p.x) {
+		} else if (node.GetX() < prev.GetX()) {
 			n.x += mazeHandler.pathWidth / 2.0f;
-		} else if (n.z > p.z) {
+		} else if (node.GetY() > prev.GetY()) {
 			n.z -= mazeHandler.pathWidth / 2.0f;
-		} else if (n.z < p.z) {
+		} else if (node.GetY() < prev.GetY()) {
 			n.z += mazeHandler.pathWidth / 2.0f;
 		}
 		return n;

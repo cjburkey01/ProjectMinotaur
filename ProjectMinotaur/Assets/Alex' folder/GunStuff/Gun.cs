@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿/*using UnityEngine;
 
-public class Gun : MonoBehaviour {
+public class GunOld : MonoBehaviour {
 
 	//variables 
 	public float target;
@@ -35,4 +33,4 @@ public class Gun : MonoBehaviour {
 		Gizmos.color = Color.white;
 		Gizmos.DrawRay(barrelEnd.transform.position, barrelEnd.transform.TransformDirection(Vector3.forward));
 	}
-}
+}*/

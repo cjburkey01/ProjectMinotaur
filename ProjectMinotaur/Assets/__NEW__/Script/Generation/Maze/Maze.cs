@@ -6,15 +6,17 @@ public class Maze {
 	public readonly int chunkSize;
 	public readonly int mazeChunkWidth;
 	public readonly int mazeChunkHeight;
+	public readonly float variability;
 
 	protected readonly IAlgorithm mazeAlgorithm;
 	protected List<MazeChunk> chunks;
 
-	public Maze(IAlgorithm mazeAlgorithm, int chunkSize, int mazeChunkWidth, int mazeChunkHeight) {
+	public Maze(IAlgorithm mazeAlgorithm, int chunkSize, int mazeChunkWidth, int mazeChunkHeight, float variability) {
 		this.mazeAlgorithm = mazeAlgorithm;
 		this.chunkSize = chunkSize;
 		this.mazeChunkWidth = mazeChunkWidth;
 		this.mazeChunkHeight = mazeChunkHeight;
+		this.variability = variability;
 		chunks = new List<MazeChunk>();
 	}
 
@@ -25,10 +27,14 @@ public class Maze {
 				AddChunk(x, y);
 				MazeChunk chunk = GetChunk(x, y);
 				if (chunk != null) {
-					chunk.InitializeNodes();
+					chunk.InitializeNodes(variability);
 				}
 			}
 		}
+	}
+
+	public void Destroy() {
+		chunks.Clear();
 	}
 
 	public MazeChunk GetChunk(int x, int y) {
@@ -50,9 +56,9 @@ public class Maze {
 		if (GetChunk(x, y) != null) {
 			return;
 		}
-		MazeChunk chunk = new MazeChunk(this, x, y, chunkSize);
+		MazeChunk chunk = new MazeChunk(x, y, chunkSize);
 		chunks.Add(chunk);
-		chunk.InitializeNodes();
+		chunk.InitializeNodes(variability);
 	}
 
 	public bool InMaze(int x, int y) {
@@ -117,7 +123,6 @@ public class Maze {
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventChunkPrePopulationBegin(this));
 		InitializeChunks();
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventChunkPrePopulationFinish(this));
-
 		for (int x = 0; x < mazeChunkWidth; x++) {
 			for (int y = 0; y < mazeChunkWidth; y++) {
 				MazeChunk chunk = GetChunk(x, y);
@@ -130,12 +135,11 @@ public class Maze {
 					return;
 				}
 				if (!chunk.IsInitialized()) {
-					chunk.InitializeNodes();
+					chunk.InitializeNodes(variability);
 				}
 				PMEventSystem.GetEventSystem().TriggerEvent(new EventChunkGenerationFinish(this, chunk, x, y));
 			}
 		}
-
 		Debug.Log("Generating maze using: " + mazeAlgorithm.GetName());
 		executor.StartCoroutine(mazeAlgorithm.Generate(this, startingPoint));
 	}

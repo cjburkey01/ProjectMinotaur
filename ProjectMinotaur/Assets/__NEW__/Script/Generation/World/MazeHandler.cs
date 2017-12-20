@@ -11,18 +11,18 @@ public class MazeHandler : MonoBehaviour {
 	public float pathWidth = 15.0f;
 	public float pathSpread = 30.0f;
 	public float pathHeight = 25.0f;
-	public float distanceVariability = 1.0f;
+	public float distanceVariability = 7.4f;
 	public string chunkPrefabName = "MazeRenderedChunk";
 	public GameObject[] nearnessObjects;
 	public float updateInterval = 1.0f;
 	public float chunkUnloadDistancePadding = 100.0f;
-	public bool drawLines = true;
 
+	public bool loadDebug = true;
 	public Text infoText;
 
 	private GameObject chunkPrefab;
 	private Maze maze;
-	private float loadTimer = 0.0f;
+	private float loadTimer;
 	private bool rendering;
 	private bool generated;
 
@@ -45,7 +45,12 @@ public class MazeHandler : MonoBehaviour {
 		}
 		Debug.Log("Loaded chunk prefab.");
 		loadedChunks = new Dictionary<MazePos, MazeRenderedChunk>();
-		maze = new Maze(new DepthFirstMaze(), chunkSize, chunksX, chunksY);
+		Generate();
+	}
+
+	public void Generate() {
+		loadedChunks = new Dictionary<MazePos, MazeRenderedChunk>();
+		maze = new Maze(new DepthFirstMaze(), chunkSize, chunksX, chunksY, distanceVariability);
 		GenerateMaze();
 	}
 
@@ -59,7 +64,7 @@ public class MazeHandler : MonoBehaviour {
 				infoText.text += "\nGenerated nodes: " + maze.GetSizeX() * maze.GetSizeY();
 				infoText.text += "\nSize: " + maze.GetSizeX() + "x" + maze.GetSizeY();
 				infoText.text += "\nChunks: " + chunksX + "x" + chunksY;
-				infoText.text += "\nChunk loader check in " + (updateInterval - loadTimer).ToString("0.##") + "s";
+				infoText.text += "\nChunk loader check in " + (updateInterval - loadTimer).ToString("0.00") + "s";
 				infoText.text += "\nPath width: " + pathWidth;
 				infoText.text += "\nPath height: " + pathHeight;
 				infoText.text += "\nNode interval: " + pathSpread;
@@ -68,7 +73,7 @@ public class MazeHandler : MonoBehaviour {
 			if (loadTimer >= updateInterval) {
 				loadTimer = 0;
 				foreach (GameObject obj in nearnessObjects) {
-					if (drawLines) {
+					if (loadDebug) {
 						Debug.DrawLine(obj.transform.position, obj.transform.position + Vector3.up * 200.0f, Color.red, updateInterval / 2.0f, true);
 					}
 					StartCoroutine(RenderMazeAroundObject(obj));
@@ -84,10 +89,7 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	public IEnumerator RenderMazeAroundObject(GameObject obj) {
-		if (rendering) {
-			yield break;
-		}
-		if (obj == null) {
+		if (rendering || obj == null || !obj.activeSelf || !obj.activeInHierarchy) {
 			yield break;
 		}
 		rendering = true;
@@ -99,7 +101,7 @@ public class MazeHandler : MonoBehaviour {
 			}
 			if (!ShouldBeLoadedByObj(obj, pos) && !toDestroy.Contains(pos)) {
 				toDestroy.Add(pos);
-				if (drawLines) {
+				if (loadDebug) {
 					Vector3 center = GetCenterWorldPosOfChunk(pos);
 					Debug.DrawLine(center, center + Vector3.up * 200.0f, Color.magenta, updateInterval / 2.0f, true);
 				}
@@ -115,7 +117,7 @@ public class MazeHandler : MonoBehaviour {
 					continue;
 				}
 				RenderChunk(new MazePos(x, y));
-				if (drawLines) {
+				if (loadDebug) {
 					Vector3 center = GetCenterWorldPosOfChunk(new MazePos(x, y));
 					Debug.DrawLine(center, center + Vector3.up * 200.0f, Color.green, updateInterval / 2.0f, true);
 				}
@@ -140,6 +142,15 @@ public class MazeHandler : MonoBehaviour {
 			return false;
 		}
 		return true;
+	}
+
+	public void Clear() {
+		maze.Destroy();
+		List<MazePos> chunks = new List<MazePos>(loadedChunks.Keys);
+		foreach (MazePos pos in chunks) {
+			RemoveChunk(pos);
+		}
+		loadedChunks.Clear();
 	}
 
 	private void RemoveChunk(MazePos pos) {
@@ -173,11 +184,11 @@ public class MazeHandler : MonoBehaviour {
 		return maze;
 	}
 
-	public void GenerateMaze() {
+	private void GenerateMaze() {
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationBegin>(MazeBegin);
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationFinish>(MazeFinish);
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationUpdate>(MazeUpdate);
-		maze.Generate(this, new MazePos(0, 0));
+		maze.Generate(this, new MazePos(chunksX * chunkSize / 2, chunksY * chunkSize / 2));
 	}
 
 	private void MazeBegin<T>(T e) where T : EventMazeGenerationBegin {
@@ -189,6 +200,7 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	private void MazeFinish<T>(T e) where T : EventMazeGenerationFinish {
+		e.ToString();
 		generated = true;
 		if (infoText != null) {
 			infoText.text = "Finished generating.";
@@ -208,7 +220,7 @@ public class MazeHandler : MonoBehaviour {
 			return Vector3.zero;
 		}
 		pos = atNode.GetGlobalPos();
-		return new Vector3(pos.GetX() * (pathWidth + pathSpread), y, pos.GetY() * (pathWidth + pathSpread));
+		return new Vector3(pos.GetX() * (pathWidth + pathSpread), y, pos.GetY() * (pathWidth + pathSpread)) + atNode.GetWorldOffset();
 	}
 
 	// Will return the floored node (if the pos is in a hallway, it will return the node with a lower x and y/z value)
