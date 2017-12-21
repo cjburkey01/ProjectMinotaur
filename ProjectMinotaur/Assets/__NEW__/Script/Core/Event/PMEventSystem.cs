@@ -69,6 +69,20 @@ public class PMEventSystem {
 		handler.RegisterListener(listener);
 	}
 
+	public void RemoveListener<T>(PMEventListener<T> listener) where T : IPMEvent {
+		if (eventHandlers == null) {
+			return;
+		}
+		if (ReferenceEquals(listener, null)) {
+			return;
+		}
+		EventHandler<T> handler = GetHandler<T>();
+		if (handler == null) {
+			return;
+		}
+		handler.RemoveListener(listener);
+	}
+
 	// Get the current event system via a static reference, makes this object easier to access.
 	public static PMEventSystem GetEventSystem() {
 		if (instance == null) {

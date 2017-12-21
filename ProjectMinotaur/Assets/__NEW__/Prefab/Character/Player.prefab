@@ -23,7 +23,6 @@ GameObject:
   - component: {fileID: 92320956497659832}
   - component: {fileID: 124704325598956778}
   - component: {fileID: 81871112874440688}
-  - component: {fileID: 114107230788651888}
   - component: {fileID: 114421551556288658}
   m_Layer: 2
   m_Name: Camera
@@ -44,7 +43,6 @@ GameObject:
   - component: {fileID: 143412855905335226}
   - component: {fileID: 114635949085934684}
   - component: {fileID: 114751520642733098}
-  - component: {fileID: 114805776067938024}
   m_Layer: 2
   m_Name: Player
   m_TagString: Player
@@ -200,18 +198,6 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1017651637189654}
   m_Enabled: 1
---- !u!114 &114107230788651888
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1017651637189654}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff26db721962cdf4a8edcdfa9a767d2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: c3578f0293ef74138ad6c7e816e0d10b, type: 2}
 --- !u!114 &114421551556288658
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -223,15 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 771006780ef664b62894545be3d08441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overrideDef: 1
-  antialiasing: 0
-  ambientOcclusion: 0
-  motionBlur: 0
-  bloom: 0
-  colorGrading: 0
-  vignette: 0
-  dithering: 0
-  fieldOfView: 90
+  ppp: {fileID: 11400000, guid: c3578f0293ef74138ad6c7e816e0d10b, type: 2}
 --- !u!114 &114635949085934684
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -264,17 +242,6 @@ MonoBehaviour:
   playerJumpHeight: 10
   playerGravity: 25
   locked: 0
---- !u!114 &114805776067938024
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1115867106847606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 139f477bd7023422cb9b208f8edbfc01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!124 &124704325598956778
 Behaviour:
   m_ObjectHideFlags: 1

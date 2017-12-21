@@ -3,17 +3,25 @@ using UnityEngine.UI;
 
 public class MainMenuHandler : MonoBehaviour {
 
-	public GameObject mainMenu;
-	public GameObject loadingScreen;
+	public IMenu mainMenu;
+	public IMenu loadingScreen;
+	public IMenu optionsMenu;
 	public PlayerMove player;
 	public Text loadingText;
 
 	public int realChunksX = 16;
 	public int realChunksY = 16;
 
-	void Start() {
+	void Update() {
+		if (optionsMenu.IsShown() && !player.gameObject.activeInHierarchy && Input.GetButtonDown("Cancel")) {
+			MenuSystem.GetInstance().ShowMenu(mainMenu);
+		}
+	}
+
+	private void GenerateRealMaze() {
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationUpdate>(MazeUpdate);
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationFinish>(MazeDone);
+		PMEventSystem.GetEventSystem().AddListener<EventMazeRenderChunkFinish>(OnMazeGenerated);
 	}
 
 	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {
@@ -28,6 +36,13 @@ public class MainMenuHandler : MonoBehaviour {
 		}
 	}
 
+	private void OnMazeGenerated<T>(T e) where T : EventMazeRenderChunkFinish {
+		MenuSystem.GetInstance().HideMenu(loadingScreen);
+		player.locked = false;
+		Debug.Log("Real maze done.");
+		PMEventSystem.GetEventSystem().RemoveListener<T>(OnMazeGenerated);
+	}
+
 	public void NewClick() {
 		MazeHandler handler = FindObjectOfType<MazeHandler>();
 		if (handler == null) {
@@ -38,9 +53,9 @@ public class MainMenuHandler : MonoBehaviour {
 			cam.gameObject.SetActive(false);
 		}
 		player.locked = true;
-		mainMenu.SetActive(false);
-		loadingScreen.SetActive(true);
+		MenuSystem.GetInstance().ShowMenu(loadingScreen);
 		player.gameObject.SetActive(true);
+		GenerateRealMaze();
 		handler.chunksX = realChunksX;
 		handler.chunksY = realChunksY;
 		handler.Clear();
@@ -49,11 +64,10 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	public void LoadClick() {
-
 	}
 
 	public void OptionsClick() {
-
+		MenuSystem.GetInstance().ShowMenu(optionsMenu);
 	}
 
 }

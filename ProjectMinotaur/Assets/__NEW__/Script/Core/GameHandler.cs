@@ -1,19 +1,15 @@
 ﻿using UnityEngine;
 
-public class GameHandler {
+public static class GameHandler {
 
-	public static bool paused { private set; get; }
+	public static bool Paused { private set; get; }
 
-	// Pause the game, free the cursor
 	public static void Pause() {
-		paused = true;
-		Cursor.lockState = CursorLockMode.None;
+		Paused = true;
 	}
 
-	// Play the game, lock the cursor
 	public static void Unpause() {
-		Cursor.lockState = CursorLockMode.Locked;
-		paused = false;
+		Paused = false;
 	}
 
 }

@@ -9,13 +9,13 @@ public abstract class IMeleeWeapon : IWeapon {
 	private float sinceLastAttack = 0.0f;
 
 	public override void OnUpdate(Player combatHandler) {
-		if (!GameHandler.paused && sinceLastAttack <= cooldown) {
+		if (!GameHandler.Paused && sinceLastAttack <= cooldown) {
 			sinceLastAttack += Time.deltaTime;
 		}
 	}
 
 	public override void OnPrimary(Player combatHandler) {
-		if (!GameHandler.paused) {
+		if (!GameHandler.Paused) {
 			if (sinceLastAttack >= cooldown) {
 				sinceLastAttack = 0.0f;
 				Attack(combatHandler);

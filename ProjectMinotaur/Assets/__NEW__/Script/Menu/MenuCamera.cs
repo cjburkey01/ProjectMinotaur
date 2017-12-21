@@ -8,7 +8,8 @@ public class MenuCamera : MonoBehaviour {
 	public float rotationSpeed = 5.0f;
 	public float yPos = 2.0f;
 	public MazeHandler mazeHandler;
-	public GameObject loadingScreen;
+	public IMenu mainMenu;
+	public IMenu loadingScreen;
 
 	private readonly Dictionary<MazePos, bool> visited = new Dictionary<MazePos, bool>();
 	private readonly Stack<MazePos> path = new Stack<MazePos>();
@@ -28,6 +29,7 @@ public class MenuCamera : MonoBehaviour {
 				visited.Add(new MazePos(x, y), false);
 			}
 		}
+		MenuSystem.GetInstance().ShowMenu(loadingScreen);
 	}
 
 	void Update() {
@@ -77,11 +79,12 @@ public class MenuCamera : MonoBehaviour {
 		if (ply != null) {
 			ply.locked = false;
 		}
-		loadingScreen.SetActive(false);
+		MenuSystem.GetInstance().ShowMenu(mainMenu);
 		e.ToString();
 		if (start.Equals(MazePos.NONE) && goal.Equals(MazePos.NONE) && gameObject.activeSelf && gameObject.activeInHierarchy) {
 			DoInit();
 		}
+		PMEventSystem.GetEventSystem().RemoveListener<T>(OnMazeGenerated);
 	}
 
 	private void DoInit() {

@@ -48,16 +48,23 @@ public class PlayerMove : MonoBehaviour {
 		playerCamera = cam.gameObject;
 	}
 
-	// Handle movement, in general; called every single frame
 	void Update() {
-		if (!GameHandler.paused && !locked) {
-			MouseMovement();
-			HandleMovement();
+		if (GameHandler.Paused) {
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+		} else {
+			if (!locked) {
+				MouseMovement();
+				HandleMovement();
+			}
 		}
 	}
 
 	// Handle mouse-look
 	private void MouseMovement() {
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+
 		rotation.x += Input.GetAxis("Mouse X") * mouseSensitivity;
 		rotation.y -= Input.GetAxis("Mouse Y") * mouseSensitivity;
 		rotation.y = Mathf.Clamp(rotation.y, -90.0f, 90.0f);
