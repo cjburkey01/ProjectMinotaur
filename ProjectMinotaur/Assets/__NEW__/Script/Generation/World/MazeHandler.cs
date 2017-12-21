@@ -89,7 +89,7 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	public IEnumerator RenderMazeAroundObject(GameObject obj) {
-		if (rendering || obj == null || !obj.activeSelf || !obj.activeInHierarchy) {
+		if (rendering || obj == null || !obj.activeSelf || !obj.activeInHierarchy || !generated) {
 			yield break;
 		}
 		rendering = true;
@@ -145,6 +145,7 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	public void Clear() {
+		generated = false;
 		maze.Destroy();
 		List<MazePos> chunks = new List<MazePos>(loadedChunks.Keys);
 		foreach (MazePos pos in chunks) {

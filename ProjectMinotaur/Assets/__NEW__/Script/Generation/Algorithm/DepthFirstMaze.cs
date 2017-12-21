@@ -8,7 +8,7 @@ public class DepthFirstMaze : IAlgorithm {
 	private int totalCells;
 	private int visitedCells;
 
-	public readonly double UpdatesPerSecond = 2.0d;
+	public readonly double UpdatesPerSecond = 10.0d;
 
 	public DepthFirstMaze() {
 		cells = new Stack<MazeNode>();

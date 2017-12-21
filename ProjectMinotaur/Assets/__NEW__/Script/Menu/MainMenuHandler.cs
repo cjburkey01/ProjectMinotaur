@@ -8,6 +8,7 @@ public class MainMenuHandler : MonoBehaviour {
 	public IMenu optionsMenu;
 	public PlayerMove player;
 	public Text loadingText;
+	public ProgressBar progBar;
 
 	public int realChunksX = 16;
 	public int realChunksY = 16;
@@ -26,13 +27,15 @@ public class MainMenuHandler : MonoBehaviour {
 
 	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {
 		if (loadingText != null) {
-			loadingText.text = "Generating: " + (e.GetProgress() * 100.0f).ToString("00.00") + "%";
+			loadingText.text = "Generating...";
+			progBar.progress = e.GetProgress() / 2.0f;
 		}
 	}
 
 	private void MazeDone<T>(T e) where T : EventMazeGenerationFinish {
 		if (loadingText != null) {
-			loadingText.text = "Loading...";
+			loadingText.text = "Creating chunks...";
+			progBar.progress = 1.0f;
 		}
 	}
 
@@ -40,6 +43,7 @@ public class MainMenuHandler : MonoBehaviour {
 		MenuSystem.GetInstance().HideMenu(loadingScreen);
 		player.locked = false;
 		Debug.Log("Real maze done.");
+		progBar.progress = 0.0f;
 		PMEventSystem.GetEventSystem().RemoveListener<T>(OnMazeGenerated);
 	}
 

@@ -35,6 +35,7 @@ public class Maze {
 
 	public void Destroy() {
 		chunks.Clear();
+
 	}
 
 	public MazeChunk GetChunk(int x, int y) {

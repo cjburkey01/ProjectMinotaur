@@ -49,26 +49,34 @@ public class MazeRenderedChunk : MonoBehaviour {
 		Vector3 right = Vector3.right * width;
 		Vector3 forward = Vector3.forward * width;
 		if (node.HasWall(MazeNode.TOP)) {
+			Debug.DrawLine(corner + right + up, corner + up, Color.red, 60.0f, true);
 			AddQuad(verts, tris, uvs, corner + right, up, -right, Vector2.zero, new Vector2(width / textureSize, handler.pathHeight / textureSize));
 		}
 		if (node.HasWall(MazeNode.LEFT)) {
+			Debug.DrawLine(corner + up, corner + forward + up, Color.red, 60.0f, true);
 			AddQuad(verts, tris, uvs, corner, up, forward, Vector2.zero, new Vector2(width / textureSize, handler.pathHeight / textureSize));
 		}
 		if (node.HasWall(MazeNode.BOTTOM)) {
+			Debug.DrawLine(corner + forward + up, corner + forward + right + up, Color.red, 60.0f, true);
 			AddQuad(verts, tris, uvs, corner + forward, up, right, Vector2.zero, new Vector2(width / textureSize, handler.pathHeight / textureSize));
 		} else {
 			//AddQuad(verts, tris, uvs, corner + forward, up, Vector3.forward * spread, true);
 			//AddQuad(verts, tris, uvs, corner + (Vector3.forward * spread) + forward + right, up, -Vector3.forward * spread, true);
 			Vector2 uvMax = new Vector2(Vector3.Distance(corner + forward, bNode) / textureSize, handler.pathHeight / textureSize);
+			Debug.DrawLine(corner + forward + up, bNode + up, Color.red, 60.0f, true);
+			Debug.DrawLine(bNode + right + up, corner + forward + right + up, Color.red, 60.0f, true);
 			AddQuadCorners(verts, tris, uvs, corner + forward, corner + forward + up, bNode + up, bNode, Vector2.zero, uvMax);
 			AddQuadCorners(verts, tris, uvs, bNode + right, bNode + right + up, corner + forward + right + up, corner + forward + right, Vector2.zero, uvMax);
 		}
 		if (node.HasWall(MazeNode.RIGHT)) {
+			Debug.DrawLine(corner + right + forward + up, corner + right + up, Color.red, 60.0f, true);
 			AddQuad(verts, tris, uvs, corner + right + forward, up, -forward, Vector2.zero, new Vector2(width / textureSize, handler.pathHeight / textureSize));
 		} else {
 			//AddQuad(verts, tris, uvs, corner + right + forward, up, Vector3.right * spread, true);
 			//AddQuad(verts, tris, uvs, corner + (Vector3.right * spread) + right, up, -Vector3.right * spread, true);
 			Vector2 uvMax = new Vector2(Vector3.Distance(corner + forward + right, rNode + forward) / textureSize, handler.pathHeight / textureSize);
+			Debug.DrawLine(corner + forward + right + up, rNode + forward + up, Color.red, 60.0f, true);
+			Debug.DrawLine(rNode + up, corner + right + up, Color.red, 60.0f, true);
 			AddQuadCorners(verts, tris, uvs, corner + forward + right, corner + forward + right + up, rNode + forward + up, rNode + forward, Vector2.zero, uvMax);
 			AddQuadCorners(verts, tris, uvs, rNode, rNode + up, corner + right + up, corner + right, Vector2.zero, uvMax);
 		}
