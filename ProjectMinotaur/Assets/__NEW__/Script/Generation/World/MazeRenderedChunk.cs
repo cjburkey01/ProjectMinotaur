@@ -7,6 +7,7 @@ public class MazeRenderedChunk : MonoBehaviour {
 	public Material wallMaterial;
 	public bool destroyed;
 	public GameObject[] lights;
+	public float textureSize = 15.0f;
 
 	private MeshFilter meshFilter;
 	private MeshRenderer meshRenderer;
@@ -48,45 +49,43 @@ public class MazeRenderedChunk : MonoBehaviour {
 		Vector3 right = Vector3.right * width;
 		Vector3 forward = Vector3.forward * width;
 		if (node.HasWall(MazeNode.TOP)) {
-			AddQuad(verts, tris, uvs, corner + right, up, -right, true);
+			AddQuad(verts, tris, uvs, corner + right, up, -right, Vector2.zero, new Vector2(width / textureSize, handler.pathHeight / textureSize));
 		}
 		if (node.HasWall(MazeNode.LEFT)) {
-			AddQuad(verts, tris, uvs, corner, up, forward, true);
+			AddQuad(verts, tris, uvs, corner, up, forward, Vector2.zero, new Vector2(width / textureSize, handler.pathHeight / textureSize));
 		}
 		if (node.HasWall(MazeNode.BOTTOM)) {
-			AddQuad(verts, tris, uvs, corner + forward, up, right, true);
+			AddQuad(verts, tris, uvs, corner + forward, up, right, Vector2.zero, new Vector2(width / textureSize, handler.pathHeight / textureSize));
 		} else {
 			//AddQuad(verts, tris, uvs, corner + forward, up, Vector3.forward * spread, true);
 			//AddQuad(verts, tris, uvs, corner + (Vector3.forward * spread) + forward + right, up, -Vector3.forward * spread, true);
-			AddQuadCorners(verts, tris, uvs, corner + forward, corner + forward + up, bNode + up, bNode);
-			AddQuadCorners(verts, tris, uvs, bNode + right, bNode + right + up, corner + forward + right + up, corner + forward + right);
+			Vector2 uvMax = new Vector2(Vector3.Distance(corner + forward, bNode) / textureSize, handler.pathHeight / textureSize);
+			AddQuadCorners(verts, tris, uvs, corner + forward, corner + forward + up, bNode + up, bNode, Vector2.zero, uvMax);
+			AddQuadCorners(verts, tris, uvs, bNode + right, bNode + right + up, corner + forward + right + up, corner + forward + right, Vector2.zero, uvMax);
 		}
 		if (node.HasWall(MazeNode.RIGHT)) {
-			AddQuad(verts, tris, uvs, corner + right + forward, up, -forward, true);
+			AddQuad(verts, tris, uvs, corner + right + forward, up, -forward, Vector2.zero, new Vector2(width / textureSize, handler.pathHeight / textureSize));
 		} else {
 			//AddQuad(verts, tris, uvs, corner + right + forward, up, Vector3.right * spread, true);
 			//AddQuad(verts, tris, uvs, corner + (Vector3.right * spread) + right, up, -Vector3.right * spread, true);
-			AddQuadCorners(verts, tris, uvs, corner + forward + right, corner + forward + right + up, rNode + forward + up, rNode + forward);
-			AddQuadCorners(verts, tris, uvs, rNode, rNode + up, corner + right + up, corner + right);
+			Vector2 uvMax = new Vector2(Vector3.Distance(corner + forward + right, rNode + forward) / textureSize, handler.pathHeight / textureSize);
+			AddQuadCorners(verts, tris, uvs, corner + forward + right, corner + forward + right + up, rNode + forward + up, rNode + forward, Vector2.zero, uvMax);
+			AddQuadCorners(verts, tris, uvs, rNode, rNode + up, corner + right + up, corner + right, Vector2.zero, uvMax);
 		}
 	}
 
-	private void AddQuadCorners(List<Vector3> verts, List<int> tris, List<Vector2> uvs, Vector3 bottomLeft, Vector3 topLeft, Vector3 topRight, Vector3 bottomRight) {
+	private void AddQuadCorners(List<Vector3> verts, List<int> tris, List<Vector2> uvs, Vector3 bottomLeft, Vector3 topLeft, Vector3 topRight, Vector3 bottomRight, Vector2 uvMin, Vector3 uvMax) {
 		int i = verts.Count;
 		verts.AddRange(new Vector3[] { bottomLeft, topLeft, topRight, bottomRight });
 		tris.AddRange(new int[] { i + 1, i + 2, i, i + 3, i, i + 2 });
-		uvs.AddRange(new Vector2[] { new Vector2(0.0f, 1.0f), new Vector2(0.0f, 0.0f), new Vector2(1.0f, 0.0f), new Vector2(1.0f, 1.0f) });
+		uvs.AddRange(new Vector2[] { new Vector2(uvMin.x, uvMax.y), uvMin, new Vector2(uvMax.x, uvMin.y), uvMax });
 	}
 
-	private void AddQuad(List<Vector3> verts, List<int> tris, List<Vector2> uvs, Vector3 corner, Vector3 up, Vector3 right, bool drawTexture) {
+	private void AddQuad(List<Vector3> verts, List<int> tris, List<Vector2> uvs, Vector3 corner, Vector3 up, Vector3 right, Vector2 uvMin, Vector3 uvMax) {
 		int i = verts.Count;
 		verts.AddRange(new Vector3[] { corner, corner + up, corner + up + right, corner + right });
 		tris.AddRange(new int[] { i + 1, i + 2, i, i + 3, i, i + 2 });
-		if (drawTexture) {
-			uvs.AddRange(new Vector2[] { new Vector2(0.0f, 1.0f), new Vector2(0.0f, 0.0f), new Vector2(1.0f, 0.0f), new Vector2(1.0f, 1.0f) });
-		} else {
-			uvs.AddRange(new Vector2[] { Vector2.zero, Vector2.zero, Vector2.zero, Vector2.zero });
-		}
+		uvs.AddRange(new Vector2[] { new Vector2(uvMin.x, uvMax.y), uvMin, new Vector2(uvMax.x, uvMin.y), uvMax });
 	}
 
 	private void GenerateMesh(List<Vector3> verts, List<int> tris, List<Vector2> uvs) {

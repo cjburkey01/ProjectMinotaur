@@ -42,17 +42,16 @@ GameObject:
   - component: {fileID: 4171276025111444}
   - component: {fileID: 136736591654007044}
   - component: {fileID: 143412855905335226}
+  - component: {fileID: 114635949085934684}
   - component: {fileID: 114751520642733098}
-  - component: {fileID: 114040088378843096}
   - component: {fileID: 114805776067938024}
-  - component: {fileID: 114947826903144822}
   m_Layer: 2
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1220966811319860
 GameObject:
   m_ObjectHideFlags: 0
@@ -119,8 +118,8 @@ Camera:
   m_GameObject: {fileID: 1017651637189654}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -136,7 +135,7 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: 3
+  m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
@@ -146,7 +145,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
-  m_StereoMirrorMode: 0
 --- !u!23 &23624574360174950
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -156,6 +154,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -171,6 +170,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -200,20 +200,6 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1017651637189654}
   m_Enabled: 1
---- !u!114 &114040088378843096
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1115867106847606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f12edfcf25a724e7ca3566bbcad399ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  walkingBob: 480
-  runningBob: 640
-  bobAmount: 0.14
 --- !u!114 &114107230788651888
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -237,6 +223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 771006780ef664b62894545be3d08441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  overrideDef: 1
   antialiasing: 0
   ambientOcclusion: 0
   motionBlur: 0
@@ -245,6 +232,19 @@ MonoBehaviour:
   vignette: 0
   dithering: 0
   fieldOfView: 90
+--- !u!114 &114635949085934684
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1115867106847606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9363ef32f8a944b8b08923b7b670aae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  armRotation: 0
+  playerArm: {fileID: 0}
 --- !u!114 &114751520642733098
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -261,10 +261,9 @@ MonoBehaviour:
   playerWalkSpeed: 6
   playerRunSpeed: 8
   playerInAirRatio: 0.8
-  playerJumpHeight: 9
-  playerGravity: 20
-  armRotation: 0
-  playerArm: {fileID: 0}
+  playerJumpHeight: 10
+  playerGravity: 25
+  locked: 0
 --- !u!114 &114805776067938024
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -274,17 +273,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 139f477bd7023422cb9b208f8edbfc01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &114947826903144822
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1115867106847606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 821e01f3104af479caccca92fc15661e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!124 &124704325598956778

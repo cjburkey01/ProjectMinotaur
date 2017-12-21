@@ -28,6 +28,10 @@ public class Enemy : Entity {
 		}
 	}
 
+	public override void OnAttack(Entity attacker, int damage) {
+
+	}
+
 }
 
 public class EntityAttackEvent : EntityEvent {

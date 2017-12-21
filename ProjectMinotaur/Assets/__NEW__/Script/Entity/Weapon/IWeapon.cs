@@ -1,18 +1,18 @@
-﻿public interface IWeapon {
+﻿public abstract class IWeapon {
 
-	string GetName();
+	public abstract string GetName();
 
-	string GetDescription();
+	public abstract string GetDescription();
 
-	void OnUpdate(Player combatHandler);
+	public abstract void OnUpdate(Player combatHandler);
 
 	// Left click
-	void OnPrimary(Player combatHandler);
+	public abstract void OnPrimary(Player combatHandler);
 
 	// Right click
-	void OnSecondary(Player combatHandler);
+	public abstract void OnSecondary(Player combatHandler);
 
 	// Middle click
-	void OnTertiary(Player combatHandler);
+	public abstract void OnTertiary(Player combatHandler);
 
 }

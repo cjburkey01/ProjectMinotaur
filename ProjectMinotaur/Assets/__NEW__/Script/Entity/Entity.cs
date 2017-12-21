@@ -1,8 +1,16 @@
 ﻿using UnityEngine;
 
-public class Entity : MonoBehaviour {
+public abstract class Entity : MonoBehaviour {
 
 	private byte health;
+
+	public virtual void Start() {
+		PMEventSystem.GetEventSystem().AddListener<EntityAttackEvent>(OnAttackEvent);
+	}
+
+	private void OnAttackEvent<T>(T e) where T : EntityAttackEvent {
+		OnAttack(e.GetAttacker(), e.GetDamage());
+	}
 
 	public void SetHealth(int setH) {
 		if (setH > 100) {
@@ -25,6 +33,8 @@ public class Entity : MonoBehaviour {
 	public int GetHealth() {
 		return health;
 	}
+
+	public abstract void OnAttack(Entity attacker, int damage);
 
 }
 

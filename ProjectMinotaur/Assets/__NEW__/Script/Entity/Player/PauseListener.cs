@@ -2,13 +2,18 @@
 
 public class PauseListener : MonoBehaviour {
 
+	private PlayerMove ply;
+
 	void Update() {
-		if (Input.GetButtonDown("Cancel")) {
-			TogglePauseMenu();
+		if (ply == null) {
+			ply = FindObjectOfType<PlayerMove>();
+		}
+		if (Input.GetButtonDown("Cancel") && !ply.locked) {
+			TogglePause();
 		}
 	}
 
-	public static void TogglePauseMenu() {
+	public static void TogglePause() {
 		if (GameHandler.paused) {
 			Unpause();
 		} else {
@@ -18,24 +23,10 @@ public class PauseListener : MonoBehaviour {
 
 	public static void Pause() {
 		GameHandler.Pause();
-		OpenMenu();
 	}
 
 	public static void Unpause() {
 		GameHandler.Unpause();
-		CloseMenu();
-	}
-
-	private static void OpenMenu() {
-		if (MenuHandler.instance != null && MenuHandler.instance.MenuExists("MenuPause")) {
-			MenuHandler.instance.OpenMenu("MenuPause");
-		}
-	}
-
-	private static void CloseMenu() {
-		if (MenuHandler.instance != null) {
-			MenuHandler.instance.CloseMenu();
-		}
 	}
 
 }

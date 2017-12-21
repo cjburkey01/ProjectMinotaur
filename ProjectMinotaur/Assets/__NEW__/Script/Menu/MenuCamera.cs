@@ -6,7 +6,7 @@ public class MenuCamera : MonoBehaviour {
 	// Units per second.
 	public float speed = 1.0f;
 	public float rotationSpeed = 5.0f;
-	public float yPosRatio = 0.5f;
+	public float yPos = 2.0f;
 	public MazeHandler mazeHandler;
 	public GameObject loadingScreen;
 
@@ -90,7 +90,7 @@ public class MenuCamera : MonoBehaviour {
 	}
 
 	private Vector3 TrueNodePos(MazePos node) {
-		Vector3 o = mazeHandler.GetWorldPosOfNode(node, yPosRatio * mazeHandler.pathHeight);
+		Vector3 o = mazeHandler.GetWorldPosOfNode(node, yPos);
 		o.x += mazeHandler.pathWidth / 2.0f;
 		o.z += mazeHandler.pathWidth / 2.0f;
 		return o;

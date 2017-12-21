@@ -10,8 +10,8 @@ public class Player : Entity {
 	private Camera cam;
 	private IWeapon weapon;
 
-	void Start() {
-		PMEventSystem.GetEventSystem().AddListener<EntityAttackEvent>(OnEntityAttacked);
+	public override void Start() {
+		base.Start();
 
 		if (playerArm != null) {
 			rotationOffset = new Vector3(playerArm.transform.rotation.x, playerArm.transform.rotation.y, playerArm.transform.rotation.z);
@@ -62,11 +62,9 @@ public class Player : Entity {
 	}
 
 	// Damages player from attack
-	private void OnEntityAttacked<T>(T e) where T : EntityAttackEvent {
-		if (e.GetEntity().Equals(this)) {
-			TakeHealth(e.GetDamage());
-			print("Damaged by " + e.GetAttacker());
-		}
+	public override void OnAttack(Entity attacker, int damage) {
+		TakeHealth(damage);
+		print("Damaged by " + attacker);
 	}
 
 }

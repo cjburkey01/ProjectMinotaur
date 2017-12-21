@@ -18,7 +18,7 @@ public class MainMenuHandler : MonoBehaviour {
 
 	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {
 		if (loadingText != null) {
-			loadingText.text = "Generating: " + (e.GetProgress() * 100.0f).ToString("00.0000") + "%";
+			loadingText.text = "Generating: " + (e.GetProgress() * 100.0f).ToString("00.00") + "%";
 		}
 	}
 
