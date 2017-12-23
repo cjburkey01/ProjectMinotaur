@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PauseListener : MonoBehaviour {
 
+	public IMenu pauseMenu;
 	public IMenu optionsMenu;
 
 	private PlayerMove ply;
@@ -19,7 +21,7 @@ public class PauseListener : MonoBehaviour {
 	}
 
 	public void TogglePause() {
-		if (GameHandler.Paused) {
+		if (GameHandler.paused) {
 			Unpause();
 		} else {
 			Pause();
@@ -27,13 +29,25 @@ public class PauseListener : MonoBehaviour {
 	}
 
 	public void Pause() {
-		GameHandler.Pause();
-		MenuSystem.GetInstance().ShowMenu(optionsMenu);
+		GameHandler.paused = true;
+		MenuSystem.GetInstance().ShowMenu(pauseMenu);
 	}
 
 	public void Unpause() {
-		MenuSystem.GetInstance().HideMenu(optionsMenu);
-		GameHandler.Unpause();
+		if (optionsMenu.IsShown()) {
+			MenuSystem.GetInstance().ShowMenu(pauseMenu);
+			return;
+		}
+		MenuSystem.GetInstance().HideMenus();
+		GameHandler.paused = false;
+	}
+
+	public void OnOptionsClick() {
+		MenuSystem.GetInstance().ShowMenu(optionsMenu);
+	}
+
+	public void OnQuitClick() {
+		SceneManager.LoadScene(0);
 	}
 
 	public static PauseListener GetInstance() {

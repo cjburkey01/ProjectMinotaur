@@ -18,13 +18,13 @@ public class MenuSystem : MonoBehaviour {
 	}
 
 	public void HideMenu(IMenu menu) {
+		Debug.Log("Hiding " + menu.GetType().Name);
 		menu.Hide();
 		menu.OnHide();
 		menu.gameObject.SetActive(false);
 	}
 
 	public void ShowMenu(IMenu menu) {
-		Debug.Log("Showing menu: " + menu.GetType().Name);
 		HideMenus();
 		menu.gameObject.SetActive(true);
 		menu.Show();

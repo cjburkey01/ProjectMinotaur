@@ -13,9 +13,18 @@ public class MainMenuHandler : MonoBehaviour {
 	public int realChunksX = 16;
 	public int realChunksY = 16;
 
+	void Start() {
+		GameHandler.paused = false;
+		GameHandler.inGame = false;
+	}
+
 	void Update() {
-		if (optionsMenu.IsShown() && !player.gameObject.activeInHierarchy && Input.GetButtonDown("Cancel")) {
-			MenuSystem.GetInstance().ShowMenu(mainMenu);
+		if (!GameHandler.inGame && Input.GetButtonDown("Cancel")) {
+			if (optionsMenu.IsShown()) {
+				MenuSystem.GetInstance().ShowMenu(mainMenu);
+			} else {
+				MenuSystem.GetInstance().ShowMenu(optionsMenu);
+			}
 		}
 	}
 
@@ -40,10 +49,15 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	private void OnMazeGenerated<T>(T e) where T : EventMazeRenderChunkFinish {
+		if (!FindObjectOfType<MazeHandler>().Generated) {
+			Debug.LogError("Maze isn't fully generated yet, but a chunk was rendered");
+			return;
+		}
 		MenuSystem.GetInstance().HideMenu(loadingScreen);
 		player.locked = false;
 		Debug.Log("Real maze done.");
 		progBar.progress = 0.0f;
+		GameHandler.inGame = true;
 		PMEventSystem.GetEventSystem().RemoveListener<T>(OnMazeGenerated);
 	}
 
@@ -56,8 +70,8 @@ public class MainMenuHandler : MonoBehaviour {
 		if (cam != null) {
 			cam.gameObject.SetActive(false);
 		}
-		player.locked = true;
 		MenuSystem.GetInstance().ShowMenu(loadingScreen);
+		player.locked = true;
 		player.gameObject.SetActive(true);
 		GenerateRealMaze();
 		handler.chunksX = realChunksX;
@@ -65,6 +79,7 @@ public class MainMenuHandler : MonoBehaviour {
 		handler.Clear();
 		print("Loading real maze...");
 		handler.Generate();
+		RandomPlayerPos(handler);
 	}
 
 	public void LoadClick() {
@@ -72,6 +87,13 @@ public class MainMenuHandler : MonoBehaviour {
 
 	public void OptionsClick() {
 		MenuSystem.GetInstance().ShowMenu(optionsMenu);
+	}
+
+	private void RandomPlayerPos(MazeHandler handler) {
+		MazePos pos = new MazePos(Util.NextRand(0, handler.chunksX * handler.chunkSize - 1), Util.NextRand(0, handler.chunksX * handler.chunkSize - 1));
+		Vector3 plyPos = handler.GetWorldPosOfNode(pos, 0.5f) + new Vector3(handler.pathWidth / 2.0f, 5.0f, handler.pathWidth / 2.0f);
+		player.transform.position = plyPos;
+		Debug.Log("Player at node: " + pos + ". World: " + plyPos);
 	}
 
 }

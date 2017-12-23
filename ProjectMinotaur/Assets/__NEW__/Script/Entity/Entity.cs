@@ -2,7 +2,7 @@
 
 public abstract class Entity : MonoBehaviour {
 
-	private byte health;
+	private byte health = 100;
 
 	public virtual void Start() {
 		PMEventSystem.GetEventSystem().AddListener<EntityAttackEvent>(OnAttackEvent);

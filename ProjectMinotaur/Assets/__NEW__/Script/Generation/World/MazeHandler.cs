@@ -23,8 +23,8 @@ public class MazeHandler : MonoBehaviour {
 	private GameObject chunkPrefab;
 	private Maze maze;
 	private float loadTimer;
-	private bool rendering;
-	private bool generated;
+	public bool Rendering { private set; get; }
+	public bool Generated { private set; get; }
 
 	private Dictionary<MazePos, MazeRenderedChunk> loadedChunks;
 
@@ -49,13 +49,14 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	public void Generate() {
+		Rendering = true;
 		loadedChunks = new Dictionary<MazePos, MazeRenderedChunk>();
 		maze = new Maze(new DepthFirstMaze(), chunkSize, chunksX, chunksY, distanceVariability);
 		GenerateMaze();
 	}
 
 	void Update() {
-		if (generated) {
+		if (Generated) {
 			if (infoText != null) {
 				infoText.text = "Project Minotaur v0.0.1";
 				infoText.text += "\n\nLoaded chunks: " + loadedChunks.Count;
@@ -89,10 +90,10 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	public IEnumerator RenderMazeAroundObject(GameObject obj) {
-		if (rendering || obj == null || !obj.activeSelf || !obj.activeInHierarchy || !generated) {
+		if (Rendering || obj == null || !obj.activeSelf || !obj.activeInHierarchy || !Generated) {
 			yield break;
 		}
-		rendering = true;
+		Rendering = true;
 		List<MazePos> toDestroy = new List<MazePos>();
 		List<MazePos> keys = new List<MazePos>(loadedChunks.Keys);
 		foreach (MazePos pos in keys) {
@@ -124,7 +125,7 @@ public class MazeHandler : MonoBehaviour {
 				yield return null;
 			}
 		}
-		rendering = false;
+		Rendering = false;
 	}
 
 	private float GetDistSqrd(Vector3 fromP, Vector3 toP) {
@@ -145,7 +146,7 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	public void Clear() {
-		generated = false;
+		Generated = false;
 		maze.Destroy();
 		List<MazePos> chunks = new List<MazePos>(loadedChunks.Keys);
 		foreach (MazePos pos in chunks) {
@@ -165,6 +166,9 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	private void RenderChunk(MazePos pos) {
+		if (!Generated) {
+			return;
+		}
 		GameObject instance = Instantiate(chunkPrefab, Vector3.zero, Quaternion.identity);
 		instance.transform.name = "Chunk: " + pos;
 		instance.transform.parent = transform;
@@ -193,8 +197,9 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	private void MazeBegin<T>(T e) where T : EventMazeGenerationBegin {
+		Rendering = true;
 		e.IsCancellable();
-		generated = false;
+		Generated = false;
 		if (infoText != null) {
 			infoText.text = "Generating maze... ";
 		}
@@ -202,10 +207,11 @@ public class MazeHandler : MonoBehaviour {
 
 	private void MazeFinish<T>(T e) where T : EventMazeGenerationFinish {
 		e.ToString();
-		generated = true;
+		Generated = true;
 		if (infoText != null) {
 			infoText.text = "Finished generating.";
 		}
+		Rendering = false;
 	}
 
 	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {

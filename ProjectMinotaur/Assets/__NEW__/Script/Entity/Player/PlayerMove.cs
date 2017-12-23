@@ -28,7 +28,6 @@ public class PlayerMove : MonoBehaviour {
 
 	// Initialize variables
 	void Start() {
-		GameHandler.Unpause();
 		currentSpeed = playerWalkSpeed;
 		moveDirection = Vector3.zero;
 		rotation = Vector3.zero;
@@ -49,7 +48,7 @@ public class PlayerMove : MonoBehaviour {
 	}
 
 	void Update() {
-		if (GameHandler.Paused) {
+		if (GameHandler.paused) {
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 		} else {
