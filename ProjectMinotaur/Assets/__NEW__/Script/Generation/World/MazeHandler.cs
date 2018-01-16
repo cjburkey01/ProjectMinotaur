@@ -51,7 +51,7 @@ public class MazeHandler : MonoBehaviour {
 	public void Generate() {
 		Rendering = true;
 		loadedChunks = new Dictionary<MazePos, MazeRenderedChunk>();
-		maze = new Maze(new DepthFirstMaze(), chunkSize, chunksX, chunksY, distanceVariability);
+		maze = new Maze(new EllersMaze(), chunkSize, chunksX, chunksY, distanceVariability);
 		GenerateMaze();
 	}
 
