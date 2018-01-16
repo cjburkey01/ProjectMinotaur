@@ -22,7 +22,19 @@ public class EllersMaze : IAlgorithm {
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationBegin(maze));
 		int rowN = 0;
 
-		
+		for (int col = 0; col < maze.GetSizeX(); col++) {
+			sets.Add(new List<int>());
+			sets[col].Add(col);
+		}
+
+		for (int row = 0; row < maze.GetSizeY(); row++) {
+			for (int col = 0; col < maze.GetSizeX(); col++) {
+				MazePos pos = new MazePos(col, row);
+				if (ShouldCombine(GetContainingSet(col), GetContainingSet(col + 1))) {
+					CombineSets(GetContainingSet(col), GetContainingSet(col + 1));
+				}
+			}
+		}
 
 		if (Util.GetMillis() > time + (1000.0d / UpdatesPerSecond)) {
 			time = Util.GetMillis();
@@ -34,7 +46,7 @@ public class EllersMaze : IAlgorithm {
 	}
 
 	private int GetContainingSet(int col) {
-		for (int i = 0; i < sets.Count; i ++) {
+		for (int i = 0; i < sets.Count; i++) {
 			foreach (int po in sets[i]) {
 				if (col.Equals(po)) {
 					return i;
@@ -55,7 +67,7 @@ public class EllersMaze : IAlgorithm {
 	}
 
 	private bool ShouldCombine(int set1, int set2) {
-		if(set1 < 0 || set2 < 0 || set1 >= sets.Count || set2 >= sets.Count) {
+		if (set1 < 0 || set2 < 0 || set1 >= sets.Count || set2 >= sets.Count) {
 			return false;
 		}
 		return (Util.NextRand(0, 1000) / 1000.0f) <= JoinRightChance;
