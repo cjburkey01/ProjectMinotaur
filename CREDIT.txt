@@ -1,2 +1,3 @@
 CREDITS:
 	Icon: Minotaur by parkjisun from the Noun Project
+	Maze Generation: Alex Sosnovskiy's C# Eller's Algorithm Implementation based on Eric Woroshow's JS [Eller's] Maze Generation Algorithm

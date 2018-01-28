@@ -29,7 +29,9 @@ public class MenuCamera : MonoBehaviour {
 				visited.Add(new MazePos(x, y), false);
 			}
 		}
-		MenuSystem.GetInstance().ShowMenu(loadingScreen);
+		if (loadingScreen != null) {
+			MenuSystem.GetInstance().ShowMenu(loadingScreen);
+		}
 	}
 
 	void Update() {
@@ -79,7 +81,9 @@ public class MenuCamera : MonoBehaviour {
 		if (ply != null) {
 			ply.locked = false;
 		}
-		MenuSystem.GetInstance().ShowMenu(mainMenu);
+		if (mainMenu != null) {
+			MenuSystem.GetInstance().ShowMenu(mainMenu);
+		}
 		e.ToString();
 		if (start.Equals(MazePos.NONE) && goal.Equals(MazePos.NONE) && gameObject.activeSelf && gameObject.activeInHierarchy) {
 			DoInit();
