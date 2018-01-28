@@ -32,7 +32,6 @@ public class EllersMaze : IAlgorithm {
 			for (int y = 0; y < maze.GetSizeY(); y++) {
 				MazeNode node = maze.GetNode(x, y);
 				EllerMaze.Cell cell = m.At(y, x);
-				Debug.Log("Cell at " + x + ", " + y + " = " + cell);
 				node.SetWalls(0);
 				if (cell.up) {
 					node.AddWall(MazeNode.TOP);
