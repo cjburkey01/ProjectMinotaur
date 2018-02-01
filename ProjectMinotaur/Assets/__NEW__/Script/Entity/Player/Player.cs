@@ -9,12 +9,12 @@ public class Player : Entity {
 	private PlayerMove player;
 	private Camera cam;
 	private IWeapon weapon;
-	private PlayerUI ui;
+	//private PlayerUI ui;
 
 	public override void Start() {
 		base.Start();
 
-		ui = FindObjectOfType<PlayerUI>();
+		//ui = FindObjectOfType<PlayerUI>();
 
 		if (playerArm != null) {
 			rotationOffset = new Vector3(playerArm.transform.rotation.x, playerArm.transform.rotation.y, playerArm.transform.rotation.z);

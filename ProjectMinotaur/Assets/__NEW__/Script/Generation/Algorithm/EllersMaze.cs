@@ -9,7 +9,6 @@ public class EllersMaze : IAlgorithm {
 	public static readonly float DownChance = 0.5f;
 
 	private Maze maze;
-	private double time;
 	private int rowN;
 
 	private readonly List<List<int>> sets = new List<List<int>>();
@@ -20,13 +19,14 @@ public class EllersMaze : IAlgorithm {
 
 	public IEnumerator Generate(Maze maze, MazePos starting) {
 		this.maze = maze;
-		time = Util.GetMillis();
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationBegin(maze));
+		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, 0.0f));
+		yield return null;
 
 		Debug.Log("Begining external eller's maze generation.");
 		EllerMaze.Maze m = EllerMaze.Eller.Generate(maze.GetSizeX(), maze.GetSizeY());
 		Debug.Log("Maze generated, loading into maze memory.");
-		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, 0.5f));
+		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, 0.25f));
 		yield return null;
 		for (int x = 0; x < maze.GetSizeX(); x++) {
 			for (int y = 0; y < maze.GetSizeY(); y++) {
@@ -45,6 +45,10 @@ public class EllersMaze : IAlgorithm {
 				if (cell.left) {
 					node.AddWall(MazeNode.LEFT);
 				}
+			}
+			if (x % 3 == 0) {
+				PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, (float) x / maze.GetSizeX()));
+				yield return null;
 			}
 		}
 		Debug.Log("Loaded maze nodes from maze cells. Done.");
