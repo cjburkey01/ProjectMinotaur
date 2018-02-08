@@ -1,26 +1,28 @@
 {
-	"name": "Shotgun",
-	"description": "Large spray, but efficient at killing close enemies.",
-	"reset_time": 1,
-	"damage": 40,
-	"max_distance": 100,
-	"spray": 27,
-	"ammo_per_clip": 15,
-	"shots_per_primary": 3,
-	"display_position_offset": {
-		"x": 0,
-		"y": 0,
-		"z": 0
-	},
-	"display_rotation_offset": {
-		"x": 0,
-		"y": 0,
-		"z": 0
-	},
-	"barrel_position_offset": {
-		"x": 0,
-		"y": 0,
-		"z": 0
-	},
-	"model_path": "Weapon/Model/Shotgun"
+  "name": "Shotgun",
+  "description": "Large spray, but efficient at killing close enemies.",
+  "is_primary": true,
+  "reset_time": 1,
+  "damage": 40,
+  "max_distance": 100,
+  "spray": 27,
+  "ammo_per_clip": 15,
+  "shots_per_primary": 3,
+  "display_position_offset": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "display_rotation_offset": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "barrel_position_offset": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "model_path": "Weapon/Model/Shotgun",
+  "icon_path": "Weapon/Icon/Shotgun"
 }

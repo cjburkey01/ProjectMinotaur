@@ -16,6 +16,7 @@ public delegate bool OnWeaponReload(Weapon instance);
 
 public sealed class WeaponDefinition : GameItem {
 
+	public readonly bool isPrimary;
 	public readonly float resetTime;
 	public readonly int damage;
 	public readonly float maxDistance;
@@ -25,6 +26,8 @@ public sealed class WeaponDefinition : GameItem {
 	public readonly Vector3 displayPositionOffset;
 	public readonly Vector3 displayRotationOffset;
 	public readonly Vector3 barrelPosition;
+	public readonly GameObject model;
+	public readonly Sprite icon;
 
 	private OnWeaponAttack primaryAction = ((weapon) => { return true; });
 	private OnWeaponAttack secondaryAction = ((weapon) => { return true; });
@@ -33,8 +36,10 @@ public sealed class WeaponDefinition : GameItem {
 	/// <summary>
 	///		Creates a new type of weapon with the supplied parameters.
 	/// </summary>
+	/// <param name="unique">A unique ID with which to keep track of this weapon.</param>
 	/// <param name="name">The display name of this weapon.</param>
 	/// <param name="desc">The displayed description of the weapon.</param>
+	/// <param name="isPrimary">Whether this should go into the primary or secondary weapon slot.</param>
 	/// <param name="resetTime">How many seconds elapse before the weapon is ready to fire again.</param>
 	/// <param name="damage">How much damage the weapon does (will not be used if custom events are enabled).</param>
 	/// <param name="maxDistance">How far away a target may be, at most, for the damage to be afflicted.</param>
@@ -44,7 +49,10 @@ public sealed class WeaponDefinition : GameItem {
 	/// <param name="displayPositionOffset">Offsset locally from the hand of the player.</param>
 	/// <param name="displayRotationOffset">The rotation of the weapon compared to the hand.</param>
 	/// <param name="barrelPosition">The position of the end of the barrel (relative to the gun)</param>
-	public WeaponDefinition(string unique, string name, string desc, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition) : base(unique, name, desc) {
+	/// <param name="modelPath">The location of the model (prefab) for this weapon.</param>
+	/// <param name="iconPath">The location of the icon (sprite) to be displayed for this weapon.</param>
+	public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string iconPath) : base(unique, name, desc) {
+		this.isPrimary = isPrimary;
 		this.resetTime = resetTime;
 		this.damage = damage;
 		this.maxDistance = maxDistance;
@@ -54,6 +62,14 @@ public sealed class WeaponDefinition : GameItem {
 		this.displayPositionOffset = displayPositionOffset;
 		this.displayRotationOffset = displayRotationOffset;
 		this.barrelPosition = barrelPosition;
+		model = Resources.Load<GameObject>(modelPath);
+		if (model == null) {
+			Debug.LogWarning("Weapon has no model: " + unique + " | " + modelPath);
+		}
+		icon = Resources.Load<Sprite>(iconPath);
+		if (icon == null) {
+			Debug.LogWarning("Weapon has no icon: " + unique + " | " + iconPath);
+		}
 	}
 
 	/// <summary>

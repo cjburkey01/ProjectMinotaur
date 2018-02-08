@@ -23,6 +23,7 @@ public static class WeaponLoader {
 			// These are hard coded in...for now, hehehe >:D
 			string name = json["name"].Value;
 			string description = json["description"].Value;
+			bool isPrimary = json["is_primary"].AsBool;
 			float resetTime = json["reset_time"].AsFloat;
 			int damage = json["damage"].AsInt;
 			float maxDistance = json["max_distance"].AsFloat;
@@ -32,8 +33,10 @@ public static class WeaponLoader {
 			Vector3 displayPositionOffset = LoadVector3(json, "display_position_offset");
 			Vector3 displayRotationOffset = LoadVector3(json, "display_rotation_offset");
 			Vector3 barrelPositionOffset = LoadVector3(json, "barrel_position_offset");
-			
-			return new WeaponDefinition(path, name, description, resetTime, damage, maxDistance, spray, ammoPerClip, shotsPerPrimary, displayPositionOffset, displayRotationOffset, barrelPositionOffset);
+			string modelPath = json["model_path"].Value;
+			string iconPath = json["icon_path"].Value;
+
+			return new WeaponDefinition(path, name, description, isPrimary, resetTime, damage, maxDistance, spray, ammoPerClip, shotsPerPrimary, displayPositionOffset, displayRotationOffset, barrelPositionOffset, modelPath, iconPath);
 		} catch (Exception e) {
 			Debug.LogError("An error occurred while reading the weapon JSON: " + e.Message);
 		}

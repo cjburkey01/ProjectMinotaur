@@ -1,26 +1,28 @@
 {
-	"name": "Dagger",
-	"description": "Stab 'em!",
-	"reset_time": 1,
-	"damage": 40,
-	"max_distance": 3,
-	"spray": 0,
-	"ammo_per_clip": -1,
-	"shots_per_primary": 1,
-	"display_position_offset": {
-		"x": 0,
-		"y": 0,
-		"z": 0
-	},
-	"display_rotation_offset": {
-		"x": 0,
-		"y": 0,
-		"z": 0
-	},
-	"barrel_position_offset": {
-		"x": 0,
-		"y": 0,
-		"z": 0
-	},
-	"model_path": "Weapon/Model/Dagger"
+  "name": "Dagger",
+  "description": "Stab 'em!",
+  "is_primary": false,
+  "reset_time": 1,
+  "damage": 40,
+  "max_distance": 3,
+  "spray": 0,
+  "ammo_per_clip": -1,
+  "shots_per_primary": 1,
+  "display_position_offset": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "display_rotation_offset": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "barrel_position_offset": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "model_path": "Weapon/Model/Dagger",
+  "icon_path": "Weapon/Icon/Knife"
 }

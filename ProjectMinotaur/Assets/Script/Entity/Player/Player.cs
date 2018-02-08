@@ -1,21 +1,21 @@
 ﻿using UnityEngine;
 
 public class Player : Entity {
-	
+
 	public PlayerUI PlayerOverlay { private set; get; }
 	public PlayerMove MovementMotor { private set; get; }
 	public Camera LookCamera { private set; get; }
 	public Inventory MainInventory { private set; get; }
 	public Hotbar Toolbar { private set; get; }
 
-	public void Start() {
-		InitInventory();
+	void Start() {
 		InitVars();
+		InitInventory();
 	}
 
 	void Update() {
-		if (PlayerOverlay != null) {
-			PlayerOverlay.healthBar.progress = GetHealth() / 100.0f;
+		if (Input.GetKeyDown(KeyCode.Tab)) {
+			Toolbar.SwitchWeapon();
 		}
 	}
 
@@ -24,9 +24,6 @@ public class Player : Entity {
 
 		MainInventory = new Inventory("PlayerInventoryMain", 25);
 		Toolbar = new Hotbar(this);
-
-		Toolbar.SetWeapon(true, null);	// Set both primary and secondary weapons to fists by default.
-		Toolbar.SetWeapon(false, null);
 
 		Debug.Log("Primary weapon: " + Toolbar.GetWeapon());
 	}
