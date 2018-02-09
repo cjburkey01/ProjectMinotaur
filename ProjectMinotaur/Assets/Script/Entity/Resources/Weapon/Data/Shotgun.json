@@ -24,5 +24,6 @@
     "z": 0
   },
   "model_path": "Weapon/Model/Shotgun",
-  "icon_path": "Weapon/Icon/Shotgun"
+  "icon_path": "Weapon/Icon/Shotgun",
+  "draw_trail": true
 }

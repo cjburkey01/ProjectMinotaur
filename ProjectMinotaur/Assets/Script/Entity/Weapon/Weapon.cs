@@ -22,6 +22,10 @@ public class Weapon : MonoBehaviour {
 		transform.rotation = Quaternion.Euler(WeaponType.displayRotationOffset);
 	}
 
+	public Vector3 GetBarrelPosWorld() {
+		return transform.TransformPoint(WeaponType.barrelPosition);
+	}
+
 	public static Weapon Create(bool permanent, Player parentPlayer, WeaponDefinition def) {
 		GameObject tmp = new GameObject(def.DisplayName);
 		tmp.transform.name = "Weapon: " + def.DisplayName;

@@ -17,6 +17,9 @@ public class Player : Entity {
 		if (Input.GetKeyDown(KeyCode.Tab)) {
 			Toolbar.SwitchWeapon();
 		}
+		if (Input.GetButtonDown("Fire1")) {
+			Toolbar.GetWeapon().WeaponType.OnPrimary(Toolbar.GetWeapon());
+		}
 	}
 
 	private void InitInventory() {

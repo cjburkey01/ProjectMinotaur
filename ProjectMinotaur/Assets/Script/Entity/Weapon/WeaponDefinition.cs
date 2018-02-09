@@ -28,6 +28,7 @@ public sealed class WeaponDefinition : GameItem {
 	public readonly Vector3 barrelPosition;
 	public readonly GameObject model;
 	public readonly Sprite icon;
+	public readonly bool drawTrail;
 
 	private OnWeaponAttack primaryAction = ((weapon) => { return true; });
 	private OnWeaponAttack secondaryAction = ((weapon) => { return true; });
@@ -51,7 +52,7 @@ public sealed class WeaponDefinition : GameItem {
 	/// <param name="barrelPosition">The position of the end of the barrel (relative to the gun)</param>
 	/// <param name="modelPath">The location of the model (prefab) for this weapon.</param>
 	/// <param name="iconPath">The location of the icon (sprite) to be displayed for this weapon.</param>
-	public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string iconPath) : base(unique, name, desc) {
+	public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string iconPath, bool drawTrail) : base(unique, name, desc) {
 		this.isPrimary = isPrimary;
 		this.resetTime = resetTime;
 		this.damage = damage;
@@ -70,6 +71,7 @@ public sealed class WeaponDefinition : GameItem {
 		if (icon == null) {
 			Debug.LogWarning("Weapon has no icon: " + unique + " | " + iconPath);
 		}
+		this.drawTrail = drawTrail;
 	}
 
 	/// <summary>
@@ -99,7 +101,13 @@ public sealed class WeaponDefinition : GameItem {
 	public void OnPrimary(Weapon instance) {
 		bool def = primaryAction.Invoke(instance);
 		if (def) {
-
+			RaycastHit hit;
+			Vector3 dir = instance.Holder.LookCamera.transform.forward;
+			float dist = maxDistance;
+			if (Physics.Raycast(instance.GetBarrelPosWorld(), dir, out hit, maxDistance)) {
+				dist = hit.distance;
+			}
+			BulletTrail.Create(dir, dist, instance);
 		}
 	}
 

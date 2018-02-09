@@ -35,8 +35,9 @@ public static class WeaponLoader {
 			Vector3 barrelPositionOffset = LoadVector3(json, "barrel_position_offset");
 			string modelPath = json["model_path"].Value;
 			string iconPath = json["icon_path"].Value;
+			bool trail = json["draw_trail"].AsBool;
 
-			return new WeaponDefinition(path, name, description, isPrimary, resetTime, damage, maxDistance, spray, ammoPerClip, shotsPerPrimary, displayPositionOffset, displayRotationOffset, barrelPositionOffset, modelPath, iconPath);
+			return new WeaponDefinition(path, name, description, isPrimary, resetTime, damage, maxDistance, spray, ammoPerClip, shotsPerPrimary, displayPositionOffset, displayRotationOffset, barrelPositionOffset, modelPath, iconPath, trail);
 		} catch (Exception e) {
 			Debug.LogError("An error occurred while reading the weapon JSON: " + e.Message);
 		}
