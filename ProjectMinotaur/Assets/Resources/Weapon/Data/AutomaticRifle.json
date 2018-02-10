@@ -1,0 +1,34 @@
+{
+  "name": "Machine Gun",
+  "description": "Just your average run-of-the-mill standard automatic rifle.",
+  "is_primary": true,
+  "reset_time": 0.1,
+  "damage": 10,
+  "max_distance": 200,
+  "spray": 1,
+  "ammo_per_clip": 60,
+  "shots_per_primary": 1,
+  "display_position_offset": {
+    "x": 0.391,
+    "y": -0.399,
+    "z": 0.864
+  },
+  "display_rotation_offset": {
+    "x": 0,
+    "y": 180,
+    "z": 0
+  },
+  "barrel_position_offset": {
+    "x": 0,
+    "y": 0.126,
+    "z": -0.722
+  },
+  "model_path": "Weapon/Model/M4A1",
+  "icon_path": "Weapon/Icon/Rifle32",
+  "draw_trail": true,
+  "full_auto": true,
+  "recoil_time": 0.2,
+  "recoil_x": 30.0,
+  "recoil_y": 10.0,
+  "recoil_speed": 20.0
+}

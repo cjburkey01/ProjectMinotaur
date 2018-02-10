@@ -14,11 +14,21 @@ public class Player : Entity {
 	}
 
 	void Update() {
-		if (Input.GetKeyDown(KeyCode.Tab)) {
-			Toolbar.SwitchWeapon();
-		}
-		if (Input.GetButtonDown("Fire1")) {
-			Toolbar.GetWeapon().WeaponType.OnPrimary(Toolbar.GetWeapon());
+		if (!GameHandler.paused && Toolbar != null) {
+			if (Input.GetKeyDown(KeyCode.Tab)) {
+				Toolbar.SwitchWeapon();
+			}
+			if (Toolbar.GetWeapon() != null) {
+				if (Toolbar.GetWeapon().WeaponType.auto) {
+					if (Input.GetButton("Fire1")) {
+						Toolbar.GetWeapon().AttemptFire();
+					}
+				} else {
+					if (Input.GetButtonDown("Fire1")) {
+						Toolbar.GetWeapon().AttemptFire();
+					}
+				}
+			}
 		}
 	}
 

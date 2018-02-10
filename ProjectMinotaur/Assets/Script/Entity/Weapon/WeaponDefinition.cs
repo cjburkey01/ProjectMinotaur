@@ -16,6 +16,8 @@ public delegate bool OnWeaponReload(Weapon instance);
 
 public sealed class WeaponDefinition : GameItem {
 
+	public static readonly float DEG_TO_RAD = Mathf.PI / 180.0f;
+
 	public readonly bool isPrimary;
 	public readonly float resetTime;
 	public readonly int damage;
@@ -29,6 +31,11 @@ public sealed class WeaponDefinition : GameItem {
 	public readonly GameObject model;
 	public readonly Sprite icon;
 	public readonly bool drawTrail;
+	public readonly bool auto;
+	public readonly float recoilTime;
+	public readonly float recoilX;
+	public readonly float recoilY;
+	public readonly float recoilSpeed;
 
 	private OnWeaponAttack primaryAction = ((weapon) => { return true; });
 	private OnWeaponAttack secondaryAction = ((weapon) => { return true; });
@@ -50,9 +57,11 @@ public sealed class WeaponDefinition : GameItem {
 	/// <param name="displayPositionOffset">Offsset locally from the hand of the player.</param>
 	/// <param name="displayRotationOffset">The rotation of the weapon compared to the hand.</param>
 	/// <param name="barrelPosition">The position of the end of the barrel (relative to the gun)</param>
-	/// <param name="modelPath">The location of the model (prefab) for this weapon.</param>
+	/// <param name="modelPath">The location of the model (prefab) for this weapon.</param
 	/// <param name="iconPath">The location of the icon (sprite) to be displayed for this weapon.</param>
-	public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string iconPath, bool drawTrail) : base(unique, name, desc) {
+	/// <param name="drawTrail">Whether or not to draw a bullet trail"</param>
+	/// <param name="auto">Whether or not the weapon can be "held down"</param>
+	public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string iconPath, bool drawTrail, bool auto, float recoilTime, float recoilX, float recoilY, float recoilSpeed) : base(unique, name, desc) {
 		this.isPrimary = isPrimary;
 		this.resetTime = resetTime;
 		this.damage = damage;
@@ -72,6 +81,11 @@ public sealed class WeaponDefinition : GameItem {
 			Debug.LogWarning("Weapon has no icon: " + unique + " | " + iconPath);
 		}
 		this.drawTrail = drawTrail;
+		this.auto = auto;
+		this.recoilTime = recoilTime;
+		this.recoilX = recoilX;
+		this.recoilY = recoilY;
+		this.recoilSpeed = recoilSpeed;
 	}
 
 	/// <summary>
@@ -101,14 +115,36 @@ public sealed class WeaponDefinition : GameItem {
 	public void OnPrimary(Weapon instance) {
 		bool def = primaryAction.Invoke(instance);
 		if (def) {
+			instance.currentClipAmmo--;
+
 			RaycastHit hit;
-			Vector3 dir = instance.Holder.LookCamera.transform.forward;
+			Vector3 start = instance.Holder.LookCamera.transform.position;
+			Vector3 dir = GetBulletSpread(instance.Holder.LookCamera.transform.forward) * Vector3.forward;
+
+			/*float dirOffX = Random.Range(-(1 - spray * DEG_TO_RAD), 1 - spray);
+			float dirOffY = Random.Range(-(1 - spray * DEG_TO_RAD), 1 - spray * DEG_TO_RAD);
+			float dirOffZ = Random.Range(-(1 - spray * DEG_TO_RAD), 1 - spray * DEG_TO_RAD);
+			dir.x += dirOffX;
+			dir.y += dirOffY;
+			dir.z += dirOffZ;
+			dir.Normalize();*/
+
 			float dist = maxDistance;
-			if (Physics.Raycast(instance.GetBarrelPosWorld(), dir, out hit, maxDistance)) {
+			if (Physics.Raycast(instance.Holder.LookCamera.transform.position, dir, out hit, maxDistance)) {
 				dist = hit.distance;
 			}
-			BulletTrail.Create(dir, dist, instance);
+			Vector3 end = (hit.distance <= 0.0f) ? (start + (dir * dist)) : (hit.point);
+			if (drawTrail) {
+				BulletTrail.Create(instance.transform.TransformPoint(barrelPosition), end);
+			}
 		}
+	}
+
+	private Quaternion GetBulletSpread(Vector3 dir) {
+		Quaternion fireRot = Quaternion.LookRotation(dir);
+		Quaternion rand = Random.rotation;
+		fireRot = Quaternion.RotateTowards(fireRot, rand, spray);
+		return fireRot;
 	}
 
 	public void OnSecondary(Weapon instance) {

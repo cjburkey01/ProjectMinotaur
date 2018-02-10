@@ -8,11 +8,15 @@ public class ProgressBar : MonoBehaviour {
 	public bool damp = true;
 	public float damping = 0.1f;
 
+	public Text Child { private set; get; }
+
 	private Vector2 vel;
 	private float fullWidth;
 
 	void Start() {
 		fullWidth = progressCenter.sizeDelta.x;
+
+		Child = GetComponentInChildren<Text>();
 
 		// Force resize the progress bar when it is created rather than let it drift from 100% to the default.
 		Vector2 tmp = progressCenter.sizeDelta;

@@ -1,0 +1,34 @@
+{
+  "name": "Fists",
+  "description": "This is the default weapon, you can smack stuff.",
+  "is_primary": false,
+  "reset_time": 1,
+  "damage": 10,
+  "max_distance": 3,
+  "spray": 0,
+  "ammo_per_clip": -1,
+  "shots_per_primary": 1,
+  "display_position_offset": {
+    "x": 0.51,
+    "y": -0.28,
+    "z": 0.71
+  },
+  "display_rotation_offset": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "barrel_position_offset": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "model_path": "Weapon/Model/TestFistModel",
+  "icon_path": "Weapon/Icon/Hand32",
+  "draw_trail": false,
+  "full_auto": false,
+  "recoil_time": 0.0,
+  "recoil_x": 0.0,
+  "recoil_y": 0.0,
+  "recoil_speed": 0.0
+}

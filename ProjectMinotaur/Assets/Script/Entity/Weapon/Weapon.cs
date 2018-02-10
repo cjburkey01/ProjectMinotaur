@@ -8,16 +8,47 @@ public class Weapon : MonoBehaviour {
 	public int clipCount;
 	public int currentClipAmmo;
 
-	private void Init(bool permanent, WeaponDefinition type) {
+	private float lastFire;
+
+	void Update() {
+		if (lastFire < WeaponType.resetTime) {
+			lastFire += Time.deltaTime;
+		}
+	}
+
+	public void AttemptFire() {
+		if (lastFire < WeaponType.resetTime) {
+			return;
+		}
+		if (currentClipAmmo >= WeaponType.shotsPerPrimary) {
+			lastFire = 0.0f;
+			Holder.MovementMotor.Recoil.DoRecoil(WeaponType.recoilTime, WeaponType.recoilX, WeaponType.recoilY, WeaponType.recoilSpeed);
+			for (int i = 0; i < WeaponType.shotsPerPrimary; i++) {
+				DoShot();
+			}
+		} else {
+			DoReload();
+		}
+	}
+
+	private void DoShot() {
+		WeaponType.OnPrimary(this);
+	}
+
+	private void DoReload() {
+		WeaponType.OnReload(this);
+	}
+
+	private void Init(int startingClips, bool permanent, WeaponDefinition type) {
 		Permanent = permanent;
 		WeaponType = type;
-		clipCount = 3;
+		clipCount = startingClips - 1;
 		currentClipAmmo = type.ammoPerClip;
 	}
 
 	public void SetPlayer(Player player) {
 		Holder = player;
-		transform.parent = player.gameObject.transform;
+		transform.parent = player.LookCamera.gameObject.transform;
 		transform.localPosition = WeaponType.displayPositionOffset;
 		transform.rotation = Quaternion.Euler(WeaponType.displayRotationOffset);
 	}
@@ -30,7 +61,7 @@ public class Weapon : MonoBehaviour {
 		GameObject tmp = new GameObject(def.DisplayName);
 		tmp.transform.name = "Weapon: " + def.DisplayName;
 		Weapon w = tmp.AddComponent<Weapon>();
-		w.Init(permanent, def);
+		w.Init(3, permanent, def);
 		if (def.model != null) {
 			GameObject model = Instantiate(def.model, Vector3.zero, Quaternion.identity);
 			model.transform.parent = tmp.transform;

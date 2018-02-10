@@ -14,6 +14,7 @@ public class PlayerMove : MonoBehaviour {
 
 	public bool Running { private set; get; }
 	public bool Moving { private set; get; }
+	public RecoilSystem Recoil { private set; get; }
 
 	private CharacterController controller;
 	private GameObject playerCamera;
@@ -32,6 +33,11 @@ public class PlayerMove : MonoBehaviour {
 		moveDirection = Vector3.zero;
 		rotation = Vector3.zero;
 
+		Recoil = GetComponentInChildren<RecoilSystem>();
+		if (Recoil == null) {
+			Debug.LogError("Recoil object not found on character's camera.");
+			gameObject.SetActive(false);
+		}
 
 		controller = GetComponent<CharacterController>();
 		if (controller == null) {
