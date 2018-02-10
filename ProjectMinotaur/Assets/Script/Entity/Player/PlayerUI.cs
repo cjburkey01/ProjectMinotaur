@@ -7,7 +7,7 @@ public class PlayerUI : MonoBehaviour {
 	public ProgressBar ammoBar;
 	public WeaponSlot primarySlot;
 	public WeaponSlot secondarySlot;
-	public Image crossshair;
+	public CrosshairHandler crossshair;
 
 	private Player player;
 

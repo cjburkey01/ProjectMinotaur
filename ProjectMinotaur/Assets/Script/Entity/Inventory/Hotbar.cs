@@ -21,7 +21,7 @@ public class Hotbar {
 		// TODO: REMOVE THIS TEST CODE
 
 		SetWeapon(true, Weapon.Create(false, player, DefaultWeapons.AutomaticRifle));
-		//SetWeapon(false, Weapon.Create(false, DefaultWeapons.Dagger));
+		SetWeapon(false, Weapon.Create(false, player, DefaultWeapons.Dagger));
 	}
 
 	public void SwitchWeapon() {

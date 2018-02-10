@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class GameItem {
 
@@ -7,12 +8,14 @@ public class GameItem {
 	public string Description { private set; get; }
 	public int MaxStackSize { private set; get; }
 
-	public GameItem(string uid, string name, string description) {
+	public GameItem(string uid, string name, string description, int maxStackSize) {
 		UniqueId = uid;
 		DisplayName = name;
 		Description = description;
-		MaxStackSize = 1;
+		MaxStackSize = maxStackSize;
 	}
+
+	public virtual void CreateModel(WorldItem item) { }
 
 	public override bool Equals(object obj) {
 		var item = obj as GameItem;
@@ -30,6 +33,25 @@ public class GameItem {
 
 	public override string ToString() {
 		return UniqueId;
+	}
+
+}
+
+public class WorldItem : MonoBehaviour {
+
+	public ItemStack Stack { private set; get; }
+
+	public static WorldItem Spawn(ItemStack stack, Vector3 pos) {
+		if (stack == null || stack.IsEmpty()) {
+			return null;
+		}
+		GameObject obj = new GameObject(stack.Item.DisplayName + "x" + stack.Count);
+		WorldItem item = obj.AddComponent<WorldItem>();
+		item.Stack = stack.Copy();
+		item.transform.position = pos;
+		item.transform.rotation = Random.rotation;
+		stack.Item.CreateModel(item);
+		return item;
 	}
 
 }

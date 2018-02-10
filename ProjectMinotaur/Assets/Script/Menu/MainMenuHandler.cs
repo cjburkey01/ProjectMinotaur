@@ -32,12 +32,26 @@ public class MainMenuHandler : MonoBehaviour {
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationUpdate>(MazeUpdate);
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationFinish>(MazeDone);
 		PMEventSystem.GetEventSystem().AddListener<EventMazeRenderChunkFinish>(OnMazeGenerated);
+
+		PMEventSystem.GetEventSystem().AddListener<ItemSpawnEvent>(ItemSpawn);
+		PMEventSystem.GetEventSystem().AddListener<ItemFinishEvent>(ItemsDone);
+	}
+
+	private void ItemSpawn<T>(T e) where T : ItemSpawnEvent {
+		if (loadingText != null) {
+			loadingText.text = "Spawning Items...";
+			progBar.progress = (1.0f + e.Progress) / 3.0f;
+		}
+	}
+
+	private void ItemsDone<T>(T e) where T : ItemFinishEvent {
+		
 	}
 
 	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {
 		if (loadingText != null) {
 			loadingText.text = "Generating...";
-			progBar.progress = e.GetProgress() / 2.0f;
+			progBar.progress = e.GetProgress() / 3.0f;
 		}
 	}
 
@@ -49,6 +63,10 @@ public class MainMenuHandler : MonoBehaviour {
 	}
 
 	private void OnMazeGenerated<T>(T e) where T : EventMazeRenderChunkFinish {
+		OnGenerationCompletelyDone();
+	}
+
+	private void OnGenerationCompletelyDone() {
 		if (!FindObjectOfType<MazeHandler>().Generated) {
 			Debug.LogError("Maze isn't fully generated yet, but a chunk was rendered");
 			return;
@@ -58,7 +76,7 @@ public class MainMenuHandler : MonoBehaviour {
 		Debug.Log("Real maze done.");
 		progBar.progress = 0.0f;
 		GameHandler.inGame = true;
-		PMEventSystem.GetEventSystem().RemoveListener<T>(OnMazeGenerated);
+		PMEventSystem.GetEventSystem().RemoveListener<EventMazeRenderChunkFinish>(OnMazeGenerated);
 	}
 
 	public void NewClick() {

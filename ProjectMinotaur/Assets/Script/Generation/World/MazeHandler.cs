@@ -193,6 +193,7 @@ public class MazeHandler : MonoBehaviour {
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationBegin>(MazeBegin);
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationFinish>(MazeFinish);
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationUpdate>(MazeUpdate);
+		PMEventSystem.GetEventSystem().AddListener<ItemSpawnEvent>(ItemSpawn);
 		maze.Generate(this, new MazePos(chunksX * chunkSize / 2, chunksY * chunkSize / 2));
 	}
 
@@ -217,6 +218,12 @@ public class MazeHandler : MonoBehaviour {
 	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {
 		if (infoText != null) {
 			infoText.text = "Generating maze: " + (e.GetProgress() * 100.0f).ToString("00.00") + "%";
+		}
+	}
+
+	private void ItemSpawn<T>(T e) where T : ItemSpawnEvent {
+		if (infoText != null && e.Item != null && !e.Item.Stack.IsEmpty()) {
+			infoText.text = "Item: " + e.Item.transform.name + " at " + e.Item.transform.position;
 		}
 	}
 

@@ -17,7 +17,7 @@ public class EllersMaze : IAlgorithm {
 		return "Eller's Maze";
 	}
 
-	public IEnumerator Generate(Maze maze, MazePos starting) {
+	public IEnumerator Generate(MazeHandler handler, bool items, Maze maze, MazePos starting) {
 		this.maze = maze;
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationBegin(maze));
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, 0.0f));
@@ -53,7 +53,33 @@ public class EllersMaze : IAlgorithm {
 		}
 		Debug.Log("Loaded maze nodes from maze cells. Done.");
 
+		//handler.StartCoroutine(GenerateItems(handler));
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationFinish(maze));
+	}
+
+	private float start = 0.0f;
+	private IEnumerator GenerateItems(MazeHandler handler) {
+		Debug.Log("Generating items.");
+		PMEventSystem.GetEventSystem().TriggerEvent(new ItemBeginEvent(maze));
+		yield return null;
+		
+		for (int x = 0; x < maze.GetSizeX(); x++) {
+			for (int y = 0; y < maze.GetSizeY(); y++) {
+				if (Random.Range(0, 3) == 1) {
+					float prog = (float) (x * maze.GetSizeY() + y) / (maze.GetSizeX() * maze.GetSizeY());
+					WorldItem item = WorldItem.Spawn(new ItemStack(DefaultWeapons.AutomaticRifle, 1), handler.GetWorldPosOfNode(new MazePos(x, y), 5.0f));
+					PMEventSystem.GetEventSystem().TriggerEvent(new ItemSpawnEvent(maze, item, prog));
+				}
+				if (Util.GetMillis() - start >= 1000.0f / 60.0f) {
+					yield return null;
+					start = (float) Util.GetMillis();
+				}
+			}
+		}
+
+		PMEventSystem.GetEventSystem().TriggerEvent(new ItemFinishEvent(maze));
+		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationFinish(maze));
+		yield return null;
 	}
 
 	private int GetContainingSet(int col) {

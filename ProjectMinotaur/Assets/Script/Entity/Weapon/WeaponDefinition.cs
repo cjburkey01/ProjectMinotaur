@@ -61,7 +61,7 @@ public sealed class WeaponDefinition : GameItem {
 	/// <param name="iconPath">The location of the icon (sprite) to be displayed for this weapon.</param>
 	/// <param name="drawTrail">Whether or not to draw a bullet trail"</param>
 	/// <param name="auto">Whether or not the weapon can be "held down"</param>
-	public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string iconPath, bool drawTrail, bool auto, float recoilTime, float recoilX, float recoilY, float recoilSpeed) : base(unique, name, desc) {
+	public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string iconPath, bool drawTrail, bool auto, float recoilTime, float recoilX, float recoilY, float recoilSpeed) : base(unique, name, desc, 1) {
 		this.isPrimary = isPrimary;
 		this.resetTime = resetTime;
 		this.damage = damage;
@@ -86,6 +86,14 @@ public sealed class WeaponDefinition : GameItem {
 		this.recoilX = recoilX;
 		this.recoilY = recoilY;
 		this.recoilSpeed = recoilSpeed;
+	}
+
+	public override void CreateModel(WorldItem item) {
+		if (model != null) {
+			GameObject obj = Object.Instantiate(model, item.transform);
+			obj.transform.localPosition = Vector3.zero;
+			obj.transform.localRotation = Quaternion.identity;
+		}
 	}
 
 	/// <summary>

@@ -120,7 +120,7 @@ public class Maze {
 
 	// -- Actual Generation -- //
 
-	public void Generate(MonoBehaviour executor, MazePos startingPoint) {
+	public void Generate(MazeHandler handler, MazePos startingPoint) {
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventChunkPrePopulationBegin(this));
 		InitializeChunks();
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventChunkPrePopulationFinish(this));
@@ -142,7 +142,7 @@ public class Maze {
 			}
 		}
 		Debug.Log("Generating maze using: " + mazeAlgorithm.GetName());
-		executor.StartCoroutine(mazeAlgorithm.Generate(this, startingPoint));
+		handler.StartCoroutine(mazeAlgorithm.Generate(handler, true, this, startingPoint));
 	}
 
 }

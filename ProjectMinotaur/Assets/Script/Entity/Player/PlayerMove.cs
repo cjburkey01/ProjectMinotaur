@@ -14,7 +14,6 @@ public class PlayerMove : MonoBehaviour {
 
 	public bool Running { private set; get; }
 	public bool Moving { private set; get; }
-	public RecoilSystem Recoil { private set; get; }
 
 	private CharacterController controller;
 	private GameObject playerCamera;
@@ -27,17 +26,16 @@ public class PlayerMove : MonoBehaviour {
 	private Vector3 previousPosition;
 	private float pedalSpeed;
 
+	private float recoil;
+	private float maxRecoilX = -20.0f;
+	private float maxRecoilY = 20.0f;
+	private float recoilSpeed = 2.0f;
+
 	// Initialize variables
 	void Start() {
 		currentSpeed = playerWalkSpeed;
 		moveDirection = Vector3.zero;
 		rotation = Vector3.zero;
-
-		Recoil = GetComponentInChildren<RecoilSystem>();
-		if (Recoil == null) {
-			Debug.LogError("Recoil object not found on character's camera.");
-			gameObject.SetActive(false);
-		}
 
 		controller = GetComponent<CharacterController>();
 		if (controller == null) {
@@ -51,6 +49,13 @@ public class PlayerMove : MonoBehaviour {
 			gameObject.SetActive(false);
 		}
 		playerCamera = cam.gameObject;
+	}
+
+	public void DoRecoil(float recoil, float maxRecoilX, float maxRecoilY, float recoilSpeed) {
+		this.recoil = recoil;
+		this.maxRecoilX = -maxRecoilX;
+		this.maxRecoilY = Random.Range(-maxRecoilY, maxRecoilY);
+		this.recoilSpeed = recoilSpeed;
 	}
 
 	void Update() {
@@ -69,6 +74,12 @@ public class PlayerMove : MonoBehaviour {
 	private void MouseMovement() {
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
+
+		if (recoil > 0.0f) {
+			rotation.x += maxRecoilY * Time.deltaTime * recoilSpeed;
+			rotation.y += maxRecoilX * Time.deltaTime * recoilSpeed;
+			recoil -= Time.deltaTime;
+		}
 
 		rotation.x += Input.GetAxis("Mouse X") * mouseSensitivity;
 		rotation.y -= Input.GetAxis("Mouse Y") * mouseSensitivity;

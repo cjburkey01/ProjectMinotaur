@@ -22,7 +22,7 @@ public class Weapon : MonoBehaviour {
 		}
 		if (currentClipAmmo >= WeaponType.shotsPerPrimary) {
 			lastFire = 0.0f;
-			Holder.MovementMotor.Recoil.DoRecoil(WeaponType.recoilTime, WeaponType.recoilX, WeaponType.recoilY, WeaponType.recoilSpeed);
+			Holder.MovementMotor.DoRecoil(WeaponType.recoilTime, WeaponType.recoilX, WeaponType.recoilY, WeaponType.recoilSpeed);
 			for (int i = 0; i < WeaponType.shotsPerPrimary; i++) {
 				DoShot();
 			}

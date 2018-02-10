@@ -18,7 +18,7 @@ public class DepthFirstMaze : IAlgorithm {
 		return "Recursive Backtracker Maze";
 	}
 
-	public IEnumerator Generate(Maze maze, MazePos starting) {
+	public IEnumerator Generate(MazeHandler handler, bool items, Maze maze, MazePos starting) {
 		totalCells = maze.GetSizeX() * maze.GetSizeY();
 		visitedCells = 0;
 

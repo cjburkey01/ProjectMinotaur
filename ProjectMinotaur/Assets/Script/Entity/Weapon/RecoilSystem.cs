@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RecoilSystem : MonoBehaviour {
 
-	private float recoil;
+	/*private float recoil;
 	private float maxRecoilX = -20.0f;
 	private float maxRecoilY = 20.0f;
 	private float recoilSpeed = 2.0f;
@@ -22,6 +22,6 @@ public class RecoilSystem : MonoBehaviour {
 			transform.localRotation = Quaternion.Slerp(transform.localRotation, maxRecoil, Time.deltaTime * recoilSpeed);
 			recoil -= Time.deltaTime;
 		}
-	}
+	}*/
 
 }
