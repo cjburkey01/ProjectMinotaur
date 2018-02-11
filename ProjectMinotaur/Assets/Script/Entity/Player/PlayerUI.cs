@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour {
 
@@ -17,7 +16,7 @@ public class PlayerUI : MonoBehaviour {
 	}
 
 	void Update() {
-		if (GetPlayer() == null || player.Toolbar == null || player.Toolbar.GetWeapon() == null) {
+		if (GetPlayer() == null || player.Toolbar == null || player.Toolbar.GetWeapon() == null || !GameStateHandler.Instance.State.Equals(GameState.INGAME)) {
 			healthBar.gameObject.SetActive(false);
 			ammoBar.gameObject.SetActive(false);
 			primarySlot.gameObject.SetActive(false);
@@ -30,8 +29,8 @@ public class PlayerUI : MonoBehaviour {
 			secondarySlot.gameObject.SetActive(true);
 			crossshair.gameObject.SetActive(true);
 
-			healthBar.progress = GetPlayer().GetHealth() / 100.0f;
-			ammoBar.progress = (float) player.Toolbar.GetWeapon().currentClipAmmo / player.Toolbar.GetWeapon().WeaponType.ammoPerClip;
+			healthBar.Progress = GetPlayer().GetHealth() / 100.0f;
+			ammoBar.Progress = (float) player.Toolbar.GetWeapon().currentClipAmmo / player.Toolbar.GetWeapon().WeaponType.ammoPerClip;
 			if (ammoBar.Child != null) {
 				ammoBar.Child.text = player.Toolbar.GetWeapon().clipCount + " | " + player.Toolbar.GetWeapon().currentClipAmmo;
 			}

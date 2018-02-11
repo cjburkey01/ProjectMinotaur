@@ -2,14 +2,11 @@
 using UnityEngine;
 
 public class MenuCamera : MonoBehaviour {
-
-	// Units per second.
+	
 	public float speed = 1.0f;
 	public float rotationSpeed = 5.0f;
 	public float yPos = 2.0f;
-	public MazeHandler mazeHandler;
-	public IMenu mainMenu;
-	public IMenu loadingScreen;
+	public MazeHandler maze;
 
 	private readonly Dictionary<MazePos, bool> visited = new Dictionary<MazePos, bool>();
 	private readonly Stack<MazePos> path = new Stack<MazePos>();
@@ -21,18 +18,6 @@ public class MenuCamera : MonoBehaviour {
 	private float beginTime;
 	private float length;
 	private Vector3 refVel = Vector3.zero;
-
-	void Start() {
-		PMEventSystem.GetEventSystem().AddListener<EventMazeRenderChunkFinish>(OnMazeGenerated);
-		for (int x = 0; x < mazeHandler.chunksX * mazeHandler.chunkSize; x++) {
-			for (int y = 0; y < mazeHandler.chunksY * mazeHandler.chunkSize; y++) {
-				visited.Add(new MazePos(x, y), false);
-			}
-		}
-		if (loadingScreen != null) {
-			MenuSystem.GetInstance().ShowMenu(loadingScreen);
-		}
-	}
 
 	void Update() {
 		if (start.Equals(MazePos.NONE) || goal.Equals(MazePos.NONE)) {
@@ -76,50 +61,54 @@ public class MenuCamera : MonoBehaviour {
 		transform.rotation = Quaternion.Euler(current);
 	}
 
-	private void OnMazeGenerated<T>(T e) where T : EventMazeRenderChunkFinish {
-		PlayerMove ply = FindObjectOfType<PlayerMove>();
-		if (ply != null) {
-			ply.locked = false;
-		}
-		if (mainMenu != null) {
-			MenuSystem.GetInstance().ShowMenu(mainMenu);
-		}
-		e.ToString();
-		if (start.Equals(MazePos.NONE) && goal.Equals(MazePos.NONE) && gameObject.activeSelf && gameObject.activeInHierarchy) {
-			DoInit();
-		}
-		PMEventSystem.GetEventSystem().RemoveListener<T>(OnMazeGenerated);
+	public void Init() {
+		DoInit();
 	}
 
 	private void DoInit() {
+		visited.Clear();
+		path.Clear();
+		start = MazePos.NONE;
+		goal = MazePos.NONE;
+		previous = MazePos.NONE;
+		previous2 = MazePos.NONE;
+		movingTowards = MazePos.NONE;
+		beginTime = 0.0f;
+		length = 0.0f;
+		refVel = Vector3.zero;
 		start = MazePos.ZERO;
-		goal = new MazePos(mazeHandler.GetMaze().GetSizeX() - 1, mazeHandler.GetMaze().GetSizeY() - 1);
+		goal = new MazePos(maze.GetMaze().GetSizeX() - 1, maze.GetMaze().GetSizeY() - 1);
+		for (int x = 0; x < maze.chunksX * maze.chunkSize; x++) {
+			for (int y = 0; y < maze.chunksY * maze.chunkSize; y++) {
+				visited.Add(new MazePos(x, y), false);
+			}
+		}
 	}
 
 	private Vector3 TrueNodePos(MazePos node) {
-		Vector3 o = mazeHandler.GetWorldPosOfNode(node, yPos);
-		o.x += mazeHandler.pathWidth / 2.0f;
-		o.z += mazeHandler.pathWidth / 2.0f;
+		Vector3 o = maze.GetWorldPosOfNode(node, yPos);
+		o.x += maze.pathWidth / 2.0f;
+		o.z += maze.pathWidth / 2.0f;
 		return o;
 	}
 
 	private Vector3 GoalNodePos(MazePos node, MazePos prev) {
 		Vector3 n = TrueNodePos(node);
 		if (node.GetX() > prev.GetX()) {
-			n.x -= mazeHandler.pathWidth / 2.0f;
+			n.x -= maze.pathWidth / 2.0f;
 		} else if (node.GetX() < prev.GetX()) {
-			n.x += mazeHandler.pathWidth / 2.0f;
+			n.x += maze.pathWidth / 2.0f;
 		} else if (node.GetY() > prev.GetY()) {
-			n.z -= mazeHandler.pathWidth / 2.0f;
+			n.z -= maze.pathWidth / 2.0f;
 		} else if (node.GetY() < prev.GetY()) {
-			n.z += mazeHandler.pathWidth / 2.0f;
+			n.z += maze.pathWidth / 2.0f;
 		}
 		return n;
 	}
 
 	private MazePos[] Neighbors(MazePos node) {
 		List<MazePos> outNodes = new List<MazePos>();
-		MazePos[] found = mazeHandler.GetMaze().GetConnectedNeighbors(node);
+		MazePos[] found = maze.GetMaze().GetConnectedNeighbors(node);
 		foreach (MazePos pos in found) {
 			if (!visited[pos]) {
 				outNodes.Add(pos);

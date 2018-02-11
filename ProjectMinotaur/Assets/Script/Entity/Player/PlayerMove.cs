@@ -51,6 +51,13 @@ public class PlayerMove : MonoBehaviour {
 		playerCamera = cam.gameObject;
 	}
 
+	public void ResetTransform(Vector3 pos) {
+		transform.position = pos;
+		transform.rotation = Quaternion.identity;
+		playerCamera.transform.localRotation = Quaternion.identity;
+		rotation = Vector2.zero;
+	}
+
 	public void DoRecoil(float recoil, float maxRecoilX, float maxRecoilY, float recoilSpeed) {
 		this.recoil = recoil;
 		this.maxRecoilX = -maxRecoilX;

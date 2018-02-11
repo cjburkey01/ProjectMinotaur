@@ -3,7 +3,6 @@
 public class EventHandler<T> where T : IPMEvent {
 
 	private readonly List<PMEventListener<T>> listeners = new List<PMEventListener<T>>();
-	private readonly List<PMEventListener<T>> disabled = new List<PMEventListener<T>>();
 
 	// Registers the supplied method as a listener for this event.
 	public void RegisterListener(PMEventListener<T> listener) {
@@ -21,7 +20,7 @@ public class EventHandler<T> where T : IPMEvent {
 			return;
 		}
 		if (listeners.Contains(listener)) {
-			disabled.Add(listener);
+			listeners.Remove(listener);
 		}
 	}
 
@@ -31,9 +30,6 @@ public class EventHandler<T> where T : IPMEvent {
 			return;
 		}
 		foreach (PMEventListener<T> listener in listeners) {
-			if (disabled.Contains(listener)) {
-				continue;
-			}
 			if (eventObj.IsCancellable() && eventObj.IsCancelled()) {
 				return;
 			}

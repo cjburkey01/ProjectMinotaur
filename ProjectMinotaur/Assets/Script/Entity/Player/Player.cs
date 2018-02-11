@@ -8,9 +8,30 @@ public class Player : Entity {
 	public Inventory MainInventory { private set; get; }
 	public Hotbar Toolbar { private set; get; }
 
+	private bool didInit;
+
 	void Start() {
+		Init();
+		
+	}
+
+	public void Init() {
+		if (didInit) {
+			return;
+		}
+		didInit = true;
+		DefaultWeapons.Initialize();
 		InitVars();
 		InitInventory();
+		PMEventSystem.GetEventSystem().AddListener<StateChangeEvent>(e => {
+			if (e.Handler.State.Equals(GameState.INGAME)) {
+				if (Toolbar != null) {
+					Toolbar.Exit();
+				}
+				InitVars();
+				InitInventory();
+			}
+		});
 	}
 
 	void Update() {
@@ -33,8 +54,6 @@ public class Player : Entity {
 	}
 
 	private void InitInventory() {
-		DefaultWeapons.Initialize();
-
 		MainInventory = new Inventory("PlayerInventoryMain", 25);
 		Toolbar = new Hotbar(this);
 

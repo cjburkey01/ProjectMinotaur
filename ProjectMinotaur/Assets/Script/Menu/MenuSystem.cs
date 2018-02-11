@@ -18,7 +18,6 @@ public class MenuSystem : MonoBehaviour {
 	}
 
 	public void HideMenu(IMenu menu) {
-		Debug.Log("Hiding " + menu.GetType().Name);
 		menu.Hide();
 		menu.OnHide();
 		menu.gameObject.SetActive(false);

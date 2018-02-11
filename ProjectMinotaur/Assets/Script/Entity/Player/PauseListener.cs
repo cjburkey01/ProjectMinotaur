@@ -47,7 +47,7 @@ public class PauseListener : MonoBehaviour {
 	}
 
 	public void OnQuitClick() {
-		SceneManager.LoadScene(0);
+		GameStateHandler.Instance.SetState(GameState.MENU);
 	}
 
 	public static PauseListener GetInstance() {

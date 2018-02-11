@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+//using UnityEngine.UI;
 
 public class MainMenuHandler : MonoBehaviour {
 
+	/*
 	public IMenu mainMenu;
 	public IMenu loadingScreen;
 	public IMenu optionsMenu;
@@ -113,5 +114,6 @@ public class MainMenuHandler : MonoBehaviour {
 		player.transform.position = plyPos;
 		Debug.Log("Player at node: " + pos + ". World: " + plyPos);
 	}
+	*/
 
 }

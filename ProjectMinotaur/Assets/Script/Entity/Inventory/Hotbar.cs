@@ -24,6 +24,15 @@ public class Hotbar {
 		SetWeapon(false, Weapon.Create(false, player, DefaultWeapons.Dagger));
 	}
 
+	public void Exit() {
+		if (Primary != null) {
+			Object.Destroy(Primary);
+		}
+		if (Secondary != null) {
+			Object.Destroy(Secondary);
+		}
+	}
+
 	public void SwitchWeapon() {
 		SelectWeapon(!IsPrimarySelected);
 		player.PlayerOverlay.primarySlot.SetSelected(IsPrimarySelected);

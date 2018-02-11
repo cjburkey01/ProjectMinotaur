@@ -45,14 +45,13 @@ public class MazeHandler : MonoBehaviour {
 		}
 		Debug.Log("Loaded chunk prefab.");
 		loadedChunks = new Dictionary<MazePos, MazeRenderedChunk>();
-		Generate();
 	}
 
-	public void Generate() {
+	public void Generate(System.Action<float> progress, LoadingStepComplete done) {
 		Rendering = true;
 		loadedChunks = new Dictionary<MazePos, MazeRenderedChunk>();
 		maze = new Maze(new EllersMaze(), chunkSize, chunksX, chunksY, distanceVariability);
-		GenerateMaze();
+		GenerateMaze(progress, done);
 	}
 
 	void Update() {
@@ -189,11 +188,22 @@ public class MazeHandler : MonoBehaviour {
 		return maze;
 	}
 
-	private void GenerateMaze() {
+	private System.Action<float> progress;
+	private LoadingStepComplete done;
+	private void GenerateMaze(System.Action<float> progress, LoadingStepComplete done) {
+		this.progress = progress;
+		this.done = done;
+		
+		PMEventSystem.GetEventSystem().RemoveListener<EventMazeGenerationBegin>(MazeBegin);
+		PMEventSystem.GetEventSystem().RemoveListener<EventMazeGenerationFinish>(MazeFinish);
+		PMEventSystem.GetEventSystem().RemoveListener<EventMazeGenerationUpdate>(MazeUpdate);
+		PMEventSystem.GetEventSystem().RemoveListener<ItemSpawnEvent>(ItemSpawn);
+
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationBegin>(MazeBegin);
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationFinish>(MazeFinish);
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationUpdate>(MazeUpdate);
 		PMEventSystem.GetEventSystem().AddListener<ItemSpawnEvent>(ItemSpawn);
+
 		maze.Generate(this, new MazePos(chunksX * chunkSize / 2, chunksY * chunkSize / 2));
 	}
 
@@ -212,11 +222,13 @@ public class MazeHandler : MonoBehaviour {
 		if (infoText != null) {
 			infoText.text = "Finished generating.";
 		}
+		done.Invoke();
 		Rendering = false;
 	}
 
 	private void MazeUpdate<T>(T e) where T : EventMazeGenerationUpdate {
 		if (infoText != null) {
+			progress.Invoke(e.GetProgress());
 			infoText.text = "Generating maze: " + (e.GetProgress() * 100.0f).ToString("00.00") + "%";
 		}
 	}
