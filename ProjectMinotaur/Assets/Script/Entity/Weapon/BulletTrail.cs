@@ -1,14 +1,11 @@
 ﻿using UnityEngine;
 
 public class BulletTrail : MonoBehaviour {
-
-	public float life = 0.05f;
-
+    
+	public float life = 0.5f;
+    
 	private float alpha = -1.0f;
 	private float time = 0.0f;
-
-	private Vector3 start;
-	private Vector3 end;
 
 	private LineRenderer line;
 
@@ -21,10 +18,10 @@ public class BulletTrail : MonoBehaviour {
 			Destroy(gameObject);
 			return;
 		}
-		alpha = time / life / 8.0f;
-		Color c = line.startColor;
-		c.a = 0.125f - alpha;
-		line.startColor = c;
+        alpha = time / life / 8.0f;
+        Color c = line.endColor;
+		c.a = 1.0f / 8.0f - alpha;
+		line.startColor = new Color(c.r, c.g, c.b, 0.0f);
 		line.endColor = c;
 	}
 
@@ -32,14 +29,20 @@ public class BulletTrail : MonoBehaviour {
 		GameObject trailObj = new GameObject("GunTrail");
 		trailObj.transform.position = Vector3.zero;
 		BulletTrail trail = trailObj.AddComponent<BulletTrail>();
-		trail.start = start;
-		trail.end = end;
 		trail.line = trailObj.AddComponent<LineRenderer>();
 		trail.line.startWidth = 0.015f;
 		trail.line.endWidth = 0.015f;
-		trail.line.SetPositions(new Vector3[] { trail.start, trail.end });
-		trail.line.material = Resources.Load<Material>("BulletTrailMaterial");
-		trail.alpha = 1.0f;
+        Vector3 dir = (end - start).normalized;
+        dir *= 15.0f;
+        dir += start;
+        if (Vector3.Distance(start, dir) >= Vector3.Distance(start, end)) {
+            end = dir;
+        }
+		trail.line.SetPositions(new Vector3[] { start, dir, end });
+        trail.line.material = Resources.Load<Material>("BulletTrailMaterial");
+        trail.line.startColor = new Color(1.0f, 1.0f, 1.0f, 1.0f / 8.0f);
+        trail.line.endColor = new Color(1.0f, 1.0f, 1.0f, 1.0f / 8.0f);
+        trail.alpha = 1.0f;
 	}
 
 }
