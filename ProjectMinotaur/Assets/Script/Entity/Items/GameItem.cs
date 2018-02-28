@@ -8,18 +8,50 @@ public class GameItem {
 	public string Description { private set; get; }
 	public int MaxStackSize { private set; get; }
 
-	public GameItem(string uid, string name, string description, int maxStackSize) {
+	protected GameObject model;
+	protected Sprite icon;
+
+	public GameObject Model {
+		protected set {
+			model = value;
+		}
+		get {
+			if (model == null) {
+				Debug.LogWarning("Item has no model: " + UniqueId);
+			}
+			return model;
+		}
+	}
+
+	public Sprite Icon {
+		protected set {
+			icon = value;
+		}
+		get {
+			if (icon == null) {
+				Debug.LogWarning("Item has no icon: " + UniqueId);
+			}
+			return icon;
+		}
+	}
+
+	protected GameItem(string uid, string name, string description, int maxStackSize) : this(uid, name, description, maxStackSize, null, null) {
+	}
+
+	public GameItem(string uid, string name, string description, int maxStackSize, GameObject model, Sprite icon) {
 		UniqueId = uid;
 		DisplayName = name;
 		Description = description;
 		MaxStackSize = maxStackSize;
+		Model = model;
+		Icon = icon;
 	}
 
 	public virtual void CreateModel(WorldItem item) { }
 
 	public override bool Equals(object obj) {
 		var item = obj as GameItem;
-		return item != null && UniqueId == item.UniqueId && DisplayName == item.DisplayName && Description == item.Description && MaxStackSize == item.MaxStackSize;
+		return item != null && UniqueId == item.UniqueId && DisplayName == item.DisplayName && Description == item.Description && MaxStackSize == item.MaxStackSize && EqualityComparer<GameObject>.Default.Equals(Model, item.Model) && EqualityComparer<Sprite>.Default.Equals(Icon, item.Icon);
 	}
 
 	public override int GetHashCode() {
@@ -27,6 +59,8 @@ public class GameItem {
 		hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(UniqueId);
 		hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(DisplayName);
 		hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Description);
+		hashCode = hashCode * -1521134295 + EqualityComparer<GameObject>.Default.GetHashCode(Model);
+		hashCode = hashCode * -1521134295 + EqualityComparer<Sprite>.Default.GetHashCode(Icon);
 		hashCode = hashCode * -1521134295 + MaxStackSize.GetHashCode();
 		return hashCode;
 	}

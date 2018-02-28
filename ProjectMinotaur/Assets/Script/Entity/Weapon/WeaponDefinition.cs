@@ -28,8 +28,6 @@ public sealed class WeaponDefinition : GameItem {
 	public readonly Vector3 displayPositionOffset;
 	public readonly Vector3 displayRotationOffset;
 	public readonly Vector3 barrelPosition;
-	public readonly GameObject model;
-	public readonly Sprite icon;
 	public readonly bool drawTrail;
 	public readonly bool auto;
 	public readonly float recoilTime;
@@ -72,14 +70,8 @@ public sealed class WeaponDefinition : GameItem {
 		this.displayPositionOffset = displayPositionOffset;
 		this.displayRotationOffset = displayRotationOffset;
 		this.barrelPosition = barrelPosition;
-		model = Resources.Load<GameObject>(modelPath);
-		if (model == null) {
-			Debug.LogWarning("Weapon has no model: " + unique + " | " + modelPath);
-		}
-		icon = Resources.Load<Sprite>(iconPath);
-		if (icon == null) {
-			Debug.LogWarning("Weapon has no icon: " + unique + " | " + iconPath);
-		}
+		Model = Resources.Load<GameObject>(modelPath);
+		Icon = Resources.Load<Sprite>(iconPath);
 		this.drawTrail = drawTrail;
 		this.auto = auto;
 		this.recoilTime = recoilTime;
@@ -129,21 +121,15 @@ public sealed class WeaponDefinition : GameItem {
 			Vector3 start = instance.Holder.LookCamera.transform.position;
 			Vector3 dir = GetBulletSpread(instance.Holder.LookCamera.transform.forward) * Vector3.forward;
 
-			/*float dirOffX = Random.Range(-(1 - spray * DEG_TO_RAD), 1 - spray);
-			float dirOffY = Random.Range(-(1 - spray * DEG_TO_RAD), 1 - spray * DEG_TO_RAD);
-			float dirOffZ = Random.Range(-(1 - spray * DEG_TO_RAD), 1 - spray * DEG_TO_RAD);
-			dir.x += dirOffX;
-			dir.y += dirOffY;
-			dir.z += dirOffZ;
-			dir.Normalize();*/
-
 			float dist = maxDistance;
 			if (Physics.Raycast(instance.Holder.LookCamera.transform.position, dir, out hit, maxDistance)) {
 				dist = hit.distance;
+				Debug.Log("Hit: " + hit.collider.gameObject.transform.name + " @ " + dist + " meters away");
 			}
 			Vector3 end = (hit.distance <= 0.0f) ? (start + (dir * dist)) : (hit.point);
 			if (drawTrail) {
 				BulletTrail.Create(instance.transform.TransformPoint(barrelPosition), end);
+				instance.DrawFlash();
 			}
 		}
 	}

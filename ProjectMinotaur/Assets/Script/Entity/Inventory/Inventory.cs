@@ -2,14 +2,13 @@
 
 public sealed class Inventory {
 
-	public string Name { private set; get; }
-	public Player OpenTo { private set; get; }
-	public int Slots { private set; get; }
+	public readonly string name;
+	public readonly int slots;
 	private ItemStack[] contents;
 
 	public Inventory(string name, int slots) {
-		Name = name;
-		Slots = slots;
+		this.name = name;
+		this.slots = slots;
 		contents = new ItemStack[slots];
 	}
 
@@ -23,7 +22,7 @@ public sealed class Inventory {
 			return false;
 		}
 		int count = stack.Count;
-		for (int i = 0; i < Slots && count > 0; i ++) {
+		for (int i = 0; i < slots && count > 0; i ++) {
 			if (!HasItem(i)) {	// Empty slot
 				if (count > stack.Item.MaxStackSize) {	// Fill up this slot and move on, the input has too many items.
 					count -= stack.Item.MaxStackSize;
@@ -51,9 +50,13 @@ public sealed class Inventory {
 		return false;	// Inventory filled up.
 	}
 
-	// Will return the item stack in the specified slot, or null if one was not found or the slot contains an empty itemstack.
+	/// <summary>
+	///		Will return the item stack in the specified slot.
+	/// </summary>
+	/// <param name="slot">The slot from which to retrive the item.</param>
+	/// <returns>The item found in the slot, or null if it is empty or if the slot is invalid.</returns>
 	public ItemStack GetItemStack(int slot) {
-		if (slot < 0 || slot >= Slots) {
+		if (slot < 0 || slot >= slots) {
 			return null;
 		}
 		if (!contents[slot].IsEmpty()) {
@@ -62,34 +65,30 @@ public sealed class Inventory {
 		return null;
 	}
 
-	// Returns whether or not the slot contains an item.
+	/// <summary>
+	///		Checks whether or not the slot contains an item.
+	/// </summary>
+	/// <param name="slot">The slot to check.</param>
+	/// <returns>Whether or not the slot has an item.</returns>
 	public bool HasItem(int slot) {
-		return contents[slot] != null;
-	}
-
-	public void ShowInventory(Player player) {
-		OpenTo = player;
-	}
-
-	public void CloseInventory() {
-		OpenTo = null;
+		return GetItemStack(slot) != null;
 	}
 
 	public override bool Equals(object obj) {
 		var inventory = obj as Inventory;
-		return inventory != null && EqualityComparer<Player>.Default.Equals(OpenTo, inventory.OpenTo) && Slots == inventory.Slots && EqualityComparer<ItemStack[]>.Default.Equals(contents, inventory.contents);
+		return inventory != null && EqualityComparer<string>.Default.Equals(name, inventory.name) && slots == inventory.slots && EqualityComparer<ItemStack[]>.Default.Equals(contents, inventory.contents);
 	}
 
 	public override int GetHashCode() {
 		var hashCode = -1360609007;
-		hashCode = hashCode * -1521134295 + EqualityComparer<Player>.Default.GetHashCode(OpenTo);
-		hashCode = hashCode * -1521134295 + Slots.GetHashCode();
+		hashCode = hashCode * -1521134295 + name.GetHashCode();
+		hashCode = hashCode * -1521134295 + slots.GetHashCode();
 		hashCode = hashCode * -1521134295 + EqualityComparer<ItemStack[]>.Default.GetHashCode(contents);
 		return hashCode;
 	}
 
 	public override string ToString() {
-		return "Inventory: " + Name;
+		return "Inventory: " + name;
 	}
 
 }

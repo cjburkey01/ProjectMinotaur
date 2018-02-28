@@ -54,8 +54,11 @@ public class Player : Entity {
 	}
 
 	private void InitInventory() {
-		MainInventory = new Inventory("PlayerInventoryMain", 25);
-		Toolbar = new Hotbar(this);
+		MainInventory = new Inventory("PlayerInventoryMain", 15);	// 15 main inventory slots
+		Toolbar = new Hotbar(this);     // 2 weapon and/or in-hand slots
+
+		Toolbar.SetWeapon(true, Weapon.Create(false, this, DefaultWeapons.AutomaticRifle));
+		Toolbar.SetWeapon(false, Weapon.Create(false, this, DefaultWeapons.Dagger));
 
 		Debug.Log("Primary weapon: " + Toolbar.GetWeapon());
 	}
@@ -78,11 +81,14 @@ public class Player : Entity {
 			Destroy(gameObject);
 		}
 
-        HandRenderer = GameObject.FindGameObjectsWithTag("HandRender")[0].GetComponent<Camera>();
-        if (HandRenderer == null) {
-            Debug.LogError("HandRenderer not found");
-            Destroy(gameObject);
-        }
+		GameObject[] foundHands = GameObject.FindGameObjectsWithTag("HandRender");
+		if (foundHands.Length > 0 && foundHands[0] != null) {
+			HandRenderer = foundHands[0].GetComponent<Camera>();
+			if (HandRenderer == null) {
+				Debug.LogError("HandRenderer not found");
+				Destroy(gameObject);
+			}
+		}
 	}
 
 }

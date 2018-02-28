@@ -3,7 +3,7 @@
 public class Hotbar {
 
 	private Player player;
-	public readonly int Size = 3;
+	public readonly int Size = 2;
 	public Inventory Inventory { private set; get; }
 	public Weapon Primary;
 	public Weapon Secondary;
@@ -17,11 +17,6 @@ public class Hotbar {
 		SetWeapon(true, null);
 		SetWeapon(false, null);
 		SelectWeapon(true);
-
-		// TODO: REMOVE THIS TEST CODE
-
-		SetWeapon(true, Weapon.Create(false, player, DefaultWeapons.AutomaticRifle));
-		SetWeapon(false, Weapon.Create(false, player, DefaultWeapons.Dagger));
 	}
 
 	public void Exit() {
@@ -64,11 +59,11 @@ public class Hotbar {
 			}
 			Secondary = weapon;
 		}
-		if (Primary != null && Primary.WeaponType.icon != null) {
-			player.PlayerOverlay.primarySlot.SetIcon(Primary.WeaponType.icon);
+		if (Primary != null && Primary.WeaponType.Icon != null) {
+			player.PlayerOverlay.primarySlot.SetIcon(Primary.WeaponType.Icon);
 		}
-		if (Secondary != null && Secondary.WeaponType.icon != null) {
-			player.PlayerOverlay.secondarySlot.SetIcon(Secondary.WeaponType.icon);
+		if (Secondary != null && Secondary.WeaponType.Icon != null) {
+			player.PlayerOverlay.secondarySlot.SetIcon(Secondary.WeaponType.Icon);
 		}
 	}
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class Weapon : MonoBehaviour {
 
@@ -7,13 +8,26 @@ public class Weapon : MonoBehaviour {
 	public Player Holder { private set; get; }
 	public int clipCount;
 	public int currentClipAmmo;
-
+	
+	private ParticleSystem muzzleFlash;
 	private float lastFire;
 
 	void Update() {
 		if (lastFire < WeaponType.resetTime) {
 			lastFire += Time.deltaTime;
 		}
+	}
+
+	public void DrawFlash() {
+		if (muzzleFlash != null) {
+			muzzleFlash.Play(true);
+			StartCoroutine(StopFlash());
+		}
+	}
+
+	private IEnumerator StopFlash() {
+		yield return new WaitForSeconds(WeaponType.resetTime / 2.0f);
+		muzzleFlash.Stop();
 	}
 
 	public void AttemptFire() {
@@ -47,8 +61,15 @@ public class Weapon : MonoBehaviour {
 	}
 
 	public void SetPlayer(Player player) {
+		if (player == null) {
+			transform.parent = null;
+			Holder = null;
+			gameObject.SetLayer(0);
+			return;
+		}
 		Holder = player;
-		transform.parent = player.LookCamera.gameObject.transform;
+		gameObject.SetLayer(8);
+		transform.parent = player.HandRenderer.gameObject.transform;
 		transform.localPosition = WeaponType.displayPositionOffset;
 		transform.localRotation = Quaternion.Euler(WeaponType.displayRotationOffset);
 	}
@@ -62,15 +83,35 @@ public class Weapon : MonoBehaviour {
 		tmp.transform.name = "Weapon: " + def.DisplayName;
 		Weapon w = tmp.AddComponent<Weapon>();
 		w.Init(3, permanent, def);
-		if (def.model != null) {
-			GameObject model = Instantiate(def.model, Vector3.zero, Quaternion.identity);
+		if (def.drawTrail) {
+			GameObject obj = Resources.Load<GameObject>("Weapon/MuzzleFlash");
+			if (obj != null) {
+				GameObject tmptmp = Instantiate(obj, Vector3.zero, Quaternion.identity);
+				foreach (Transform trans in tmptmp.transform) {
+					if (trans.parent.Equals(tmptmp.transform)) {
+						w.muzzleFlash = trans.GetComponent<ParticleSystem>();
+						break;
+					}
+				}
+				if (w.muzzleFlash == null) {
+					Debug.LogWarning("MuzzleFlash has no particle system.");
+					Destroy(tmptmp);
+				} else {
+					w.muzzleFlash.Stop(true);
+					tmptmp.transform.parent = w.gameObject.transform;
+					tmptmp.transform.localPosition = def.barrelPosition;
+				}
+			} else {
+				Debug.LogWarning("Failed to load MuzzleFlash prefab.");
+			}
+		}
+		if (def.Model != null) {
+			GameObject model = Instantiate(def.Model, Vector3.zero, Quaternion.identity);
 			model.transform.parent = tmp.transform;
 			model.transform.name = "Model";
 			model.transform.localPosition = Vector3.zero;
 		}
-		if (parentPlayer != null) {
-			w.SetPlayer(parentPlayer);
-		}
+		w.SetPlayer(parentPlayer);
 		return w;
 	}
 

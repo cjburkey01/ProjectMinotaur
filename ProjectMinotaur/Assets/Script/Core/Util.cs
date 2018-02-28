@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using UnityEngine;
 
 public static class Util {
 
@@ -12,6 +13,14 @@ public static class Util {
 			ret[i] = array[i];
 		}
 		return ret;
+	}
+
+	// Recursively set layers of GameObjects
+	public static void SetLayer(this GameObject obj, int layer) {
+		obj.layer = layer;
+		foreach (Transform child in obj.transform) {
+			SetLayer(child.gameObject, layer);
+		}
 	}
 
 	public static double GetMillis() {
