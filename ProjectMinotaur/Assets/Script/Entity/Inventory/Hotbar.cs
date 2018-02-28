@@ -26,10 +26,10 @@ public class Hotbar {
 
 	public void Exit() {
 		if (Primary != null) {
-			Object.Destroy(Primary);
+			Object.Destroy(Primary.gameObject);
 		}
 		if (Secondary != null) {
-			Object.Destroy(Secondary);
+            Object.Destroy(Secondary.gameObject);
 		}
 	}
 

@@ -5,15 +5,15 @@ public class Player : Entity {
 	public PlayerUI PlayerOverlay { private set; get; }
 	public PlayerMove MovementMotor { private set; get; }
 	public Camera LookCamera { private set; get; }
+    public Camera HandRenderer { private set; get; }
 	public Inventory MainInventory { private set; get; }
 	public Hotbar Toolbar { private set; get; }
 
 	private bool didInit;
 
 	void Start() {
-		Init();
-		
-	}
+        Init();
+    }
 
 	public void Init() {
 		if (didInit) {
@@ -25,9 +25,9 @@ public class Player : Entity {
 		InitInventory();
 		PMEventSystem.GetEventSystem().AddListener<StateChangeEvent>(e => {
 			if (e.Handler.State.Equals(GameState.INGAME)) {
-				if (Toolbar != null) {
-					Toolbar.Exit();
-				}
+                if (Toolbar != null) {
+                    Toolbar.Exit();
+                }
 				InitVars();
 				InitInventory();
 			}
@@ -77,6 +77,12 @@ public class Player : Entity {
 			Debug.LogError("Camera not found on Player object.");
 			Destroy(gameObject);
 		}
+
+        HandRenderer = GameObject.FindGameObjectsWithTag("HandRender")[0].GetComponent<Camera>();
+        if (HandRenderer == null) {
+            Debug.LogError("HandRenderer not found");
+            Destroy(gameObject);
+        }
 	}
 
 }

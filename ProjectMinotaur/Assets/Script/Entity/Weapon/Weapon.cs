@@ -50,7 +50,7 @@ public class Weapon : MonoBehaviour {
 		Holder = player;
 		transform.parent = player.LookCamera.gameObject.transform;
 		transform.localPosition = WeaponType.displayPositionOffset;
-		transform.rotation = Quaternion.Euler(WeaponType.displayRotationOffset);
+		transform.localRotation = Quaternion.Euler(WeaponType.displayRotationOffset);
 	}
 
 	public Vector3 GetBarrelPosWorld() {
