@@ -11,6 +11,7 @@ public class PlayerMove : MonoBehaviour {
 	public float playerJumpHeight = 6.0f;
 	public float playerGravity = 9.0f;
 	public bool locked;
+	public bool lockCursor = true;
 
 	public bool Running { private set; get; }
 	public bool Moving { private set; get; }
@@ -66,7 +67,7 @@ public class PlayerMove : MonoBehaviour {
 	}
 
 	void Update() {
-		if (GameHandler.paused) {
+		if (lockCursor) {
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 		} else {

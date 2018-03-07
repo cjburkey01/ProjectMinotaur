@@ -24,7 +24,8 @@
     "z": -0.722
   },
   "model_path": "Weapon/Model/M4A1",
-  "icon_path": "Weapon/Icon/Rifle32",
+  "icon32_path": "Weapon/Icon/Rifle32",
+  "icon512_path": "Weapon/Icon/HD/Rifle",
   "draw_trail": true,
   "full_auto": true,
   "recoil_time": 0.2,

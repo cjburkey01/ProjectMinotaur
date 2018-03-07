@@ -59,7 +59,7 @@ public sealed class WeaponDefinition : GameItem {
 	/// <param name="iconPath">The location of the icon (sprite) to be displayed for this weapon.</param>
 	/// <param name="drawTrail">Whether or not to draw a bullet trail"</param>
 	/// <param name="auto">Whether or not the weapon can be "held down"</param>
-	public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string iconPath, bool drawTrail, bool auto, float recoilTime, float recoilX, float recoilY, float recoilSpeed) : base(unique, name, desc, 1) {
+	public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string icon32Path, string icon512Path, bool drawTrail, bool auto, float recoilTime, float recoilX, float recoilY, float recoilSpeed) : base(unique, name, desc, 1) {
 		this.isPrimary = isPrimary;
 		this.resetTime = resetTime;
 		this.damage = damage;
@@ -71,7 +71,8 @@ public sealed class WeaponDefinition : GameItem {
 		this.displayRotationOffset = displayRotationOffset;
 		this.barrelPosition = barrelPosition;
 		Model = Resources.Load<GameObject>(modelPath);
-		Icon = Resources.Load<Sprite>(iconPath);
+		Icon32 = Resources.Load<Sprite>(icon32Path);
+		Icon512 = Resources.Load<Sprite>(icon512Path);
 		this.drawTrail = drawTrail;
 		this.auto = auto;
 		this.recoilTime = recoilTime;
@@ -115,7 +116,7 @@ public sealed class WeaponDefinition : GameItem {
 	public void OnPrimary(Weapon instance) {
 		bool def = primaryAction.Invoke(instance);
 		if (def) {
-			instance.currentClipAmmo--;
+			instance.SetCurrentClipAmmo(instance.GetCurrentClipAmmo() - 1);
 
 			RaycastHit hit;
 			Vector3 start = instance.Holder.LookCamera.transform.position;
@@ -154,9 +155,9 @@ public sealed class WeaponDefinition : GameItem {
 		bool def = reloadAction.Invoke(instance);
 		if (def) {
 			if (ammoPerClip > 0) {
-				if (instance.clipCount > 0) {
-					instance.clipCount--;
-					instance.currentClipAmmo = ammoPerClip;
+				if (instance.GetClipCount() > 0) {
+					instance.SetClipCount(instance.GetClipCount() - 1);
+					instance.SetCurrentClipAmmo(ammoPerClip);
 				}
 			}
 		}

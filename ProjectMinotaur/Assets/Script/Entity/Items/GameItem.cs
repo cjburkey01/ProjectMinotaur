@@ -9,7 +9,8 @@ public class GameItem {
 	public int MaxStackSize { private set; get; }
 
 	protected GameObject model;
-	protected Sprite icon;
+	protected Sprite icon32;
+	protected Sprite icon512;
 
 	public GameObject Model {
 		protected set {
@@ -23,35 +24,48 @@ public class GameItem {
 		}
 	}
 
-	public Sprite Icon {
+	public Sprite Icon32 {
 		protected set {
-			icon = value;
+			icon32 = value;
 		}
 		get {
-			if (icon == null) {
-				Debug.LogWarning("Item has no icon: " + UniqueId);
+			if (icon32 == null) {
+				Debug.LogWarning("Item has no SD icon: " + UniqueId);
 			}
-			return icon;
+			return icon32;
 		}
 	}
 
-	protected GameItem(string uid, string name, string description, int maxStackSize) : this(uid, name, description, maxStackSize, null, null) {
+	public Sprite Icon512 {
+		protected set {
+			icon512 = value;
+		}
+		get {
+			if (icon512 == null) {
+				Debug.LogWarning("Item has no HD icon: " + UniqueId);
+			}
+			return icon512;
+		}
 	}
 
-	public GameItem(string uid, string name, string description, int maxStackSize, GameObject model, Sprite icon) {
+	protected GameItem(string uid, string name, string description, int maxStackSize) : this(uid, name, description, maxStackSize, null, null, null) {
+	}
+
+	public GameItem(string uid, string name, string description, int maxStackSize, GameObject model, Sprite icon32, Sprite icon512) {
 		UniqueId = uid;
 		DisplayName = name;
 		Description = description;
 		MaxStackSize = maxStackSize;
 		Model = model;
-		Icon = icon;
+		Icon32 = icon32;
+		Icon512 = icon512;
 	}
 
 	public virtual void CreateModel(WorldItem item) { }
 
 	public override bool Equals(object obj) {
 		var item = obj as GameItem;
-		return item != null && UniqueId == item.UniqueId && DisplayName == item.DisplayName && Description == item.Description && MaxStackSize == item.MaxStackSize && EqualityComparer<GameObject>.Default.Equals(Model, item.Model) && EqualityComparer<Sprite>.Default.Equals(Icon, item.Icon);
+		return item != null && UniqueId == item.UniqueId && DisplayName == item.DisplayName && Description == item.Description && MaxStackSize == item.MaxStackSize && EqualityComparer<GameObject>.Default.Equals(Model, item.Model) && EqualityComparer<Sprite>.Default.Equals(Icon32, item.Icon32) && EqualityComparer<Sprite>.Default.Equals(Icon512, item.Icon512);
 	}
 
 	public override int GetHashCode() {
@@ -60,7 +74,8 @@ public class GameItem {
 		hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(DisplayName);
 		hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Description);
 		hashCode = hashCode * -1521134295 + EqualityComparer<GameObject>.Default.GetHashCode(Model);
-		hashCode = hashCode * -1521134295 + EqualityComparer<Sprite>.Default.GetHashCode(Icon);
+		hashCode = hashCode * -1521134295 + EqualityComparer<Sprite>.Default.GetHashCode(Icon32);
+		hashCode = hashCode * -1521134295 + EqualityComparer<Sprite>.Default.GetHashCode(Icon512);
 		hashCode = hashCode * -1521134295 + MaxStackSize.GetHashCode();
 		return hashCode;
 	}
@@ -87,6 +102,10 @@ public class WorldItem : MonoBehaviour {
 		stack.Item.CreateModel(item);
 		return item;
 	}
+	
+	void Update() {
+		// TODO: ROTATE
+	}
 
 }
 
@@ -94,10 +113,12 @@ public class ItemStack {
 
 	public GameItem Item { private set; get; }
 	public int Count { set; get; }
+	public ItemData Data { private set; get; }
 
 	public ItemStack(GameItem item, int count) {
 		Item = item;
 		Count = count;
+		Data = new ItemData();
 	}
 
 	public bool IsEmpty() {
@@ -119,6 +140,46 @@ public class ItemStack {
 
 	public override string ToString() {
 		return Item + "x" + Count;
+	}
+
+}
+
+public class ItemData {
+
+	private Dictionary<string, object> data;
+
+	public ItemData() {
+		data = new Dictionary<string, object>();
+	}
+
+	public void Set(string key, object value) {
+		if (data.ContainsKey(key)) {
+			data[key] = value;
+		} else {
+			data.Add(key, value);
+		}
+	}
+
+	public object Get(string key) {
+		if (!data.ContainsKey(key)) {
+			return null;
+		}
+		object ret;
+		if (!data.TryGetValue(key, out ret) || ret == null) {
+			return null;
+		}
+		return ret;
+	}
+
+	public T Get<T>(string key, T def) {
+		object at = Get(key);
+		if (!(at is T)) {
+			return def;
+		}
+		if (at == null || at.Equals(def)) {
+			return def;
+		}
+		return (T) at;
 	}
 
 }

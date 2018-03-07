@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public sealed class Inventory {
 
@@ -50,6 +51,13 @@ public sealed class Inventory {
 		return false;	// Inventory filled up.
 	}
 
+	public void Set(int slot, ItemStack stack) {
+		if (slot < 0 || slot >= slots) {
+			return;
+		}
+		contents[slot] = stack;
+	}
+
 	/// <summary>
 	///		Will return the item stack in the specified slot.
 	/// </summary>
@@ -59,7 +67,7 @@ public sealed class Inventory {
 		if (slot < 0 || slot >= slots) {
 			return null;
 		}
-		if (!contents[slot].IsEmpty()) {
+		if (contents[slot] != null && !contents[slot].IsEmpty()) {
 			return contents[slot];
 		}
 		return null;

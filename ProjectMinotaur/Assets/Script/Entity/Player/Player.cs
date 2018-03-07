@@ -8,6 +8,8 @@ public class Player : Entity {
     public Camera HandRenderer { private set; get; }
 	public Inventory MainInventory { private set; get; }
 	public Hotbar Toolbar { private set; get; }
+	public UIInventory inventoryUi;
+	public bool InventoryOpen { private set; get; }
 
 	private bool didInit;
 
@@ -34,12 +36,24 @@ public class Player : Entity {
 		});
 	}
 
+	public void ToggleInventory() {
+		inventoryUi.gameObject.SetActive(!InventoryOpen);
+		InventoryOpen = inventoryUi.gameObject.activeInHierarchy;
+		if (InventoryOpen) {
+			inventoryUi.RefreshInventory();
+		}
+	}
+
 	void Update() {
+		MovementMotor.lockCursor = GameHandler.paused || InventoryOpen;
 		if (!GameHandler.paused && Toolbar != null) {
+			if (Input.GetKeyDown(KeyCode.E) || (!GameHandler.paused && InventoryOpen && Input.GetButtonDown("Cancel"))) {
+				ToggleInventory();
+			}
 			if (Input.GetKeyDown(KeyCode.Tab)) {
 				Toolbar.SwitchWeapon();
 			}
-			if (Toolbar.GetWeapon() != null) {
+			if (Toolbar.GetWeapon() != null && !InventoryOpen) {
 				if (Toolbar.GetWeapon().WeaponType.auto) {
 					if (Input.GetButton("Fire1")) {
 						Toolbar.GetWeapon().AttemptFire();
@@ -54,13 +68,15 @@ public class Player : Entity {
 	}
 
 	private void InitInventory() {
-		MainInventory = new Inventory("PlayerInventoryMain", 15);	// 15 main inventory slots
-		Toolbar = new Hotbar(this);     // 2 weapon and/or in-hand slots
+		MainInventory = new Inventory("PlayerInventoryMain", 15 + 2);	// 15 main inventory slots, 2 weapon slots
+		Toolbar = new Hotbar(this);
 
 		Toolbar.SetWeapon(true, Weapon.Create(false, this, DefaultWeapons.AutomaticRifle));
 		Toolbar.SetWeapon(false, Weapon.Create(false, this, DefaultWeapons.Dagger));
 
 		Debug.Log("Primary weapon: " + Toolbar.GetWeapon());
+
+		inventoryUi.SetInventory(MainInventory);
 	}
 
 	private void InitVars() {

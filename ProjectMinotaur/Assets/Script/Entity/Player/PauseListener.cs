@@ -6,16 +6,16 @@ public class PauseListener : MonoBehaviour {
 	public IMenu pauseMenu;
 	public IMenu optionsMenu;
 
-	private PlayerMove ply;
+	private Player ply;
 
 	void Update() {
 		if (ply == null) {
-			ply = FindObjectOfType<PlayerMove>();
+			ply = FindObjectOfType<Player>();
 			if (ply == null) {
 				return;
 			}
 		}
-		if (Input.GetButtonDown("Cancel") && !ply.locked) {
+		if (Input.GetButtonDown("Cancel") && !ply.MovementMotor.locked && !ply.InventoryOpen) {
 			TogglePause();
 		}
 	}

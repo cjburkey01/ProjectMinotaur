@@ -24,7 +24,8 @@
     "z": 0
   },
   "model_path": "Weapon/Model/Handgun",
-  "icon_path": "Weapon/Icon/Handgun32",
+  "icon32_path": "Weapon/Icon/Handgun32",
+  "icon512_path": "Weapon/Icon/HD/Handgun",
   "draw_trail": true,
   "full_auto": false,
   "recoil_time": 0.2,

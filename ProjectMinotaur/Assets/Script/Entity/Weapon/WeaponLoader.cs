@@ -34,7 +34,8 @@ public static class WeaponLoader {
 			Vector3 displayRotationOffset = LoadVector3(json, "display_rotation_offset");
 			Vector3 barrelPositionOffset = LoadVector3(json, "barrel_position_offset");
 			string modelPath = json["model_path"].Value;
-			string iconPath = json["icon_path"].Value;
+			string icon32Path = json["icon32_path"].Value;
+			string icon512Path = json["icon512_path"].Value;
 			bool trail = json["draw_trail"].AsBool;
 			bool auto = json["full_auto"].AsBool;
 			float recoilTime = json["recoil_time"].AsFloat;
@@ -42,7 +43,7 @@ public static class WeaponLoader {
 			float recoilY = json["recoil_y"].AsFloat;
 			float recoilSpeed = json["recoil_speed"].AsFloat;
 
-			return new WeaponDefinition(path, name, description, isPrimary, resetTime, damage, maxDistance, spray, ammoPerClip, shotsPerPrimary, displayPositionOffset, displayRotationOffset, barrelPositionOffset, modelPath, iconPath, trail, auto, recoilTime, recoilX, recoilY, recoilTime);
+			return new WeaponDefinition(path, name, description, isPrimary, resetTime, damage, maxDistance, spray, ammoPerClip, shotsPerPrimary, displayPositionOffset, displayRotationOffset, barrelPositionOffset, modelPath, icon32Path, icon512Path, trail, auto, recoilTime, recoilX, recoilY, recoilTime);
 		} catch (Exception e) {
 			Debug.LogError("An error occurred while reading the weapon JSON: " + e.Message);
 		}

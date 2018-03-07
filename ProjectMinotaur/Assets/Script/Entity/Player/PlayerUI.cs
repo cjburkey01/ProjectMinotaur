@@ -30,9 +30,9 @@ public class PlayerUI : MonoBehaviour {
 			crossshair.gameObject.SetActive(true);
 
 			healthBar.Progress = GetPlayer().GetHealth() / 100.0f;
-			ammoBar.Progress = (float) player.Toolbar.GetWeapon().currentClipAmmo / player.Toolbar.GetWeapon().WeaponType.ammoPerClip;
+			ammoBar.Progress = (float) player.Toolbar.GetWeapon().GetCurrentClipAmmo() / player.Toolbar.GetWeapon().WeaponType.ammoPerClip;
 			if (ammoBar.Child != null) {
-				ammoBar.Child.text = player.Toolbar.GetWeapon().clipCount + " | " + player.Toolbar.GetWeapon().currentClipAmmo;
+				ammoBar.Child.text = player.Toolbar.GetWeapon().GetClipCount() + " | " + player.Toolbar.GetWeapon().GetCurrentClipAmmo();
 			}
 		}
 	}

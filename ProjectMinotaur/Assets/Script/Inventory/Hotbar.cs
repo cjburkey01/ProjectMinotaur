@@ -3,8 +3,6 @@
 public class Hotbar {
 
 	private Player player;
-	public readonly int Size = 2;
-	public Inventory Inventory { private set; get; }
 	public Weapon Primary;
 	public Weapon Secondary;
 
@@ -13,7 +11,6 @@ public class Hotbar {
 
 	public Hotbar(Player player) {
 		this.player = player;
-		Inventory = new Inventory("PlayerInventoryToolbar", Size);
 		SetWeapon(true, null);
 		SetWeapon(false, null);
 		SelectWeapon(true);
@@ -53,30 +50,28 @@ public class Hotbar {
 				Object.Destroy(Primary.gameObject);
 			}
 			Primary = weapon;
+			player.MainInventory.Set(15, Primary.Stack);
 		} else {
 			if (Secondary != null) {
 				Object.Destroy(Secondary.gameObject);
 			}
 			Secondary = weapon;
+			player.MainInventory.Set(16, Secondary.Stack);
 		}
-		if (Primary != null && Primary.WeaponType.Icon != null) {
-			player.PlayerOverlay.primarySlot.SetIcon(Primary.WeaponType.Icon);
+		if (Primary != null && Primary.WeaponType.Icon32 != null) {
+			player.PlayerOverlay.primarySlot.SetIcon(Primary.WeaponType.Icon32);
 		}
-		if (Secondary != null && Secondary.WeaponType.Icon != null) {
-			player.PlayerOverlay.secondarySlot.SetIcon(Secondary.WeaponType.Icon);
+		if (Secondary != null && Secondary.WeaponType.Icon32 != null) {
+			player.PlayerOverlay.secondarySlot.SetIcon(Secondary.WeaponType.Icon32);
 		}
 	}
 
 	public void UpdateSlot(int slot) {
-		Slot = slot % Size;
+		Slot = slot % 2;
 	}
 
 	public ItemStack GetStackInSlot(int slot) {
-		return Inventory.GetItemStack(Slot);
-	}
-
-	public bool AddItem(ItemStack stack) {
-		return Inventory.Add(stack);
+		return player.MainInventory.GetItemStack(15 + Slot);
 	}
 
 }

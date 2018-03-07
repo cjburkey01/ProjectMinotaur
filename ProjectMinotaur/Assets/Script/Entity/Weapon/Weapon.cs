@@ -2,13 +2,11 @@
 using UnityEngine;
 
 public class Weapon : MonoBehaviour {
-
-	public bool Permanent { private set; get; }
+	
 	public WeaponDefinition WeaponType { private set; get; }
 	public Player Holder { private set; get; }
-	public int clipCount;
-	public int currentClipAmmo;
-	
+	public ItemStack Stack { private set; get; }
+
 	private ParticleSystem muzzleFlash;
 	private float lastFire;
 
@@ -34,7 +32,7 @@ public class Weapon : MonoBehaviour {
 		if (lastFire < WeaponType.resetTime) {
 			return;
 		}
-		if (currentClipAmmo >= WeaponType.shotsPerPrimary) {
+		if (GetCurrentClipAmmo() >= WeaponType.shotsPerPrimary) {
 			lastFire = 0.0f;
 			Holder.MovementMotor.DoRecoil(WeaponType.recoilTime, WeaponType.recoilX, WeaponType.recoilY, WeaponType.recoilSpeed);
 			for (int i = 0; i < WeaponType.shotsPerPrimary; i++) {
@@ -54,10 +52,12 @@ public class Weapon : MonoBehaviour {
 	}
 
 	private void Init(int startingClips, bool permanent, WeaponDefinition type) {
-		Permanent = permanent;
 		WeaponType = type;
-		clipCount = startingClips - 1;
-		currentClipAmmo = type.ammoPerClip;
+		Stack = new ItemStack(type, 1);
+		Stack.Data.Set("permanent", permanent);
+		Stack.Data.Set("clip_count", startingClips - 1);
+		Stack.Data.Set("current_clip_ammo", type.ammoPerClip);
+		Stack.Data.Set("last_fire", 0);
 	}
 
 	public void SetPlayer(Player player) {
@@ -76,6 +76,34 @@ public class Weapon : MonoBehaviour {
 
 	public Vector3 GetBarrelPosWorld() {
 		return transform.TransformPoint(WeaponType.barrelPosition);
+	}
+
+	public int GetCurrentClipAmmo() {
+		return Stack.Data.Get("current_clip_ammo", int.MinValue);
+	}
+
+	public int GetClipCount() {
+		return Stack.Data.Get("clip_count", int.MinValue);
+	}
+
+	public bool IsPermanent() {
+		return Stack.Data.Get("permanent", false);
+	}
+
+	public float GetTimeSinceLastFire() {
+		return Stack.Data.Get("last_fire", float.MinValue);
+	}
+
+	public void SetCurrentClipAmmo(int clip) {
+		Stack.Data.Set("current_clip_ammo", clip);
+	}
+
+	public void SetClipCount(int clips) {
+		Stack.Data.Set("clip_count", clips);
+	}
+
+	public void SetTimeSinceLastFire(float time) {
+		Stack.Data.Set("last_fire", time);
 	}
 
 	public static Weapon Create(bool permanent, Player parentPlayer, WeaponDefinition def) {

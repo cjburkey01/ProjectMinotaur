@@ -24,7 +24,8 @@
     "z": 0
   },
   "model_path": "Weapon/Model/TestFistModel",
-  "icon_path": "Weapon/Icon/Hand32",
+  "icon32_path": "Weapon/Icon/Hand32",
+  "icon512_path": "Weapon/Icon/HD/Hand",
   "draw_trail": false,
   "full_auto": false,
   "recoil_time": 0.0,
