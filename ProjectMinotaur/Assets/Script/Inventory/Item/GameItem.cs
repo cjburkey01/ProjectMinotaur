@@ -7,6 +7,7 @@ public class GameItem {
 	public string DisplayName { private set; get; }
 	public string Description { private set; get; }
 	public int MaxStackSize { private set; get; }
+    public bool Permanent { private set; get; }
 
 	protected GameObject model;
 	protected Sprite icon32;
@@ -48,10 +49,10 @@ public class GameItem {
 		}
 	}
 
-	protected GameItem(string uid, string name, string description, int maxStackSize) : this(uid, name, description, maxStackSize, null, null, null) {
+	protected GameItem(string uid, string name, string description, int maxStackSize) : this(uid, name, description, maxStackSize, null, null, null, false) {
 	}
 
-	public GameItem(string uid, string name, string description, int maxStackSize, GameObject model, Sprite icon32, Sprite icon512) {
+	public GameItem(string uid, string name, string description, int maxStackSize, GameObject model, Sprite icon32, Sprite icon512, bool permanent) {
 		UniqueId = uid;
 		DisplayName = name;
 		Description = description;
@@ -59,6 +60,7 @@ public class GameItem {
 		Model = model;
 		Icon32 = icon32;
 		Icon512 = icon512;
+        Permanent = permanent;
 	}
 
 	public virtual void CreateModel(WorldItem item) { }

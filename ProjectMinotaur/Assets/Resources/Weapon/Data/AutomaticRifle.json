@@ -9,9 +9,9 @@
   "ammo_per_clip": 60,
   "shots_per_primary": 1,
   "display_position_offset": {
-    "x": 0.391,
-    "y": -0.399,
-    "z": 0.864
+    "x": 0.49,
+    "y": -0.51,
+    "z": 0.83
   },
   "display_rotation_offset": {
     "x": 0,

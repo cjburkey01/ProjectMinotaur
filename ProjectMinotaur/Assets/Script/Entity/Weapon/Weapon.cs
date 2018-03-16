@@ -51,10 +51,9 @@ public class Weapon : MonoBehaviour {
 		WeaponType.OnReload(this);
 	}
 
-	private void Init(int startingClips, bool permanent, WeaponDefinition type) {
+	private void Init(int startingClips, WeaponDefinition type) {
 		WeaponType = type;
 		Stack = new ItemStack(type, 1);
-		Stack.Data.Set("permanent", permanent);
 		Stack.Data.Set("clip_count", startingClips - 1);
 		Stack.Data.Set("current_clip_ammo", type.ammoPerClip);
 		Stack.Data.Set("last_fire", 0);
@@ -86,10 +85,6 @@ public class Weapon : MonoBehaviour {
 		return Stack.Data.Get("clip_count", int.MinValue);
 	}
 
-	public bool IsPermanent() {
-		return Stack.Data.Get("permanent", false);
-	}
-
 	public float GetTimeSinceLastFire() {
 		return Stack.Data.Get("last_fire", float.MinValue);
 	}
@@ -106,11 +101,11 @@ public class Weapon : MonoBehaviour {
 		Stack.Data.Set("last_fire", time);
 	}
 
-	public static Weapon Create(bool permanent, Player parentPlayer, WeaponDefinition def) {
+	public static Weapon Create(Player parentPlayer, WeaponDefinition def) {
 		GameObject tmp = new GameObject(def.DisplayName);
 		tmp.transform.name = "Weapon: " + def.DisplayName;
 		Weapon w = tmp.AddComponent<Weapon>();
-		w.Init(3, permanent, def);
+		w.Init(3, def);
 		if (def.drawTrail) {
 			GameObject obj = Resources.Load<GameObject>("Weapon/MuzzleFlash");
 			if (obj != null) {

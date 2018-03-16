@@ -51,9 +51,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a48915d2be6746ec9fb9d0a6140019a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunkSize: 16
-  chunksX: 4
-  chunksY: 4
+  chunkSize: 4
+  chunksX: 16
+  chunksY: 16
   pathWidth: 15
   pathSpread: 30
   pathHeight: 150
@@ -61,8 +61,7 @@ MonoBehaviour:
   chunkPrefabName: MazeRenderedChunk
   nearnessObjects:
   - {fileID: 0}
-  - {fileID: 0}
   updateInterval: 1
-  chunkUnloadDistancePadding: 100
+  chunkUnloadDistancePadding: 50
   loadDebug: 1
   infoText: {fileID: 0}

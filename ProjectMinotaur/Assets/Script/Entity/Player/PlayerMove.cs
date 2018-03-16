@@ -10,7 +10,9 @@ public class PlayerMove : MonoBehaviour {
 	public float playerInAirRatio = 0.8f;
 	public float playerJumpHeight = 6.0f;
 	public float playerGravity = 9.0f;
+    public float flightSpeedMod = 2.5f;
 	public bool locked;
+    public bool flying;
 	public bool lockCursor = true;
 
 	public bool Running { private set; get; }
@@ -74,6 +76,9 @@ public class PlayerMove : MonoBehaviour {
 			if (!locked) {
 				MouseMovement();
 				HandleMovement();
+                if (flying) {
+                    moveDirection = Vector3.zero;
+                }
 			}
 		}
 	}
@@ -113,7 +118,7 @@ public class PlayerMove : MonoBehaviour {
 		currentSpeed = ((Running) ? (playerRunSpeed) : (playerWalkSpeed));
 		walkInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 		walkMove = Vector2.SmoothDamp(walkMove, walkInput.normalized, ref moveVel, playerMoveDamp, 100.0f, Time.deltaTime);
-		pedalSpeed = ((controller.isGrounded) ? (currentSpeed) : (currentSpeed * playerInAirRatio));
+        pedalSpeed = ((controller.isGrounded) ? (currentSpeed) : (currentSpeed * ((!flying) ? playerInAirRatio : 1.0f))) * ((flying) ? flightSpeedMod : 1.0f);
 		moveDirection.x = walkMove.x * pedalSpeed;
 		moveDirection.z = walkMove.y * pedalSpeed;
 		moveDirection = transform.TransformDirection(moveDirection);
@@ -121,14 +126,17 @@ public class PlayerMove : MonoBehaviour {
 
 	// Handle jumping, specifically
 	private void HandleJumping() {
-		if (controller.isGrounded && Input.GetButton("Jump")) {
-			moveDirection.y = playerJumpHeight;
+        if ((flying || controller.isGrounded) && Input.GetButton("Jump")) {
+            moveDirection.y = playerJumpHeight * ((flying) ? flightSpeedMod : 1.0f);
 		}
+        if (flying && Input.GetButton("FlyDown")) {
+            moveDirection.y -= playerJumpHeight * flightSpeedMod;
+        }
 	}
 
 	// Handle gravity, specifically
 	private void HandleGravity() {
-		if (!controller.isGrounded) {
+		if (!flying && !controller.isGrounded) {
 			moveDirection.y -= playerGravity * Time.deltaTime;
 		}
 	}

@@ -43,7 +43,7 @@ public class Hotbar {
 
 	public void SetWeapon(bool which, Weapon weapon) {
 		if (weapon == null) {
-			weapon = Weapon.Create(true, player, DefaultWeapons.Fist);
+			weapon = Weapon.Create(player, DefaultWeapons.Fist);
 		}
 		if (which) {
 			if (Primary != null) {

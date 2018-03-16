@@ -71,8 +71,8 @@ public class Player : Entity {
 		MainInventory = new Inventory("PlayerInventoryMain", 15 + 2);	// 15 main inventory slots, 2 weapon slots
 		Toolbar = new Hotbar(this);
 
-		Toolbar.SetWeapon(true, Weapon.Create(false, this, DefaultWeapons.AutomaticRifle));
-		Toolbar.SetWeapon(false, Weapon.Create(false, this, DefaultWeapons.Dagger));
+		Toolbar.SetWeapon(true, Weapon.Create(this, DefaultWeapons.AutomaticRifle));
+		Toolbar.SetWeapon(false, Weapon.Create(this, DefaultWeapons.Dagger));
 
 		Debug.Log("Primary weapon: " + Toolbar.GetWeapon());
 
