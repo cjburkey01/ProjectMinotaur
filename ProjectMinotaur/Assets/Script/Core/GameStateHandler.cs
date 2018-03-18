@@ -11,6 +11,8 @@ public delegate void StepsComplete();
 public class GameStateHandler : MonoBehaviour {
 
 	public static GameStateHandler Instance { private set; get; }
+	public static WorldHandler WorldHandler { private set; get; }
+	public static string SaveFileTemp { private set; get; }
 
 	public GameState State { private set; get; }
 
@@ -28,6 +30,8 @@ public class GameStateHandler : MonoBehaviour {
 	public Text info;
 
 	private bool working;
+	
+	public bool firstInit = true;
 
 	void Start() {
 		StartCoroutine(LateStart(0.5f));
@@ -37,6 +41,7 @@ public class GameStateHandler : MonoBehaviour {
 		yield return new WaitForSeconds(time);
 
 		Instance = this;
+		WorldHandler = new WorldHandler();
 		GameHandler.paused = false;
 		MenuSystem.GetInstance().HideMenus();
 		menuMaze.gameObject.SetActive(false);
@@ -48,6 +53,9 @@ public class GameStateHandler : MonoBehaviour {
 	}
 
 	private void LoadSteps<T>(T e) where T : LoadingStepPopulate {
+		if (firstInit) {
+			e.AddStep(RegisterItems);
+		}
 		e.AddStep(AddMaze);
 		if (e.Handler.State.Equals(GameState.MENU)) {
 			e.AddStep(AddMenuCamera);
@@ -55,8 +63,10 @@ public class GameStateHandler : MonoBehaviour {
 			e.AddStep(HideMenus);
 			e.AddStep(ShowMainMenu);
 		} else {
+			firstInit = false;
 			e.AddStep(SpawnPlayer);
 			e.AddStep(WaitForChunks);
+			e.AddStep(LoadWorldParameters);
 			e.AddStep(HideMenus);
 		}
 	}
@@ -90,10 +100,26 @@ public class GameStateHandler : MonoBehaviour {
 		RandomPlayerPos(worldMaze);
 	}
 
+	private IEnumerator LoadWorldParameters(GameStateHandler state, LoadingStepComplete onDone, Action<string> t, Action<float> p) {
+		t.Invoke("Loading world...");
+		//WorldHandler.Load(SaveFileTemp);
+		WorldHandler.NewWorld();
+		//WorldHandler.Data.Set("CheatMode", true);
+		yield return null;
+		onDone.Invoke();
+	}
+
 	private IEnumerator ShowMainMenu(GameStateHandler state, LoadingStepComplete onDone, Action<string> t, Action<float> p) {
 		t.Invoke("Loading menu...");
 		p.Invoke(0.5f);
 		MenuSystem.GetInstance().ShowMenu(mainMenu);
+		yield return null;
+		onDone.Invoke();
+	}
+
+	private IEnumerator RegisterItems(GameStateHandler state, LoadingStepComplete onDone, Action<string> t, Action<float> p) {
+		t.Invoke("Loading items...");
+		DefaultWeapons.Initialize();
 		yield return null;
 		onDone.Invoke();
 	}

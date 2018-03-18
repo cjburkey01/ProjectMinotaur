@@ -2,6 +2,7 @@
   "name": "Fists",
   "description": "This is the default weapon, you can smack stuff.",
   "is_primary": false,
+  "permanent": true,
   "reset_time": 1,
   "damage": 10,
   "max_distance": 3,
@@ -24,8 +25,8 @@
     "z": 0
   },
   "model_path": "Weapon/Model/TestFistModel",
-  "icon32_path": "Weapon/Icon/Hand32",
-  "icon512_path": "Weapon/Icon/HD/Hand",
+  "icon_lq_path": "Weapon/Icon/Hand32",
+  "icon_hq_path": "Weapon/Icon/HD/Hand",
   "draw_trail": false,
   "full_auto": false,
   "recoil_time": 0.0,

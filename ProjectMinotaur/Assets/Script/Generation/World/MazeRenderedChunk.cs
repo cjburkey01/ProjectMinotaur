@@ -6,6 +6,7 @@ public class MazeRenderedChunk : MonoBehaviour {
 
 	public Material wallMaterial;
 	public bool destroyed;
+	public bool addLights;
 	public GameObject[] lights;
 	public float textureSize = 3.75f;
 	
@@ -20,16 +21,18 @@ public class MazeRenderedChunk : MonoBehaviour {
 		List<Vector3> verts = new List<Vector3>();
 		List<int> tris = new List<int>();
 		List<Vector2> uvs = new List<Vector2>();
-		for (int x = 0; x < chunk.GetSize(); x++) {
-			for (int y = 0; y < chunk.GetSize(); y++) {
-				if (lights.Length > 0) {
-					GameObject objLight = lights[Util.NextRand(0, lights.Length - 1)];
-					GameObject outLight = Instantiate(objLight, handler.GetWorldPosOfNode(chunk.GetNode(x, y).GetGlobalPos(), 0.5f) + new Vector3(handler.pathWidth / 2.0f, 0.0f, handler.pathWidth / 2.0f), Quaternion.identity);
-					outLight.transform.parent = transform;
-					outLight.transform.name = "Light: " + new MazePos(x, y);
+		if (addLights) {
+			for (int x = 0; x < chunk.GetSize(); x++) {
+				for (int y = 0; y < chunk.GetSize(); y++) {
+					if (lights.Length > 0) {
+						GameObject objLight = lights[Util.NextRand(0, lights.Length - 1)];
+						GameObject outLight = Instantiate(objLight, handler.GetWorldPosOfNode(chunk.GetNode(x, y).GetGlobalPos(), 0.5f) + new Vector3(handler.pathWidth / 2.0f, 0.0f, handler.pathWidth / 2.0f), Quaternion.identity);
+						outLight.transform.parent = transform;
+						outLight.transform.name = "Light: " + new MazePos(x, y);
+					}
 				}
+				yield return null;
 			}
-			yield return null;
 		}
 		for (int x = 0; x < chunk.GetSize(); x++) {
 			for (int y = 0; y < chunk.GetSize(); y++) {

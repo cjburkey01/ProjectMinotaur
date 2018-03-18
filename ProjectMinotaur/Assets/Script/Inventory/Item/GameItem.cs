@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using SimpleJSON;
 
 public class GameItem {
 
@@ -52,6 +53,9 @@ public class GameItem {
 	protected GameItem(string uid, string name, string description, int maxStackSize) : this(uid, name, description, maxStackSize, null, null, null, false) {
 	}
 
+	public GameItem(JSONNode json) : this(json["unique_id"].Value, json["name"].Value, json["description"].Value, json["max_stack_size"].AsInt, Resources.Load<GameObject>(json["model_path"].Value), Resources.Load<Sprite>(json["icon_lq_path"].Value), Resources.Load<Sprite>(json["icon_hq_path"].Value), json["permanent"].AsBool) {
+	}
+
 	public GameItem(string uid, string name, string description, int maxStackSize, GameObject model, Sprite icon32, Sprite icon512, bool permanent) {
 		UniqueId = uid;
 		DisplayName = name;
@@ -88,17 +92,31 @@ public class GameItem {
 
 }
 
+public class GameItemHoldable : GameItem {
+
+	public bool IsPrimary { private set; get; }
+	public Vector3 DisplayPositionOffset { private set; get; }
+	public Vector3 DisplayRotationOffset { private set; get; }
+
+	public GameItemHoldable(JSONNode json) : base(json) {
+		IsPrimary = json["is_primary"].AsBool;
+		DisplayPositionOffset = WeaponLoader.LoadVector3(json, "display_position_offset");
+		DisplayRotationOffset = WeaponLoader.LoadVector3(json, "display_rotation_offset");
+	}
+
+}
+
 public class WorldItem : MonoBehaviour {
 
 	public ItemStack Stack { private set; get; }
 
 	public static WorldItem Spawn(ItemStack stack, Vector3 pos) {
-		if (stack == null || stack.IsEmpty()) {
+		if (stack == null || stack.IsEmpty) {
 			return null;
 		}
 		GameObject obj = new GameObject(stack.Item.DisplayName + "x" + stack.Count);
 		WorldItem item = obj.AddComponent<WorldItem>();
-		item.Stack = stack.Copy();
+		item.Stack = stack.Copy;
 		item.transform.position = pos;
 		item.transform.rotation = Random.rotation;
 		stack.Item.CreateModel(item);
@@ -106,7 +124,7 @@ public class WorldItem : MonoBehaviour {
 	}
 	
 	void Update() {
-		// TODO: ROTATE
+		// TODO: ROTATE ON GROUND
 	}
 
 }
@@ -115,73 +133,38 @@ public class ItemStack {
 
 	public GameItem Item { private set; get; }
 	public int Count { set; get; }
-	public ItemData Data { private set; get; }
+	public DataHandler Data { private set; get; }
+	public bool IsEmpty {
+		get {
+			return Item == null || Count < 1;
+		}
+	}
+	public ItemStack Copy {
+		get {
+			return new ItemStack(Item, Count, Data.Copy());
+		}
+	}
 
-	public ItemStack(GameItem item, int count) {
+	public ItemStack(GameItem item, int count) : this(item, count, new DataHandler()) {
+	}
+
+	protected ItemStack(GameItem item, int count, DataHandler data) {
 		Item = item;
 		Count = count;
-		Data = new ItemData();
-	}
-
-	public bool IsEmpty() {
-		return Item == null || Count < 1;
-	}
-
-	public ItemStack Copy() {
-		return new ItemStack(Item, Count);
+		Data = data;
 	}
 
 	public override bool Equals(object obj) {
 		var stack = obj as ItemStack;
-		return stack != null && EqualityComparer<GameItem>.Default.Equals(Item, stack.Item);
+		return stack != null && EqualityComparer<GameItem>.Default.Equals(Item, stack.Item) && EqualityComparer<DataHandler>.Default.Equals(Data, stack.Data);
 	}
 
 	public override int GetHashCode() {
-		return -979861770 + EqualityComparer<GameItem>.Default.GetHashCode(Item);
+		return -979861770 + EqualityComparer<GameItem>.Default.GetHashCode(Item) + EqualityComparer<DataHandler>.Default.GetHashCode(Data);
 	}
 
 	public override string ToString() {
-		return Item + "x" + Count;
-	}
-
-}
-
-public class ItemData {
-
-	private Dictionary<string, object> data;
-
-	public ItemData() {
-		data = new Dictionary<string, object>();
-	}
-
-	public void Set(string key, object value) {
-		if (data.ContainsKey(key)) {
-			data[key] = value;
-		} else {
-			data.Add(key, value);
-		}
-	}
-
-	public object Get(string key) {
-		if (!data.ContainsKey(key)) {
-			return null;
-		}
-		object ret;
-		if (!data.TryGetValue(key, out ret) || ret == null) {
-			return null;
-		}
-		return ret;
-	}
-
-	public T Get<T>(string key, T def) {
-		object at = Get(key);
-		if (!(at is T)) {
-			return def;
-		}
-		if (at == null || at.Equals(def)) {
-			return def;
-		}
-		return (T) at;
+		return Count + "x" + Item + Data.ToString();
 	}
 
 }

@@ -15,7 +15,7 @@ public class PauseListener : MonoBehaviour {
 				return;
 			}
 		}
-		if (Input.GetButtonDown("Cancel") && !ply.MovementMotor.locked && !ply.InventoryOpen) {
+		if (Input.GetButtonDown("Cancel") && !ply.MovementMotor.locked && ply.InventoryOpen == null) {
 			TogglePause();
 		}
 	}

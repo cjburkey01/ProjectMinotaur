@@ -14,12 +14,6 @@ public static class DefaultWeapons {
 		Fist = WeaponLoader.LoadWeapon("Weapon/Data/Fist");
 		Handgun = WeaponLoader.LoadWeapon("Weapon/Data/Handgun");
 		Shotgun = WeaponLoader.LoadWeapon("Weapon/Data/Shotgun");
-
-		Debug.Log("Loaded: " + AutomaticRifle);
-		Debug.Log("Loaded: " + Dagger);
-		Debug.Log("Loaded: " + Fist);
-		Debug.Log("Loaded: " + Handgun);
-		Debug.Log("Loaded: " + Shotgun);
 	}
 
 }

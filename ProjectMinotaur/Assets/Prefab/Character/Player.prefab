@@ -289,7 +289,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9363ef32f8a944b8b08923b7b670aae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventoryUi: {fileID: 0}
+  plyInventory: {fileID: 0}
+  mainInventoryItems: {fileID: 0}
 --- !u!114 &114639215939843308
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -320,7 +321,10 @@ MonoBehaviour:
   playerInAirRatio: 0.8
   playerJumpHeight: 10
   playerGravity: 25
+  flightSpeedMod: 2.5
   locked: 0
+  flying: 0
+  lockCursor: 1
 --- !u!124 &124704325598956778
 Behaviour:
   m_ObjectHideFlags: 1

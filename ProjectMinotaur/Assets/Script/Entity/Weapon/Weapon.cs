@@ -69,8 +69,8 @@ public class Weapon : MonoBehaviour {
 		Holder = player;
 		gameObject.SetLayer(8);
 		transform.parent = player.HandRenderer.gameObject.transform;
-		transform.localPosition = WeaponType.displayPositionOffset;
-		transform.localRotation = Quaternion.Euler(WeaponType.displayRotationOffset);
+		transform.localPosition = WeaponType.DisplayPositionOffset;
+		transform.localRotation = Quaternion.Euler(WeaponType.DisplayRotationOffset);
 	}
 
 	public Vector3 GetBarrelPosWorld() {
@@ -102,6 +102,9 @@ public class Weapon : MonoBehaviour {
 	}
 
 	public static Weapon Create(Player parentPlayer, WeaponDefinition def) {
+		if (def == null) {
+			return null;
+		}
 		GameObject tmp = new GameObject(def.DisplayName);
 		tmp.transform.name = "Weapon: " + def.DisplayName;
 		Weapon w = tmp.AddComponent<Weapon>();
@@ -136,6 +139,15 @@ public class Weapon : MonoBehaviour {
 		}
 		w.SetPlayer(parentPlayer);
 		return w;
+	}
+
+	public static Weapon Create(Player player, ItemStack stack) {
+		if (stack == null || stack.Item == null || !(stack.Item is WeaponDefinition)) {
+			return null;
+		}
+		Weapon wep = Create(player, stack.Item as WeaponDefinition);
+		wep.Stack.Data.SetAll(stack.Data);
+		return wep;
 	}
 
 }

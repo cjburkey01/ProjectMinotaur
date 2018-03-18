@@ -2,15 +2,17 @@
 
 public class Hotbar {
 
-	private Player player;
+	public Player Player { private set; get; }
 	public Weapon Primary;
 	public Weapon Secondary;
+	public ItemListWeapons InventoryWeapons { private set; get; }
 
 	public int Slot { private set; get; }
 	public bool IsPrimarySelected { private set; get; }
 
-	public Hotbar(Player player) {
-		this.player = player;
+	public Hotbar(Player player, ItemListWeapons inventoryWeapons) {
+		Player = player;
+		InventoryWeapons = inventoryWeapons;
 		SetWeapon(true, null);
 		SetWeapon(false, null);
 		SelectWeapon(true);
@@ -27,8 +29,8 @@ public class Hotbar {
 
 	public void SwitchWeapon() {
 		SelectWeapon(!IsPrimarySelected);
-		player.PlayerOverlay.primarySlot.SetSelected(IsPrimarySelected);
-		player.PlayerOverlay.secondarySlot.SetSelected(!IsPrimarySelected);
+		Player.PlayerOverlay.primarySlot.SetSelected(IsPrimarySelected);
+		Player.PlayerOverlay.secondarySlot.SetSelected(!IsPrimarySelected);
 	}
 
 	public void SelectWeapon(bool primary) {
@@ -43,35 +45,31 @@ public class Hotbar {
 
 	public void SetWeapon(bool which, Weapon weapon) {
 		if (weapon == null) {
-			weapon = Weapon.Create(player, DefaultWeapons.Fist);
+			weapon = Weapon.Create(Player, DefaultWeapons.Fist);
 		}
 		if (which) {
 			if (Primary != null) {
 				Object.Destroy(Primary.gameObject);
 			}
 			Primary = weapon;
-			player.MainInventory.Set(15, Primary.Stack);
+			InventoryWeapons.primary.Item = (Primary != null) ? Primary.Stack : null;
 		} else {
 			if (Secondary != null) {
 				Object.Destroy(Secondary.gameObject);
 			}
 			Secondary = weapon;
-			player.MainInventory.Set(16, Secondary.Stack);
+			InventoryWeapons.secondary.Item = (Secondary != null) ? Secondary.Stack : null;
 		}
 		if (Primary != null && Primary.WeaponType.Icon32 != null) {
-			player.PlayerOverlay.primarySlot.SetIcon(Primary.WeaponType.Icon32);
+			Player.PlayerOverlay.primarySlot.SetIcon(Primary.WeaponType.Icon32);
 		}
 		if (Secondary != null && Secondary.WeaponType.Icon32 != null) {
-			player.PlayerOverlay.secondarySlot.SetIcon(Secondary.WeaponType.Icon32);
+			Player.PlayerOverlay.secondarySlot.SetIcon(Secondary.WeaponType.Icon32);
 		}
 	}
 
 	public void UpdateSlot(int slot) {
 		Slot = slot % 2;
-	}
-
-	public ItemStack GetStackInSlot(int slot) {
-		return player.MainInventory.GetItemStack(15 + Slot);
 	}
 
 }

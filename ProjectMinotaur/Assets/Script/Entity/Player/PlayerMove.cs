@@ -24,7 +24,7 @@ public class PlayerMove : MonoBehaviour {
 	private Vector3 moveDirection;
 	private Vector2 walkInput;
 	private Vector2 walkMove;
-	private Vector2 rotation;
+	public Vector2 rotation;
 	private Vector2 moveVel;
 	private Vector3 previousPosition;
 	private float pedalSpeed;
@@ -76,6 +76,12 @@ public class PlayerMove : MonoBehaviour {
 			if (!locked) {
 				MouseMovement();
 				HandleMovement();
+				if (Input.GetKeyDown(KeyCode.F)) {
+					if (GameStateHandler.WorldHandler.Data.Has("CheatMode") && GameStateHandler.WorldHandler.Data.Get("CheatMode", false)) {
+						flying = !flying;
+						print("Flying: " + flying);
+					}
+				}
                 if (flying) {
                     moveDirection = Vector3.zero;
                 }

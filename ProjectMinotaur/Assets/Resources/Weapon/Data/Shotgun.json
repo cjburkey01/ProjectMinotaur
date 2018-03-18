@@ -24,8 +24,8 @@
     "z": 0
   },
   "model_path": "Weapon/Model/Shotgun",
-  "icon32_path": "Weapon/Icon/Shotgun32",
-  "icon512_path": "Weapon/Icon/HD/Shotgun",
+  "icon_lq_path": "Weapon/Icon/Shotgun32",
+  "icon_hq_path": "Weapon/Icon/HD/Shotgun",
   "draw_trail": true,
   "full_auto": false,
   "recoil_time": 0.2,

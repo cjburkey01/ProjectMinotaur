@@ -16,6 +16,7 @@ public class MazeHandler : MonoBehaviour {
 	public GameObject[] nearnessObjects;
 	public float updateInterval = 1.0f;
 	public float chunkUnloadDistancePadding = 100.0f;
+	public bool addLights;
 
 	public bool loadDebug = true;
 	public Text infoText;
@@ -176,6 +177,7 @@ public class MazeHandler : MonoBehaviour {
 			Debug.LogError("Failed to get maze chunk on chunk: " + pos);
 			return;
 		}
+		chunkObj.addLights = addLights;
 		if (!loadedChunks.ContainsKey(pos)) {
 			loadedChunks.Add(pos, chunkObj);
 		} else {
@@ -234,7 +236,7 @@ public class MazeHandler : MonoBehaviour {
 	}
 
 	private void ItemSpawn<T>(T e) where T : ItemSpawnEvent {
-		if (infoText != null && e.Item != null && !e.Item.Stack.IsEmpty()) {
+		if (infoText != null && e.Item != null && !e.Item.Stack.IsEmpty) {
 			infoText.text = "Item: " + e.Item.transform.name + " at " + e.Item.transform.position;
 		}
 	}

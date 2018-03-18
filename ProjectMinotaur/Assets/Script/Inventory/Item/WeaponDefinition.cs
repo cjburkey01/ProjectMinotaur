@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using SimpleJSON;
 
 /// <summary>
 ///		Fires when the weapon is used.
@@ -14,19 +15,16 @@ public delegate bool OnWeaponAttack(Weapon instance);
 /// <returns>True if the default reload behavior will be used, or false if a custom reloading should be used.</returns>
 public delegate bool OnWeaponReload(Weapon instance);
 
-public sealed class WeaponDefinition : GameItem {
+public sealed class WeaponDefinition : GameItemHoldable {
 
 	public static readonly float DEG_TO_RAD = Mathf.PI / 180.0f;
-
-	public readonly bool isPrimary;
+	
 	public readonly float resetTime;
 	public readonly int damage;
 	public readonly float maxDistance;
 	public readonly float spray;    // In degrees
 	public readonly int ammoPerClip;
 	public readonly int shotsPerPrimary;
-	public readonly Vector3 displayPositionOffset;
-	public readonly Vector3 displayRotationOffset;
 	public readonly Vector3 barrelPosition;
 	public readonly bool drawTrail;
 	public readonly bool auto;
@@ -59,7 +57,7 @@ public sealed class WeaponDefinition : GameItem {
 	/// <param name="iconPath">The location of the icon (sprite) to be displayed for this weapon.</param>
 	/// <param name="drawTrail">Whether or not to draw a bullet trail"</param>
 	/// <param name="auto">Whether or not the weapon can be "held down"</param>
-	public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string icon32Path, string icon512Path, bool drawTrail, bool auto, float recoilTime, float recoilX, float recoilY, float recoilSpeed) : base(unique, name, desc, 1) {
+	/*public WeaponDefinition(string unique, string name, string desc, bool isPrimary, float resetTime, int damage, float maxDistance, float spray, int ammoPerClip, int shotsPerPrimary, Vector3 displayPositionOffset, Vector3 displayRotationOffset, Vector3 barrelPosition, string modelPath, string icon32Path, string icon512Path, bool drawTrail, bool auto, float recoilTime, float recoilX, float recoilY, float recoilSpeed) : base(unique, name, desc, 1) {
 		this.isPrimary = isPrimary;
 		this.resetTime = resetTime;
 		this.damage = damage;
@@ -79,6 +77,22 @@ public sealed class WeaponDefinition : GameItem {
 		this.recoilX = recoilX;
 		this.recoilY = recoilY;
 		this.recoilSpeed = recoilSpeed;
+	}*/
+
+	public WeaponDefinition(JSONNode json) : base(json) {
+		resetTime = json["reset_time"].AsFloat;
+		damage = json["damage"].AsInt;
+		maxDistance = json["max_distance"].AsFloat;
+		spray = json["spray"].AsFloat;
+		ammoPerClip = json["ammo_per_clip"];
+		shotsPerPrimary = json["shots_per_primary"];
+		barrelPosition = WeaponLoader.LoadVector3(json, "barrel_position_offset");
+		drawTrail = json["draw_trail"].AsBool;
+		auto = json["full_auto"].AsBool;
+		recoilTime = json["recoil_time"].AsFloat;
+		recoilX = json["recoil_x"].AsFloat;
+		recoilY = json["recoil_y"].AsFloat;
+		recoilSpeed = json["recoil_speed"].AsFloat;
 	}
 
 	public override void CreateModel(WorldItem item) {
