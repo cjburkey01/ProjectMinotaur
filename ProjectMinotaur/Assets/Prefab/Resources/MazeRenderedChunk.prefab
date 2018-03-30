@@ -53,8 +53,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wallMaterial: {fileID: 2100000, guid: 34cd77d56e5194090b299299fdab8989, type: 2}
   destroyed: 0
+  addLights: 0
   lights:
   - {fileID: 1282749264343886, guid: 0ef4fbd2249b140c3b7c08f33269cef8, type: 2}
   - {fileID: 1133356398543762, guid: 9974f85103cba483cae1e66df1ec644c, type: 2}
   - {fileID: 1651971740855842, guid: 08a891fe3bffc4099a98a1281cab77e9, type: 2}
-  textureSize: 7.5
+  textureSize: 5

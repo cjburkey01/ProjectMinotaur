@@ -28,6 +28,7 @@ public class BulletTrail : MonoBehaviour {
 	public static void Create(Vector3 start, Vector3 end) {
 		GameObject trailObj = new GameObject("GunTrail");
 		trailObj.transform.position = Vector3.zero;
+		trailObj.SetLayer(8);	// Make it render above walls and such
 		BulletTrail trail = trailObj.AddComponent<BulletTrail>();
 		trail.line = trailObj.AddComponent<LineRenderer>();
 		trail.line.startWidth = 0.015f;

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 public class DataHandler {
 
-	public static readonly string SEPARATOR = "\t-->==+==<--\t";
+	public static readonly string SEPARATOR = "=";
 	public static readonly string DATA_FORMAT_VERSION = "0";
 
 	public static readonly DataType TYPE_BYTE = new DataTypeByte();
@@ -68,7 +67,7 @@ public class DataHandler {
 
 	public void SetAll(DataHandler data) {
 		foreach (KeyValuePair<string, TypeValuePair> dataPiece in data.data) {
-			Set(dataPiece.Key, dataPiece.Value);
+			SetPair(dataPiece.Key, dataPiece.Value);
 		}
 	}
 
@@ -370,55 +369,6 @@ public class DataTypeVector3 : DataType {
 			return UnityEngine.Vector3.zero;
 		}
 		return new UnityEngine.Vector3(x, y, z);
-	}
-
-}
-
-public class DataTypeItemStack : DataType {
-
-	public DataTypeItemStack() : base("stack") {
-	}
-
-	public override Type GetDataType() {
-		return typeof(ItemStack);
-	}
-
-	public override object GetValue(string data) {
-        return null;
-	}
-
-}
-
-public class DataTypeInventory : DataType {
-
-	public DataTypeInventory() : base("inventory") {
-	}
-
-	public override Type GetDataType() {
-		return typeof(Inventory);
-	}
-
-	public override object GetValue(string data) {
-        return null;
-	}
-
-}
-
-public class DataTypeDataHandler : DataType {
-
-	public DataTypeDataHandler() : base("datahandler") {
-	}
-
-	public override Type GetDataType() {
-		return typeof(Inventory);
-	}
-
-	public override object GetValue(string data) {
-		string dat = data.Substring(1, data.Length - 2);
-		// TODO: DO THIS,
-		//   Parse so that all values not between '[' and ']' are read, the others are
-		//   nested DataHandler values, so process them separately.
-        return null;
 	}
 
 }
