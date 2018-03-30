@@ -3526,7 +3526,7 @@ Prefab:
     - target: {fileID: 114635949085934684, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699,
         type: 2}
       propertyPath: inventoryEnabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5af4c44c3a1f64fa2aa8fe085bd8c699, type: 2}
@@ -5168,6 +5168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dc9b2bad1a1c97478ca2eeea16b801e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  devReleaseMode: 1
   loadingMenu: {fileID: 1964588716}
   mainMenu: {fileID: 1549006847}
   optionsMenu: {fileID: 27967004}

@@ -67,7 +67,7 @@ public class MazeHandler : MonoBehaviour {
 	void Update() {
 		if (Generated) {
 			if (infoText != null) {
-				infoText.text = "Project Minotaur v0.0.1";
+				infoText.text = "Project Minotaur 0.0.1" + ((GameStateHandler.Instance.devReleaseMode) ? "-alpha" : "");
 				infoText.text += "\n\nLoaded chunks: " + loadedChunks.Count;
 				infoText.text += "\nGenerated chunks: " + chunksX * chunksY;
 				infoText.text += "\nNodes per chunk: " + chunkSize + "x" + chunkSize;
@@ -78,7 +78,7 @@ public class MazeHandler : MonoBehaviour {
 				infoText.text += "\nPath width: " + pathWidth;
 				infoText.text += "\nPath height: " + pathHeight;
 				infoText.text += "\nNode interval: " + pathSpread;
-				if (GameStateHandler.Instance.State.Equals(GameState.INGAME)) {
+				if (GameStateHandler.Instance.devReleaseMode && GameStateHandler.Instance.State.Equals(GameState.INGAME)) {
 					infoText.text += "\n\nMovement: WASD and Mouse";
 					infoText.text += "\n  Press F to toggle flight";
 					infoText.text += "\n  Tap spacebar to jump or move up";

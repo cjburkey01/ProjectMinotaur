@@ -16,6 +16,8 @@ public class GameStateHandler : MonoBehaviour {
 
 	public GameState State { private set; get; }
 
+	public bool devReleaseMode;
+
 	public IMenu loadingMenu;
 	public IMenu mainMenu;
 	public IMenu optionsMenu;
