@@ -29,14 +29,18 @@ public class Hotbar {
 
 	public void SwitchWeapon() {
 		SelectWeapon(!IsPrimarySelected);
-		Player.PlayerOverlay.primarySlot.SetSelected(IsPrimarySelected);
-		Player.PlayerOverlay.secondarySlot.SetSelected(!IsPrimarySelected);
 	}
 
 	public void SelectWeapon(bool primary) {
 		IsPrimarySelected = primary;
-		Primary.gameObject.SetActive(IsPrimarySelected);
-		Secondary.gameObject.SetActive(!IsPrimarySelected);
+		Player.PlayerOverlay.primarySlot.SetSelected(IsPrimarySelected);
+		Player.PlayerOverlay.secondarySlot.SetSelected(!IsPrimarySelected);
+		if (Primary != null && Primary.gameObject != null) {
+			Primary.gameObject.SetActive(IsPrimarySelected);
+		}
+		if (Secondary != null && Secondary.gameObject != null) {
+			Secondary.gameObject.SetActive(!IsPrimarySelected);
+		}
 	}
 
 	public Weapon GetWeapon() {
@@ -66,6 +70,7 @@ public class Hotbar {
 		if (Secondary != null && Secondary.WeaponType.Icon32 != null) {
 			Player.PlayerOverlay.secondarySlot.SetIcon(Secondary.WeaponType.Icon32);
 		}
+		SelectWeapon(IsPrimarySelected);
 	}
 
 	public void UpdateSlot(int slot) {

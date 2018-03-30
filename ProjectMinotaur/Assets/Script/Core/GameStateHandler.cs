@@ -103,7 +103,7 @@ public class GameStateHandler : MonoBehaviour {
 	private IEnumerator LoadWorldParameters(GameStateHandler state, LoadingStepComplete onDone, Action<string> t, Action<float> p) {
 		t.Invoke("Loading world...");
 		//WorldHandler.Load(SaveFileTemp);
-		WorldHandler.NewWorld();
+		WorldHandler.NewWorld(worldMaze);
 		//WorldHandler.Data.Set("CheatMode", true);
 		yield return null;
 		onDone.Invoke();

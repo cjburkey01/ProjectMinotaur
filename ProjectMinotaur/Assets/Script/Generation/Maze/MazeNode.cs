@@ -23,8 +23,19 @@ public class MazeNode {
 		this.worldOffset = worldOffset;
 	}
 
+	public MazeNode(int chunkX, int chunkY, int chunkSize, int x, int y, int walls, Vector2 worldOffset) {
+		this.walls = walls;
+		pos = new MazePos(x, y);
+		globalP = new MazePos(chunkX * chunkSize, chunkY * chunkSize);
+		this.worldOffset = new Vector3(worldOffset.x, 0.0f, worldOffset.y);
+	}
+
 	public void SetWalls(int walls) {
 		this.walls = walls;
+	}
+
+	public int GetWallData() {
+		return walls;
 	}
 
 	// Adds the specified wall to the node, providing it is not already enabled.

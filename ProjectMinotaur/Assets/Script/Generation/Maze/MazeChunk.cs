@@ -14,6 +14,18 @@ public class MazeChunk {
 		nodes = new List<MazeNode>();
 	}
 
+	public MazeChunk(int x, int y, int chunkSize, List<MazeNode> nodes) : this(x, y, chunkSize) {
+		this.nodes = nodes;
+	}
+
+	public string GetString() {
+		string output = pos.GetX() + "x" + pos.GetY() + "x";
+		foreach (MazeNode node in nodes) {
+			output += node.GetPosition().GetX() + "y" + node.GetPosition().GetY() + "y" + node.GetWorldOffset().x + "," + node.GetWorldOffset().z + "y" + node.GetWallData() + "^";
+		}
+		return output.Substring(0, output.Length - 1);
+	}
+
 	public MazeNode GetNode(int x, int y) {
 		if (!InChunk(x, y)) {
 			return null;
