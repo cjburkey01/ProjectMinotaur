@@ -31,5 +31,8 @@
   "recoil_time": 0.2,
   "recoil_x": 30.0,
   "recoil_y": 10.0,
-  "recoil_speed": 20.0
+  "recoil_speed": 20.0,
+  "sway_amount": 0.05,
+  "sway_max": 0.4,
+  "sway_smooth": 6
 }

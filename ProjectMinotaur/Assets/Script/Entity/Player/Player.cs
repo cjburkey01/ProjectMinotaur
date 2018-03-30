@@ -2,6 +2,7 @@
 
 public class Player : Entity {
 
+	public bool inventoryEnabled;
 	public GameObject plyInventory;
 	public ItemList inventoryItems;
 	public ItemListWeapons inventoryWeapons;
@@ -65,12 +66,16 @@ public class Player : Entity {
 	}
 
 	private void OpenPlayerInventory() {
-		plyInventory.SetActive(true);
-		InventoryOpen = MainInventory;
-		inventoryWeapons.hotbar = Toolbar;
-		inventoryItems.inventory = MainInventory;
-		inventoryWeapons.OpenInventory();
-		inventoryItems.OpenInventory();
+		if (inventoryEnabled) {
+			plyInventory.SetActive(true);
+			InventoryOpen = MainInventory;
+			inventoryWeapons.hotbar = Toolbar;
+			inventoryItems.inventory = MainInventory;
+			inventoryWeapons.OpenInventory();
+			inventoryItems.OpenInventory();
+		} else {
+			Toaster.Instance.AddToast("Inventory is disabled in this development build!");
+		}
 	}
 
 	void Update() {

@@ -9,10 +9,20 @@ public class Weapon : MonoBehaviour {
 
 	private ParticleSystem muzzleFlash;
 	private float lastFire;
+	private Vector3 swayInit;
 
 	void Update() {
+		if (GameHandler.paused) {
+			return;
+		}
 		if (lastFire < WeaponType.resetTime) {
 			lastFire += Time.deltaTime;
+		}
+		if (Holder != null) {
+			float movX = Mathf.Clamp(-Input.GetAxis("Mouse X") * WeaponType.swayAmount, -WeaponType.swayMax, WeaponType.swayMax);
+			float movY = Mathf.Clamp(-Input.GetAxis("Mouse Y") * WeaponType.swayAmount, -WeaponType.swayMax, WeaponType.swayMax);
+			Vector3 final = new Vector3(movX, movY);
+			transform.localPosition = Vector3.Lerp(transform.localPosition, final + swayInit, Time.deltaTime * WeaponType.swaySmooth);
 		}
 	}
 
@@ -71,6 +81,7 @@ public class Weapon : MonoBehaviour {
 		transform.parent = player.HandRenderer.gameObject.transform;
 		transform.localPosition = WeaponType.DisplayPositionOffset;
 		transform.localRotation = Quaternion.Euler(WeaponType.DisplayRotationOffset);
+		swayInit = transform.localPosition;
 	}
 
 	public Vector3 GetBarrelPosWorld() {

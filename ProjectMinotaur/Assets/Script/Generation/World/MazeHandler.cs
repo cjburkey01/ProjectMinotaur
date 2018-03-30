@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class MazeHandler : MonoBehaviour {
 
+	public static IAlgorithm MAZE_ALGORITHM = new EllersMaze();
+
 	public int chunkSize = 16;
 	public int chunksX = 4;
 	public int chunksY = 4;
@@ -39,7 +41,7 @@ public class MazeHandler : MonoBehaviour {
 			Debug.LogError("Couldn't load chunk prefab, name is empty.");
 			return;
 		}
-		chunkPrefab = Resources.Load(chunkPrefabName, typeof(GameObject)) as GameObject;
+		chunkPrefab = Resources.Load<GameObject>(chunkPrefabName);
 		if (chunkPrefab == null) {
 			Debug.LogError("Couldn't load chunk prefab, file was missing or corrupted.");
 			return;
@@ -48,11 +50,18 @@ public class MazeHandler : MonoBehaviour {
 		loadedChunks = new Dictionary<MazePos, MazeRenderedChunk>();
 	}
 
-	public void Generate(System.Action<float> progress, LoadingStepComplete done) {
+	public void Generate(System.Action<float> progress, LoadingStepComplete done, bool newMaze, bool trueGen) {
 		Rendering = true;
 		loadedChunks = new Dictionary<MazePos, MazeRenderedChunk>();
-		maze = new Maze(new EllersMaze(), chunkSize, chunksX, chunksY, distanceVariability);
-		GenerateMaze(progress, done);
+		if (newMaze) {
+			maze = new Maze(MAZE_ALGORITHM, chunkSize, chunksX, chunksY, distanceVariability);
+		}
+		GenerateMaze(progress, done, trueGen);
+	}
+
+	public void Load(System.Action<float> progress, LoadingStepComplete done, Maze maze) {
+		this.maze = maze;
+		Generate(progress, done, false, false);
 	}
 
 	void Update() {
@@ -69,6 +78,13 @@ public class MazeHandler : MonoBehaviour {
 				infoText.text += "\nPath width: " + pathWidth;
 				infoText.text += "\nPath height: " + pathHeight;
 				infoText.text += "\nNode interval: " + pathSpread;
+				if (GameStateHandler.Instance.State.Equals(GameState.INGAME)) {
+					infoText.text += "\n\nMovement: WASD and Mouse";
+					infoText.text += "\n  Press F to toggle flight";
+					infoText.text += "\n  Tap spacebar to jump or move up";
+					infoText.text += "\n  Hold leftcontrol to move down while flying";
+					infoText.text += "\n  Hold leftshift to speed up movement";
+				}
 			}
 			loadTimer += Time.deltaTime;
 			if (loadTimer >= updateInterval) {
@@ -192,7 +208,7 @@ public class MazeHandler : MonoBehaviour {
 
 	private System.Action<float> progress;
 	private LoadingStepComplete done;
-	private void GenerateMaze(System.Action<float> progress, LoadingStepComplete done) {
+	private void GenerateMaze(System.Action<float> progress, LoadingStepComplete done, bool trueGen) {
 		this.progress = progress;
 		this.done = done;
 		
@@ -206,7 +222,7 @@ public class MazeHandler : MonoBehaviour {
 		PMEventSystem.GetEventSystem().AddListener<EventMazeGenerationUpdate>(MazeUpdate);
 		PMEventSystem.GetEventSystem().AddListener<ItemSpawnEvent>(ItemSpawn);
 
-		maze.Generate(this, new MazePos(chunksX * chunkSize / 2, chunksY * chunkSize / 2));
+		maze.Generate(this, new MazePos(chunksX * chunkSize / 2, chunksY * chunkSize / 2), trueGen);
 	}
 
 	private void MazeBegin<T>(T e) where T : EventMazeGenerationBegin {

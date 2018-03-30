@@ -30,6 +30,7 @@ public class GameStateHandler : MonoBehaviour {
 	public Text info;
 
 	private bool working;
+	private int load = -1;
 	
 	public bool firstInit = true;
 
@@ -56,7 +57,10 @@ public class GameStateHandler : MonoBehaviour {
 		if (firstInit) {
 			e.AddStep(RegisterItems);
 		}
-		e.AddStep(AddMaze);
+		e.AddStep(CleanMazes);
+		if (load < 0) {
+			e.AddStep(AddMaze);
+		}
 		if (e.Handler.State.Equals(GameState.MENU)) {
 			e.AddStep(AddMenuCamera);
 			e.AddStep(WaitForChunks);
@@ -64,9 +68,9 @@ public class GameStateHandler : MonoBehaviour {
 			e.AddStep(ShowMainMenu);
 		} else {
 			firstInit = false;
+			e.AddStep(LoadWorld);
 			e.AddStep(SpawnPlayer);
 			e.AddStep(WaitForChunks);
-			e.AddStep(LoadWorldParameters);
 			e.AddStep(HideMenus);
 		}
 	}
@@ -100,13 +104,23 @@ public class GameStateHandler : MonoBehaviour {
 		RandomPlayerPos(worldMaze);
 	}
 
-	private IEnumerator LoadWorldParameters(GameStateHandler state, LoadingStepComplete onDone, Action<string> t, Action<float> p) {
+	private IEnumerator LoadWorld(GameStateHandler state, LoadingStepComplete onDone, Action<string> t, Action<float> p) {
 		t.Invoke("Loading world...");
-		//WorldHandler.Load(SaveFileTemp);
-		WorldHandler.NewWorld(worldMaze);
-		//WorldHandler.Data.Set("CheatMode", true);
-		yield return null;
-		onDone.Invoke();
+		if (load < 0) {
+			yield return null;
+			t.Invoke("Saving world...");
+			WorldHandler.NewWorld(p, onDone, worldMaze);
+		} else {
+			worldMaze.gameObject.SetActive(true);
+			bool loaded = WorldHandler.Load(p, onDone, worldMaze, load, true);
+			if (!loaded) {
+				Debug.LogError("Failed to load world: " + load);
+				SetState(GameState.MENU);
+				yield break;
+			}
+			yield return null;
+			onDone.Invoke();
+		}
 	}
 
 	private IEnumerator ShowMainMenu(GameStateHandler state, LoadingStepComplete onDone, Action<string> t, Action<float> p) {
@@ -141,27 +155,36 @@ public class GameStateHandler : MonoBehaviour {
 		onDone.Invoke();
 	}
 
-	private IEnumerator AddMaze(GameStateHandler state, LoadingStepComplete onDone, Action<string> text, Action<float> progress) {
-		text.Invoke("Generating maze...");
+	private IEnumerator CleanMazes(GameStateHandler state, LoadingStepComplete onDone, Action<string> text, Action<float> progress) {
+		text.Invoke("Cleaning up mazes...");
 		progress.Invoke(0.0f);
-
+		yield return null;
 		if (worldMaze.Generated) {
 			worldMaze.gameObject.SetActive(true);
 			worldMaze.Clear();
 			worldMaze.gameObject.SetActive(false);
 		}
+		progress.Invoke(0.5f);
+		yield return null;
 		if (menuMaze.Generated) {
 			menuMaze.gameObject.SetActive(true);
 			menuMaze.Clear();
 			menuMaze.gameObject.SetActive(false);
 		}
+		yield return null;
+		onDone.Invoke();
+	}
+
+	private IEnumerator AddMaze(GameStateHandler state, LoadingStepComplete onDone, Action<string> text, Action<float> progress) {
+		text.Invoke("Generating maze...");
+		progress.Invoke(0.0f);
 
 		if (state.State.Equals(GameState.MENU)) {
 			menuMaze.gameObject.SetActive(true);
-			menuMaze.Generate((p) => progress.Invoke(p), onDone);
+			menuMaze.Generate((p) => progress.Invoke(p), onDone, true, true);
 		} else {
 			worldMaze.gameObject.SetActive(true);
-			worldMaze.Generate((p) => progress.Invoke(p), onDone);
+			worldMaze.Generate((p) => progress.Invoke(p), onDone, true, true);
 		}
 		yield return null;
 	}
@@ -199,6 +222,7 @@ public class GameStateHandler : MonoBehaviour {
 		GameHandler.paused = false;
 
 		if (state.Equals(GameState.MENU)) {
+			load = -1;
 			LoadMenu();
 		} else if (state.Equals(GameState.INGAME)) {
 			LoadGame();
@@ -261,6 +285,11 @@ public class GameStateHandler : MonoBehaviour {
 	}
 
 	public void NewGameClick() {
+		SetState(GameState.INGAME);
+	}
+
+	public void LoadGameClick() {
+		load = 0;
 		SetState(GameState.INGAME);
 	}
 

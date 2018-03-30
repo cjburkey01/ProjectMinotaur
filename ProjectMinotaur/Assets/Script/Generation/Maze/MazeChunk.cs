@@ -6,15 +6,15 @@ public class MazeChunk {
 	private readonly int chunkSize;
 	private readonly MazePos pos;
 	private bool initialized;
-	protected List<MazeNode> nodes;
+	protected MazeNode[] nodes;
 
 	public MazeChunk(int x, int y, int chunkSize) {
 		pos = new MazePos(x, y);
 		this.chunkSize = chunkSize;
-		nodes = new List<MazeNode>();
+		nodes = new MazeNode[chunkSize * chunkSize];
 	}
 
-	public MazeChunk(int x, int y, int chunkSize, List<MazeNode> nodes) : this(x, y, chunkSize) {
+	public MazeChunk(int x, int y, int chunkSize, MazeNode[] nodes) : this(x, y, chunkSize) {
 		this.nodes = nodes;
 	}
 
@@ -30,12 +30,7 @@ public class MazeChunk {
 		if (!InChunk(x, y)) {
 			return null;
 		}
-		foreach (MazeNode node in nodes) {
-			if (node.GetPosition().GetX() == x && node.GetPosition().GetY() == y) {
-				return node;
-			}
-		}
-		return null;
+		return nodes[chunkSize * y + x];
 	}
 
 	public void AddNode(int x, int y, float variability) {
@@ -45,9 +40,8 @@ public class MazeChunk {
 		if (GetNode(x, y) != null) {
 			return;
 		}
-		//Vector3 off = new Vector3(Util.NextRand((int) (-100.0f * variability), (int) (100.0f * variability)) / 100.0f, Util.NextRand((int) (-100.0f * variability), (int) (100.0f * variability)) / 100.0f, Util.NextRand((int) (-100.0f * variability), (int) (100.0f * variability)) / 100.0f);
 		Vector3 off = new Vector3(Util.NextRand((int) (-100.0f * variability), (int) (100.0f * variability)) / 100.0f, 0.0f, Util.NextRand((int) (-100.0f * variability), (int) (100.0f * variability)) / 100.0f);
-		nodes.Add(new MazeNode(x, y, pos.GetX() * chunkSize + x, pos.GetY() * chunkSize + y, off));
+		nodes[chunkSize * y + x] = new MazeNode(x, y, pos.GetX() * chunkSize + x, pos.GetY() * chunkSize + y, off);
 	}
 
 	// Prepopulates the chunk with empty nodes.

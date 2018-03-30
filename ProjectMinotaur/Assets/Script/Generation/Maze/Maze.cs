@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ public class Maze {
 	public readonly float variability;
 
 	protected readonly IAlgorithm mazeAlgorithm;
-	protected List<MazeChunk> chunks;
+	protected MazeChunk[] chunks;
 
 	public Maze(IAlgorithm mazeAlgorithm, int chunkSize, int mazeChunkWidth, int mazeChunkHeight, float variability) {
 		this.mazeAlgorithm = mazeAlgorithm;
@@ -18,23 +19,31 @@ public class Maze {
 		this.mazeChunkWidth = mazeChunkWidth;
 		this.mazeChunkHeight = mazeChunkHeight;
 		this.variability = variability;
-		chunks = new List<MazeChunk>();
+		chunks = new MazeChunk[mazeChunkWidth * mazeChunkHeight];
 	}
 
-	public Maze(int chunkSize, int chunksX, int chunksY, float variability, List<MazeChunk> chunks) : this(null, chunkSize, chunksX, chunksY, variability) {
+	public Maze(int chunkSize, int chunksX, int chunksY, float variability, MazeChunk[] chunks) : this(MazeHandler.MAZE_ALGORITHM, chunkSize, chunksX, chunksY, variability) {
 		this.chunks = chunks;
 	}
 
-	public void SaveToFile(string filepath) {
+	public IEnumerator SaveToFile(System.Action<float> progress, LoadingStepComplete onDone, string filepath) {
 		string output = "// What are you doing in this file?\n";
 		output += "// Well, since you're already here, here's a link explaning how this thing works: http://bit.ly/2GDhYG5\n";
 		output += "// I don't know why you'd need that; anyway, have fun decompiling this mess:\n\n";
 		output += chunkSize + "|" + mazeChunkWidth + "|" + mazeChunkHeight + "|" + variability + "|";
+		int i = 0;
 		foreach (MazeChunk chunk in chunks) {
+			i ++;
+			progress.Invoke((float) i / chunks.Length);
 			output += chunk.GetString() + ">";
+			if (i % 47 == 0) {
+				yield return null;
+			}
 		}
 		output = output.Substring(0, output.Length - 1);
 		File.WriteAllText(filepath, output);
+		yield return null;
+		onDone.Invoke();
 	}
 
 	public static Maze LoadFromFile(string filepath) {
@@ -167,9 +176,9 @@ public class Maze {
 				}
 				chunkNodes.Add(new MazeNode(posX, posY, chunkSize, x, y, walls, new Vector2(offX, offY)));
 			}
-			mazeChunks.Add(new MazeChunk(posX, posY, chunkSize, chunkNodes));
+			mazeChunks.Add(new MazeChunk(posX, posY, chunkSize, chunkNodes.ToArray()));
 		}
-		return new Maze(chunkSize, chunksX, chunksY, variability, mazeChunks);
+		return new Maze(chunkSize, chunksX, chunksY, variability, mazeChunks.ToArray());
 	}
 
 	// Prepopulate the maze with chunks.
@@ -186,20 +195,14 @@ public class Maze {
 	}
 
 	public void Destroy() {
-		chunks.Clear();
-
+		chunks = new MazeChunk[0];
 	}
 
 	public MazeChunk GetChunk(int x, int y) {
 		if (!InMaze(x, y)) {
 			return null;
 		}
-		foreach (MazeChunk chunk in chunks) {
-			if (chunk.GetPosition().GetX() == x && chunk.GetPosition().GetY() == y) {
-				return chunk;
-			}
-		}
-		return null;
+		return chunks[mazeChunkHeight * y + x];
 	}
 
 	public void AddChunk(int x, int y) {
@@ -210,7 +213,7 @@ public class Maze {
 			return;
 		}
 		MazeChunk chunk = new MazeChunk(x, y, chunkSize);
-		chunks.Add(chunk);
+		chunks[mazeChunkHeight * y + x] = chunk;
 		chunk.InitializeNodes(variability);
 	}
 
@@ -272,7 +275,7 @@ public class Maze {
 
 	// -- Actual Generation -- //
 
-	public void Generate(MazeHandler handler, MazePos startingPoint) {
+	public void Generate(MazeHandler handler, MazePos startingPoint, bool trueGen) {
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventChunkPrePopulationBegin(this));
 		InitializeChunks();
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventChunkPrePopulationFinish(this));
@@ -294,7 +297,7 @@ public class Maze {
 			}
 		}
 		Debug.Log("Generating maze using: " + mazeAlgorithm.GetName());
-		handler.StartCoroutine(mazeAlgorithm.Generate(handler, true, this, startingPoint));
+		handler.StartCoroutine(mazeAlgorithm.Generate(handler, true, this, startingPoint, trueGen));
 	}
 
 }

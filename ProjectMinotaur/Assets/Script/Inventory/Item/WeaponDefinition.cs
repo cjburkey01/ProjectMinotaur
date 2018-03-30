@@ -32,6 +32,9 @@ public sealed class WeaponDefinition : GameItemHoldable {
 	public readonly float recoilX;
 	public readonly float recoilY;
 	public readonly float recoilSpeed;
+	public readonly float swayAmount;
+	public readonly float swayMax;
+	public readonly float swaySmooth;
 
 	private OnWeaponAttack primaryAction = ((weapon) => { return true; });
 	private OnWeaponAttack secondaryAction = ((weapon) => { return true; });
@@ -93,6 +96,9 @@ public sealed class WeaponDefinition : GameItemHoldable {
 		recoilX = json["recoil_x"].AsFloat;
 		recoilY = json["recoil_y"].AsFloat;
 		recoilSpeed = json["recoil_speed"].AsFloat;
+		swayAmount = json["sway_amount"].AsFloat;
+		swayMax = json["sway_max"].AsFloat;
+		swaySmooth = json["sway_smooth"].AsFloat;
 	}
 
 	public override void CreateModel(WorldItem item) {

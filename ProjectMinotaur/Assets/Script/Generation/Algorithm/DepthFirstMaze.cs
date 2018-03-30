@@ -18,47 +18,46 @@ public class DepthFirstMaze : IAlgorithm {
 		return "Recursive Backtracker Maze";
 	}
 
-	public IEnumerator Generate(MazeHandler handler, bool items, Maze maze, MazePos starting) {
+	public IEnumerator Generate(MazeHandler handler, bool items, Maze maze, MazePos starting, bool trueGen) {
 		totalCells = maze.GetSizeX() * maze.GetSizeY();
 		visitedCells = 0;
 
 		PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationBegin(maze));
 
-		// Make the initial cell the current cell and mark it as visited.
-		MazeNode current = maze.GetNode(starting.GetX(), starting.GetY());
-		if (current == null) {
-			Debug.LogError("Failed to generate maze, the starting node didn't exist.");
-		}
-		MarkVisited(current);
-
-		int i = 0;
-
-		double time = Util.GetMillis();
-		// While there are unvisited cells.
-		while (visitedCells < totalCells) {
+		if (trueGen) {
+			// Make the initial cell the current cell and mark it as visited.
+			MazeNode current = maze.GetNode(starting.GetX(), starting.GetY());
 			if (current == null) {
-				Debug.LogError("Failed to generate maze, an unexpected node was null.");
-				break;
+				Debug.LogError("Failed to generate maze, the starting node didn't exist.");
 			}
-			MazeNode[] unvisited = GetUnvisitedNeighbors(maze, current.GetGlobalPos());
-
-			// If the current cell has any neighbors which have not been visited.
-			if (unvisited.Length > 0) {
-				MazeNode chosen = unvisited[Util.NextRand(0, unvisited.Length - 1)];
-				cells.Push(current);
-				RemoveWallBetween(current, chosen);
-				current = chosen;
-				MarkVisited(current);
-			} else if (cells.Count > 0) { // If we have some cells to process.
-				current = cells.Pop();
-			} else {
-				break;
-			}
-			i++;
-			if (Util.GetMillis() > time + (1000.0d / UpdatesPerSecond)) {
-				time = Util.GetMillis();
-				PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, (float) visitedCells / (float) totalCells));
-				yield return null;
+			MarkVisited(current);
+			int i = 0;
+			double time = Util.GetMillis();
+			// While there are unvisited cells.
+			while (visitedCells < totalCells) {
+				if (current == null) {
+					Debug.LogError("Failed to generate maze, an unexpected node was null.");
+					break;
+				}
+				MazeNode[] unvisited = GetUnvisitedNeighbors(maze, current.GetGlobalPos());
+				// If the current cell has any neighbors which have not been visited.
+				if (unvisited.Length > 0) {
+					MazeNode chosen = unvisited[Util.NextRand(0, unvisited.Length - 1)];
+					cells.Push(current);
+					RemoveWallBetween(current, chosen);
+					current = chosen;
+					MarkVisited(current);
+				} else if (cells.Count > 0) { // If we have some cells to process.
+					current = cells.Pop();
+				} else {
+					break;
+				}
+				i++;
+				if (Util.GetMillis() > time + (1000.0d / UpdatesPerSecond)) {
+					time = Util.GetMillis();
+					PMEventSystem.GetEventSystem().TriggerEvent(new EventMazeGenerationUpdate(maze, (float) visitedCells / (float) totalCells));
+					yield return null;
+				}
 			}
 		}
 

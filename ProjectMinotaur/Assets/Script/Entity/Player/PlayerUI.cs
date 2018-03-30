@@ -7,6 +7,7 @@ public class PlayerUI : MonoBehaviour {
 	public WeaponSlot primarySlot;
 	public WeaponSlot secondarySlot;
 	public CrosshairHandler crossshair;
+	public Toaster toaster;
 
 	private Player player;
 
@@ -22,12 +23,16 @@ public class PlayerUI : MonoBehaviour {
 			primarySlot.gameObject.SetActive(false);
 			secondarySlot.gameObject.SetActive(false);
 			crossshair.gameObject.SetActive(false);
+			toaster.gameObject.SetActive(false);
 		} else {
 			healthBar.gameObject.SetActive(true);
 			ammoBar.gameObject.SetActive(player.Toolbar.GetWeapon().WeaponType.ammoPerClip > 0);
-			primarySlot.gameObject.SetActive(true);
-			secondarySlot.gameObject.SetActive(true);
+			if (player.inventoryEnabled) {
+				primarySlot.gameObject.SetActive(true);
+				secondarySlot.gameObject.SetActive(true);
+			}
 			crossshair.gameObject.SetActive(true);
+			toaster.gameObject.SetActive(true);
 
 			healthBar.Progress = GetPlayer().GetHealth() / 100.0f;
 			ammoBar.Progress = (float) player.Toolbar.GetWeapon().GetCurrentClipAmmo() / player.Toolbar.GetWeapon().WeaponType.ammoPerClip;
