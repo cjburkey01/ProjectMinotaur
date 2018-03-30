@@ -5048,6 +5048,7 @@ MonoBehaviour:
   player: {fileID: 111330359}
   progBar: {fileID: 488346501}
   info: {fileID: 1539453511}
+  firstInit: 1
 --- !u!1 &1736140956
 GameObject:
   m_ObjectHideFlags: 0

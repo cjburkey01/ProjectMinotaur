@@ -384,7 +384,7 @@ public class DataTypeItemStack : DataType {
 	}
 
 	public override object GetValue(string data) {
-
+        return null;
 	}
 
 }
@@ -399,7 +399,7 @@ public class DataTypeInventory : DataType {
 	}
 
 	public override object GetValue(string data) {
-		
+        return null;
 	}
 
 }
@@ -418,6 +418,7 @@ public class DataTypeDataHandler : DataType {
 		// TODO: DO THIS,
 		//   Parse so that all values not between '[' and ']' are read, the others are
 		//   nested DataHandler values, so process them separately.
+        return null;
 	}
 
 }
